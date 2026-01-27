@@ -1,0 +1,18 @@
+# DSPy Text Classification - Requirements
+# Compatible with Mac Intel (x86_64)
+
+# Core DSPy framework
+dspy>=3.1.2
+
+# Web framework
+flask>=3.0.0
+gunicorn>=21.0.0
+
+# Data validation
+pydantic>=2.0.0
+
+# Environment management
+python-dotenv>=1.0.0
+
+# Vector store (for future RAG features)
+chromadb>=0.4.0

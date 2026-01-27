@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSPy Text Classifier</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">🧠</span>
+                <h1>DSPy Text Classifier</h1>
+            </div>
+            <p class="subtitle">Powered by Google Gemini & DSPy Framework</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Input Section -->
+            <section class="input-section card">
+                <h2>📝 Input Text</h2>
+                <textarea
+                    id="input-text"
+                    placeholder="Enter text to classify... (e.g., 'I absolutely love this new smartphone! The camera quality is amazing.')"
+                    rows="4"
+                ></textarea>
+
+                <!-- Classifier Selection -->
+                <div class="classifier-selection">
+                    <h3>🎯 Select Classifier</h3>
+                    <div class="classifier-tabs">
+                        <button class="tab-btn active" data-classifier="sentiment">
+                            <span class="tab-icon">😊</span>
+                            <span class="tab-text">Sentiment</span>
+                        </button>
+                        <button class="tab-btn" data-classifier="topic">
+                            <span class="tab-icon">📂</span>
+                            <span class="tab-text">Topic</span>
+                        </button>
+                        <button class="tab-btn" data-classifier="intent">
+                            <span class="tab-icon">🎯</span>
+                            <span class="tab-text">Intent</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Custom Options -->
+                <div id="custom-options" class="custom-options hidden">
+                    <div id="topic-options" class="option-group hidden">
+                        <label>Custom Categories (comma-separated):</label>
+                        <input type="text" id="custom-categories" placeholder="e.g., Tech, Finance, Healthcare">
+                    </div>
+                    <div id="intent-options" class="option-group hidden">
+                        <label>Custom Intents (comma-separated):</label>
+                        <input type="text" id="custom-intents" placeholder="e.g., book_flight, check_weather, order_food">
+                    </div>
+                </div>
+
+                <!-- Classify Button -->
+                <button id="classify-btn" class="classify-btn">
+                    <span class="btn-icon">🚀</span>
+                    <span>Classify Text</span>
+                </button>
+            </section>
+
+            <!-- Results Section -->
+            <section id="results-section" class="results-section card hidden">
+                <h2>📊 Classification Results</h2>
+
+                <div id="loading" class="loading hidden">
+                    <div class="spinner"></div>
+                    <p>Analyzing text...</p>
+                </div>
+
+                <div id="results-content" class="results-content">
+                    <!-- Sentiment Results -->
+                    <div id="sentiment-results" class="result-type hidden">
+                        <div class="result-header">
+                            <span class="result-label">Sentiment</span>
+                            <span id="sentiment-value" class="result-value sentiment-neutral">—</span>
+                        </div>
+                        <div class="confidence-bar">
+                            <label>Confidence:</label>
+                            <span id="sentiment-confidence" class="confidence-badge">—</span>
+                        </div>
+                        <div class="reasoning">
+                            <label>Reasoning:</label>
+                            <p id="sentiment-reasoning">—</p>
+                        </div>
+                    </div>
+
+                    <!-- Topic Results -->
+                    <div id="topic-results" class="result-type hidden">
+                        <div class="result-header">
+                            <span class="result-label">Topic</span>
+                            <span id="topic-value" class="result-value topic-value">—</span>
+                        </div>
+                        <div class="confidence-bar">
+                            <label>Confidence:</label>
+                            <span id="topic-confidence" class="confidence-badge">—</span>
+                        </div>
+                        <div class="categories-used">
+                            <label>Categories:</label>
+                            <div id="topic-categories" class="tag-list"></div>
+                        </div>
+                        <div class="reasoning">
+                            <label>Reasoning:</label>
+                            <p id="topic-reasoning">—</p>
+                        </div>
+                    </div>
+
+                    <!-- Intent Results -->
+                    <div id="intent-results" class="result-type hidden">
+                        <div class="result-header">
+                            <span class="result-label">Intent</span>
+                            <span id="intent-value" class="result-value intent-value">—</span>
+                        </div>
+                        <div class="confidence-bar">
+                            <label>Confidence:</label>
+                            <span id="intent-confidence" class="confidence-badge">—</span>
+                        </div>
+                        <div class="entities">
+                            <label>Entities:</label>
+                            <pre id="intent-entities" class="entities-json">—</pre>
+                        </div>
+                        <div class="reasoning">
+                            <label>Reasoning:</label>
+                            <p id="intent-reasoning">—</p>
+                        </div>
+                    </div>
+
+                    <!-- Error Display -->
+                    <div id="error-display" class="error-display hidden">
+                        <span class="error-icon">⚠️</span>
+                        <p id="error-message"></p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Examples Section -->
+            <section class="examples-section card">
+                <h2>💡 Try These Examples</h2>
+                <div class="examples-grid">
+                    <button class="example-btn" data-text="I absolutely love this product! It exceeded all my expectations and I would highly recommend it to everyone." data-type="sentiment">
+                        <span class="example-icon">😍</span>
+                        <span class="example-label">Positive Review</span>
+                    </button>
+                    <button class="example-btn" data-text="This is the worst experience I've ever had. The service was terrible and I want a refund immediately." data-type="sentiment">
+                        <span class="example-icon">😤</span>
+                        <span class="example-label">Negative Review</span>
+                    </button>
+                    <button class="example-btn" data-text="Scientists have discovered a new method for quantum error correction that could revolutionize computing within the next decade." data-type="topic">
+                        <span class="example-icon">🔬</span>
+                        <span class="example-label">Science Article</span>
+                    </button>
+                    <button class="example-btn" data-text="Apple announced record quarterly earnings today, with iPhone sales driving significant growth in the Asian market." data-type="topic">
+                        <span class="example-icon">📈</span>
+                        <span class="example-label">Business News</span>
+                    </button>
+                    <button class="example-btn" data-text="Can you help me book a flight to New York for next Friday morning?" data-type="intent">
+                        <span class="example-icon">✈️</span>
+                        <span class="example-label">Travel Request</span>
+                    </button>
+                    <button class="example-btn" data-text="What's the weather going to be like in San Francisco tomorrow?" data-type="intent">
+                        <span class="example-icon">🌤️</span>
+                        <span class="example-label">Weather Query</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- History Section -->
+            <section class="history-section card">
+                <div class="history-header">
+                    <h2>📜 Classification History</h2>
+                    <button id="clear-history" class="clear-btn">Clear All</button>
+                </div>
+                <div id="history-list" class="history-list">
+                    <p class="empty-history">No classifications yet. Try classifying some text!</p>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Built with <span class="heart">❤️</span> using DSPy 3.1.2 & Google Gemini</p>
+            <p class="footer-links">
+                <a href="/health" target="_blank">Health Check</a> |
+                <a href="/api/classifiers" target="_blank">API Info</a>
+            </p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

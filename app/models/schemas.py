@@ -1,103 +1,143 @@
-"""
-Pydantic schemas for request/response validation
-"""
-from pydantic import BaseModel, Field
-from typing import List, Optional, Dict, Any
-from enum import Enum
+"""Pydantic request/response schemas (Model Layer)."""
+
+from __future__ import annotations
+
+from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, Field, field_validator
+
+from app.domain.enums import ClassifierType
 
 
-class ClassifierType(str, Enum):
-    SENTIMENT = "sentiment"
-    TOPIC = "topic"
-    INTENT = "intent"
+class TimestampedModel(BaseModel):
+    """Shared model base with auto-generated timestamp."""
+
+    timestamp: str = Field(
+        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+    )
 
 
-class ConfidenceLevel(str, Enum):
-    HIGH = "high"
-    MEDIUM = "medium"
-    LOW = "low"
-
-
-class SentimentType(str, Enum):
-    POSITIVE = "positive"
-    NEGATIVE = "negative"
-    NEUTRAL = "neutral"
+# ── Requests ──────────────────────────────────────────────
 
 
 class ClassificationRequest(BaseModel):
-    """Request model for classification."""
-    text: str = Field(..., min_length=1, description="Text to classify")
-    classifier_type: ClassifierType = Field(
-        default=ClassifierType.SENTIMENT,
-        description="Type of classification to perform"
-    )
-    categories: Optional[List[str]] = Field(
-        None,
-        description="Custom categories for topic classification"
-    )
-    intents: Optional[List[str]] = Field(
-        None,
-        description="Custom intents for intent classification"
-    )
+    """Single-text classification request."""
 
+    text: str
+    classifier_type: ClassifierType = ClassifierType.SENTIMENT
+    categories: Optional[List[str]] = None
+    intents: Optional[List[str]] = None
+    labels: Optional[List[str]] = None
 
-class ClassificationResponse(BaseModel):
-    """Response model for classification results."""
-    text: str = Field(..., description="Original input text")
-    classifier_type: str = Field(..., description="Type of classifier used")
-    result: Dict[str, Any] = Field(..., description="Classification result")
-    success: bool = Field(default=True, description="Whether classification succeeded")
-    error: Optional[str] = Field(None, description="Error message if failed")
-
-
-class SentimentResponse(BaseModel):
-    """Detailed sentiment classification response."""
-    sentiment: SentimentType
-    confidence: ConfidenceLevel
-    reasoning: str
-
-
-class TopicResponse(BaseModel):
-    """Detailed topic classification response."""
-    topic: str
-    confidence: ConfidenceLevel
-    reasoning: str
-    available_categories: List[str]
-
-
-class IntentResponse(BaseModel):
-    """Detailed intent classification response."""
-    intent: str
-    confidence: ConfidenceLevel
-    entities: str
-    reasoning: str
-    available_intents: List[str]
-
-
-class TrainingExample(BaseModel):
-    """Training example for classifier optimization."""
-    text: str = Field(..., description="Input text")
-    label: str = Field(..., description="Expected label/classification")
+    @field_validator("text")
+    @classmethod
+    def text_must_not_be_empty(cls, value: str) -> str:
+        normalized = value.strip()
+        if not normalized:
+            raise ValueError("Text must not be empty")
+        return normalized
 
 
 class BatchClassificationRequest(BaseModel):
-    """Request for batch classification."""
-    texts: List[str] = Field(..., min_length=1, description="List of texts to classify")
-    classifier_type: ClassifierType = Field(default=ClassifierType.SENTIMENT)
+    """Multi-text classification request."""
+
+    texts: List[str]
+    classifier_type: ClassifierType = ClassifierType.SENTIMENT
     categories: Optional[List[str]] = None
-    intents: Optional[List[str]] = None
+
+    @field_validator("texts")
+    @classmethod
+    def texts_must_not_be_empty(cls, values: List[str]) -> List[str]:
+        normalized = [value.strip() for value in values if value and value.strip()]
+        if not normalized:
+            raise ValueError("Texts list must not be empty")
+        return normalized
+
+
+class AgentRequest(BaseModel):
+    """LangGraph agent analysis request."""
+
+    text: str
+    enable_knowledge_graph: bool = True
+
+    @field_validator("text")
+    @classmethod
+    def text_must_not_be_empty(cls, value: str) -> str:
+        normalized = value.strip()
+        if not normalized:
+            raise ValueError("Text must not be empty")
+        return normalized
+
+
+class GraphInferenceRequest(BaseModel):
+    """Graph inference request."""
+
+    entity: str
+    entity_type: Optional[str] = None
+    max_depth: int = Field(default=2, ge=1, le=6)
+    relation_filter: Optional[str] = None
+
+    @field_validator("entity")
+    @classmethod
+    def entity_must_not_be_empty(cls, value: str) -> str:
+        normalized = value.strip()
+        if not normalized:
+            raise ValueError("Entity must not be empty")
+        return normalized
+
+    @field_validator("entity_type")
+    @classmethod
+    def normalize_entity_type(cls, value: Optional[str]) -> Optional[str]:
+        if value is None:
+            return None
+        normalized = value.strip().upper()
+        return normalized or None
+
+
+# ── Responses ─────────────────────────────────────────────
+
+
+class ClassificationResponse(TimestampedModel):
+    """Single classification result."""
+
+    text: str
+    classifier_type: str = "sentiment"
+    result: Dict[str, Any] = Field(default_factory=dict)
+    success: bool = True
+    error: Optional[str] = None
 
 
 class BatchClassificationResponse(BaseModel):
-    """Response for batch classification."""
+    """Batch classification results."""
+
     results: List[ClassificationResponse]
     total: int
     successful: int
     failed: int
 
 
+class AgentResponse(TimestampedModel):
+    """Full agent analysis result."""
+
+    text: str = ""
+    sentiment: Dict[str, Any] = Field(default_factory=dict)
+    topic: Dict[str, Any] = Field(default_factory=dict)
+    intent: Dict[str, Any] = Field(default_factory=dict)
+    entities: List[Dict[str, str]] = Field(default_factory=list)
+    knowledge_graph: Dict[str, Any] = Field(default_factory=dict)
+    summary: str = ""
+    success: bool = True
+    error: Optional[str] = None
+    steps: List[str] = Field(default_factory=list)
+
+
 class HealthResponse(BaseModel):
     """Health check response."""
+
     status: str
+    provider: str
     model: str
-    classifiers_available: List[str]
+    initialized: bool = False
+    classifiers_available: List[str] = Field(default_factory=list)
+    version: str = "2.0.0"

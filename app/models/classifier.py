@@ -1,227 +1,131 @@
-"""
-DSPy Classification Models
+"""DSPy Classifier Models (Model Layer - OOP)."""
 
-This module contains DSPy-based classifiers for various text classification tasks:
-- Sentiment Analysis
-- Topic Classification
-- Intent Detection
-"""
+import logging
+from typing import Any, Dict, Type
+
 import dspy
-from typing import List, Optional
-from dataclasses import dataclass
+
+from app.domain.enums import ConfidenceLevel
+
+logger = logging.getLogger(__name__)
 
 
-# ============================================================
-# DSPy Signatures for Classification
-# ============================================================
+# ── DSPy Signatures ──────────────────────────────────────
 
-class SentimentSignature(dspy.Signature):
-    """Classify the sentiment of text as positive, negative, or neutral."""
+class SentimentClassifier(dspy.Signature):
+    """Classify the sentiment of the given text."""
 
-    text: str = dspy.InputField(desc="The text to analyze for sentiment")
-    sentiment: str = dspy.OutputField(desc="The sentiment: 'positive', 'negative', or 'neutral'")
-    confidence: str = dspy.OutputField(desc="Confidence level: 'high', 'medium', or 'low'")
-    reasoning: str = dspy.OutputField(desc="Brief explanation for the classification")
+    text = dspy.InputField(desc="Text to analyze")
+    sentiment = dspy.OutputField(desc="One of: positive, negative, neutral")
+    confidence = dspy.OutputField(desc="One of: high, medium, low")
+    reasoning = dspy.OutputField(desc="Brief explanation")
+
+    @staticmethod
+    def normalize_confidence(raw: str) -> str:
+        """Map free-form confidence strings to ConfidenceLevel values."""
+        raw_lower = raw.lower()
+        if "high" in raw_lower:
+            return ConfidenceLevel.HIGH.value
+        if "low" in raw_lower:
+            return ConfidenceLevel.LOW.value
+        return ConfidenceLevel.MEDIUM.value
 
 
-class TopicSignature(dspy.Signature):
+class TopicClassifier(dspy.Signature):
     """Classify the topic/category of the given text."""
 
-    text: str = dspy.InputField(desc="The text to classify")
-    categories: str = dspy.InputField(desc="Available categories to choose from")
-    topic: str = dspy.OutputField(desc="The most appropriate topic/category")
-    confidence: str = dspy.OutputField(desc="Confidence level: 'high', 'medium', or 'low'")
-    reasoning: str = dspy.OutputField(desc="Brief explanation for the classification")
+    text = dspy.InputField(desc="Text to classify")
+    categories = dspy.InputField(
+        desc="Available categories",
+        default="Technology, Science, Business, Health, Sports, "
+        "Politics, Entertainment, Education, Other",
+    )
+    topic = dspy.OutputField(desc="Most relevant category")
+    confidence = dspy.OutputField(desc="One of: high, medium, low")
+    reasoning = dspy.OutputField(desc="Brief explanation")
 
 
-class IntentSignature(dspy.Signature):
+class IntentClassifier(dspy.Signature):
     """Detect the user's intent from the given text."""
 
-    text: str = dspy.InputField(desc="The user's input text")
-    intents: str = dspy.InputField(desc="Available intents to detect")
-    intent: str = dspy.OutputField(desc="The detected intent")
-    confidence: str = dspy.OutputField(desc="Confidence level: 'high', 'medium', or 'low'")
-    entities: str = dspy.OutputField(desc="Key entities extracted from the text (JSON format)")
-    reasoning: str = dspy.OutputField(desc="Brief explanation for the classification")
+    text = dspy.InputField(desc="Text to analyze")
+    intents = dspy.InputField(
+        desc="Available intents",
+        default="question, request, complaint, feedback, "
+        "greeting, farewell, information, other",
+    )
+    intent = dspy.OutputField(desc="Detected intent")
+    confidence = dspy.OutputField(desc="One of: high, medium, low")
+    entities = dspy.OutputField(desc="Key entities found")
+    reasoning = dspy.OutputField(desc="Brief explanation")
 
 
-class MultiLabelSignature(dspy.Signature):
+class MultiLabelClassifier(dspy.Signature):
     """Assign multiple labels to the given text."""
 
-    text: str = dspy.InputField(desc="The text to classify")
-    available_labels: str = dspy.InputField(desc="All available labels")
-    labels: str = dspy.OutputField(desc="Comma-separated list of applicable labels")
-    confidence: str = dspy.OutputField(desc="Confidence level: 'high', 'medium', or 'low'")
-    reasoning: str = dspy.OutputField(desc="Brief explanation for each label assigned")
+    text = dspy.InputField(desc="Text to label")
+    available_labels = dspy.InputField(
+        desc="Available labels",
+        default="informative, opinion, question, instructional, "
+        "persuasive, narrative",
+    )
+    labels = dspy.OutputField(desc="Comma-separated applicable labels")
+    confidence = dspy.OutputField(desc="One of: high, medium, low")
+    reasoning = dspy.OutputField(desc="Brief explanation")
 
 
-# ============================================================
-# DSPy Classification Modules
-# ============================================================
+class EntityExtractor(dspy.Signature):
+    """Extract named entities from text."""
 
-class TextClassifier(dspy.Module):
-    """Base text classifier using Chain of Thought reasoning."""
-
-    def __init__(self, signature_class):
-        super().__init__()
-        self.classifier = dspy.ChainOfThought(signature_class)
-
-    def forward(self, **kwargs) -> dspy.Prediction:
-        return self.classifier(**kwargs)
+    text = dspy.InputField(desc="Text to analyze")
+    entities = dspy.OutputField(
+        desc='JSON list of entities: '
+        '[{"text": "...", "type": "ORG|PERSON|LOC|PRODUCT|CONCEPT"}]',
+    )
+    count = dspy.OutputField(desc="Number of entities found")
 
 
-class SentimentClassifier(dspy.Module):
-    """
-    Sentiment Analysis Classifier
+class AnalysisSummarizer(dspy.Signature):
+    """Summarize a multi-step text analysis."""
 
-    Classifies text into positive, negative, or neutral sentiment
-    with confidence scores and reasoning.
-    """
-
-    def __init__(self):
-        super().__init__()
-        self.classifier = dspy.ChainOfThought(SentimentSignature)
-
-    def forward(self, text: str) -> dspy.Prediction:
-        result = self.classifier(text=text)
-
-        # Normalize sentiment output
-        sentiment = result.sentiment.lower().strip()
-        if 'positive' in sentiment:
-            sentiment = 'positive'
-        elif 'negative' in sentiment:
-            sentiment = 'negative'
-        else:
-            sentiment = 'neutral'
-
-        return dspy.Prediction(
-            sentiment=sentiment,
-            confidence=result.confidence,
-            reasoning=result.reasoning
-        )
+    text = dspy.InputField(desc="Original text")
+    sentiment = dspy.InputField(desc="Sentiment analysis result")
+    topic = dspy.InputField(desc="Topic classification result")
+    intent = dspy.InputField(desc="Intent detection result")
+    entities = dspy.InputField(desc="Extracted entities")
+    summary = dspy.OutputField(desc="Concise summary of all analysis results")
 
 
-class TopicClassifier(dspy.Module):
-    """
-    Topic/Category Classifier
-
-    Classifies text into predefined categories.
-    """
-
-    DEFAULT_CATEGORIES = [
-        "Technology", "Business", "Science", "Health",
-        "Sports", "Entertainment", "Politics", "Education", "Other"
-    ]
-
-    def __init__(self, categories: Optional[List[str]] = None):
-        super().__init__()
-        self.categories = categories or self.DEFAULT_CATEGORIES
-        self.classifier = dspy.ChainOfThought(TopicSignature)
-
-    def forward(self, text: str, categories: Optional[List[str]] = None) -> dspy.Prediction:
-        cats = categories or self.categories
-        categories_str = ", ".join(cats)
-
-        result = self.classifier(text=text, categories=categories_str)
-
-        # Normalize topic to match one of the categories
-        detected_topic = result.topic.strip()
-        matched_topic = None
-        for cat in cats:
-            if cat.lower() in detected_topic.lower() or detected_topic.lower() in cat.lower():
-                matched_topic = cat
-                break
-
-        return dspy.Prediction(
-            topic=matched_topic or detected_topic,
-            confidence=result.confidence,
-            reasoning=result.reasoning,
-            available_categories=cats
-        )
-
-
-class IntentClassifier(dspy.Module):
-    """
-    Intent Detection Classifier
-
-    Detects user intent and extracts entities from text.
-    """
-
-    DEFAULT_INTENTS = [
-        "question", "command", "greeting", "complaint",
-        "feedback", "request", "information", "other"
-    ]
-
-    def __init__(self, intents: Optional[List[str]] = None):
-        super().__init__()
-        self.intents = intents or self.DEFAULT_INTENTS
-        self.classifier = dspy.ChainOfThought(IntentSignature)
-
-    def forward(self, text: str, intents: Optional[List[str]] = None) -> dspy.Prediction:
-        intent_list = intents or self.intents
-        intents_str = ", ".join(intent_list)
-
-        result = self.classifier(text=text, intents=intents_str)
-
-        return dspy.Prediction(
-            intent=result.intent,
-            confidence=result.confidence,
-            entities=result.entities,
-            reasoning=result.reasoning,
-            available_intents=intent_list
-        )
-
-
-class MultiLabelClassifier(dspy.Module):
-    """
-    Multi-Label Classifier
-
-    Assigns multiple labels to a single text.
-    """
-
-    def __init__(self, labels: List[str]):
-        super().__init__()
-        self.labels = labels
-        self.classifier = dspy.ChainOfThought(MultiLabelSignature)
-
-    def forward(self, text: str) -> dspy.Prediction:
-        labels_str = ", ".join(self.labels)
-
-        result = self.classifier(text=text, available_labels=labels_str)
-
-        # Parse labels from comma-separated string
-        assigned_labels = [l.strip() for l in result.labels.split(",")]
-
-        return dspy.Prediction(
-            labels=assigned_labels,
-            confidence=result.confidence,
-            reasoning=result.reasoning,
-            available_labels=self.labels
-        )
-
-
-# ============================================================
-# Classifier Factory
-# ============================================================
+# ── Factory ──────────────────────────────────────────────
 
 class ClassifierFactory:
-    """Factory for creating different types of classifiers."""
+    """Factory for creating DSPy classifier instances (OOP pattern)."""
 
-    _classifiers = {
-        'sentiment': SentimentClassifier,
-        'topic': TopicClassifier,
-        'intent': IntentClassifier,
+    _registry: Dict[str, Type] = {
+        "sentiment": SentimentClassifier,
+        "topic": TopicClassifier,
+        "intent": IntentClassifier,
+        "multi_label": MultiLabelClassifier,
+        "entity": EntityExtractor,
+        "summarizer": AnalysisSummarizer,
     }
 
     @classmethod
-    def create(cls, classifier_type: str, **kwargs):
-        """Create a classifier instance."""
-        if classifier_type not in cls._classifiers:
-            raise ValueError(f"Unknown classifier type: {classifier_type}. "
-                           f"Available: {list(cls._classifiers.keys())}")
-        return cls._classifiers[classifier_type](**kwargs)
+    def create(cls, classifier_type: str) -> Any:
+        """Instantiate a ChainOfThought module for the requested type."""
+        if classifier_type not in cls._registry:
+            raise ValueError(
+                f"Unknown classifier type: {classifier_type}. "
+                f"Available: {list(cls._registry.keys())}"
+            )
+        return dspy.ChainOfThought(cls._registry[classifier_type])
 
     @classmethod
-    def available_types(cls) -> List[str]:
-        """Return list of available classifier types."""
-        return list(cls._classifiers.keys())
+    def available_types(cls) -> list:
+        """Return list of registered classifier type strings."""
+        return list(cls._registry.keys())
+
+    @classmethod
+    def register(cls, name: str, classifier_class: Type) -> None:
+        """Register a new classifier type at runtime."""
+        cls._registry[name] = classifier_class

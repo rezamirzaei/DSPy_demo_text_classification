@@ -1,4 +1,5 @@
-"""Views package - Flask routes and UI"""
-from .routes import create_app, bp
+"""Views package — Flask routes."""
 
-__all__ = ['create_app', 'bp']
+from app.views.routes import create_app
+
+__all__ = ["create_app"]

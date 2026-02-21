@@ -1,301 +1,178 @@
-"""
-Classification Controller
+"""Classification Controller (Controller Layer)."""
 
-Handles the business logic for text classification operations.
-Acts as the bridge between Views and Models in MVC architecture.
-Supports multiple LLM providers: Ollama (local), Gemini, HuggingFace, OpenAI
-"""
-import dspy
-import os
-from typing import List, Optional, Dict, Any
+from __future__ import annotations
+
 import logging
+from typing import Any, Dict, List
 
-from app.models.classifier import (
-    SentimentClassifier,
-    TopicClassifier,
-    IntentClassifier
-)
+from app.domain.enums import ClassifierType
 from app.models.schemas import (
+    AgentRequest,
+    AgentResponse,
+    BatchClassificationRequest,
+    BatchClassificationResponse,
     ClassificationRequest,
     ClassificationResponse,
-    BatchClassificationRequest,
-    BatchClassificationResponse
+    GraphInferenceRequest,
 )
+from app.services import KnowledgeGraph, build_analysis_engine
+from app.services.dspy_service import DSPyService
 
 logger = logging.getLogger(__name__)
 
 
-def get_lm_config():
-    """Get LM configuration based on PROVIDER env var."""
-    provider = os.environ.get('PROVIDER', 'ollama').lower()
-
-    if provider == 'ollama':
-        model = os.environ.get('OLLAMA_MODEL', 'llama3.2')
-        base_url = os.environ.get('OLLAMA_BASE_URL', 'http://localhost:11434')
-        return {
-            'provider': 'ollama',
-            'model': f"ollama/{model}",
-            'api_base': base_url,
-            'api_key': 'ollama',
-        }
-
-    elif provider == 'gemini':
-        api_key = os.environ.get('GOOGLE_API_KEY', '')
-        model = os.environ.get('GOOGLE_MODEL', 'gemini-2.0-flash')
-        return {
-            'provider': 'gemini',
-            'model': f"gemini/{model}",
-            'api_key': api_key,
-        }
-
-    elif provider == 'huggingface':
-        api_key = os.environ.get('HF_TOKEN', '')
-        model = os.environ.get('HF_MODEL', 'mistralai/Mistral-7B-Instruct-v0.3')
-        return {
-            'provider': 'huggingface',
-            'model': f"huggingface/{model}",
-            'api_key': api_key,
-        }
-
-    elif provider == 'openai':
-        api_key = os.environ.get('OPENAI_API_KEY', '')
-        model = os.environ.get('OPENAI_MODEL', 'gpt-4o-mini')
-        return {
-            'provider': 'openai',
-            'model': model,
-            'api_key': api_key,
-        }
-
-    else:
-        # Default fallback to ollama
-        return {
-            'provider': 'ollama',
-            'model': 'ollama/llama3.2',
-            'api_base': 'http://localhost:11434',
-            'api_key': 'ollama',
-        }
-
-
 class ClassificationController:
-    """
-    Controller for managing text classification operations.
+    """Central controller managing classification pipeline."""
 
-    This controller:
-    - Initializes and manages DSPy classifiers
-    - Handles classification requests
-    - Manages classifier lifecycle
-    - Supports multiple LLM providers
-    """
+    def __init__(self, settings: Any = None) -> None:
+        if settings is None:
+            from config import get_settings
 
-    def __init__(self, api_key: str = None, model: str = None):
-        """
-        Initialize the classification controller.
+            settings = get_settings()
 
-        Args:
-            api_key: API key (optional, will use env vars)
-            model: Model name (optional, will use env vars)
-        """
-        self.api_key = api_key
-        self.model = model
+        self._settings = settings
+        self._dspy_service = DSPyService(settings)
+        self._analysis_engine = build_analysis_engine(enable_dspy=False)
+        self._knowledge_graph = KnowledgeGraph(
+            persist_path=settings.graph_data_path,
+            auto_persist=True,
+        )
+        self._agent: Any = None
         self._initialized = False
-        self._classifiers: Dict[str, Any] = {}
-        self._provider = None
-
-    def initialize(self) -> bool:
-        """
-        Initialize DSPy and classifiers.
-
-        Returns:
-            True if initialization successful, False otherwise
-        """
-        try:
-            # Get LM config from environment
-            config = get_lm_config()
-            self._provider = config['provider']
-            self.model = config['model']
-
-            logger.info(f"Initializing DSPy with provider: {self._provider}, model: {self.model}")
-
-            # Build LM kwargs
-            lm_kwargs = {'model': config['model']}
-
-            if config.get('api_key'):
-                lm_kwargs['api_key'] = config['api_key']
-            if config.get('api_base'):
-                lm_kwargs['api_base'] = config['api_base']
-
-            # Configure DSPy
-            lm = dspy.LM(**lm_kwargs)
-            dspy.configure(lm=lm)
-
-            # Initialize classifiers
-            self._classifiers = {
-                'sentiment': SentimentClassifier(),
-                'topic': TopicClassifier(),
-                'intent': IntentClassifier()
-            }
-
-            self._initialized = True
-            logger.info(f"Classification controller initialized successfully with {self._provider}")
-            return True
-
-        except Exception as e:
-            logger.error(f"Failed to initialize classification controller: {e}")
-            self._initialized = False
-            return False
 
     @property
     def is_initialized(self) -> bool:
-        """Check if controller is initialized."""
-        return self._initialized
+        # The application remains functional with deterministic fallback.
+        return self._initialized or self.provider == "rule_based"
+
+    @property
+    def model(self) -> str:
+        return self._dspy_service.model_name
+
+    @property
+    def provider(self) -> str:
+        return self._dspy_service.provider
+
+    @property
+    def backend_ready(self) -> bool:
+        return self._dspy_service.is_initialized
+
+    def initialize(self) -> bool:
+        """Initialize primary backend and build hybrid engine."""
+        self._initialized = self._dspy_service.initialize()
+        use_dspy = self._dspy_service.is_initialized and self._dspy_service.provider != "rule_based"
+        self._analysis_engine = build_analysis_engine(enable_dspy=use_dspy)
+        return self.is_initialized
 
     def get_available_classifiers(self) -> List[str]:
-        """Get list of available classifier types."""
-        return list(self._classifiers.keys())
+        """Return registered classifier type names."""
+        return [classifier.value for classifier in ClassifierType if classifier != ClassifierType.AGENT]
 
     def classify(self, request: ClassificationRequest) -> ClassificationResponse:
-        """
-        Perform classification on the given text.
-
-        Args:
-            request: Classification request with text and classifier type
-
-        Returns:
-            Classification response with results
-        """
-        if not self._initialized:
-            return ClassificationResponse(
-                text=request.text,
-                classifier_type=request.classifier_type.value,
-                result={},
-                success=False,
-                error="Controller not initialized. Call initialize() first."
-            )
-
+        """Run a single classification."""
         try:
-            classifier_type = request.classifier_type.value
-            classifier = self._classifiers.get(classifier_type)
-
-            if not classifier:
-                return ClassificationResponse(
-                    text=request.text,
-                    classifier_type=classifier_type,
-                    result={},
-                    success=False,
-                    error=f"Unknown classifier type: {classifier_type}"
-                )
-
-            # Perform classification based on type
-            if classifier_type == 'sentiment':
-                result = classifier(text=request.text)
-                result_dict = {
-                    'sentiment': result.sentiment,
-                    'confidence': result.confidence,
-                    'reasoning': result.reasoning
-                }
-
-            elif classifier_type == 'topic':
-                result = classifier(
-                    text=request.text,
-                    categories=request.categories
-                )
-                result_dict = {
-                    'topic': result.topic,
-                    'confidence': result.confidence,
-                    'reasoning': result.reasoning,
-                    'available_categories': result.available_categories
-                }
-
-            elif classifier_type == 'intent':
-                result = classifier(
-                    text=request.text,
-                    intents=request.intents
-                )
-                result_dict = {
-                    'intent': result.intent,
-                    'confidence': result.confidence,
-                    'entities': result.entities,
-                    'reasoning': result.reasoning,
-                    'available_intents': result.available_intents
-                }
-            else:
-                result_dict = {}
-
+            payload = self._classify_payload(request)
             return ClassificationResponse(
                 text=request.text,
-                classifier_type=classifier_type,
-                result=result_dict,
-                success=True
+                classifier_type=request.classifier_type.value,
+                result=payload,
+                success=True,
             )
-
-        except Exception as e:
-            logger.error(f"Classification error: {e}")
+        except Exception as exc:
+            logger.exception("Classification failed: %s", exc)
             return ClassificationResponse(
                 text=request.text,
                 classifier_type=request.classifier_type.value,
                 result={},
                 success=False,
-                error=str(e)
+                error=str(exc),
             )
 
-    def classify_sentiment(self, text: str) -> Dict[str, Any]:
-        """Shortcut for sentiment classification."""
-        request = ClassificationRequest(text=text, classifier_type="sentiment")
-        response = self.classify(request)
-        return response.result if response.success else {"error": response.error}
+    def _classify_payload(self, request: ClassificationRequest) -> Dict[str, Any]:
+        if request.classifier_type == ClassifierType.SENTIMENT:
+            return self._analysis_engine.classify_sentiment(request.text).data
 
-    def classify_topic(self, text: str, categories: Optional[List[str]] = None) -> Dict[str, Any]:
-        """Shortcut for topic classification."""
-        request = ClassificationRequest(
-            text=text,
-            classifier_type="topic",
-            categories=categories
-        )
-        response = self.classify(request)
-        return response.result if response.success else {"error": response.error}
+        if request.classifier_type == ClassifierType.TOPIC:
+            return self._analysis_engine.classify_topic(
+                request.text,
+                categories=request.categories,
+            ).data
 
-    def classify_intent(self, text: str, intents: Optional[List[str]] = None) -> Dict[str, Any]:
-        """Shortcut for intent classification."""
-        request = ClassificationRequest(
-            text=text,
-            classifier_type="intent",
-            intents=intents
-        )
-        response = self.classify(request)
-        return response.result if response.success else {"error": response.error}
+        if request.classifier_type == ClassifierType.INTENT:
+            return self._analysis_engine.classify_intent(
+                request.text,
+                intents=request.intents,
+            ).data
 
-    def batch_classify(self, request: BatchClassificationRequest) -> BatchClassificationResponse:
-        """
-        Perform batch classification on multiple texts.
+        if request.classifier_type == ClassifierType.MULTI_LABEL:
+            return self._analysis_engine.classify_multi_label(
+                request.text,
+                labels=request.labels,
+            ).data
 
-        Args:
-            request: Batch classification request
+        if request.classifier_type == ClassifierType.ENTITY:
+            entities = self._analysis_engine.extract_entities(request.text)
+            return {
+                "entities": entities,
+                "count": len(entities),
+            }
 
-        Returns:
-            Batch classification response with all results
-        """
-        results = []
-        successful = 0
-        failed = 0
+        raise ValueError(f"Unsupported classifier type: {request.classifier_type.value}")
+
+    def batch_classify(
+        self,
+        request: BatchClassificationRequest,
+    ) -> BatchClassificationResponse:
+        """Classify a batch of texts."""
+        results: List[ClassificationResponse] = []
 
         for text in request.texts:
-            single_request = ClassificationRequest(
+            single = ClassificationRequest(
                 text=text,
                 classifier_type=request.classifier_type,
                 categories=request.categories,
-                intents=request.intents
             )
-            response = self.classify(single_request)
-            results.append(response)
+            results.append(self.classify(single))
 
-            if response.success:
-                successful += 1
-            else:
-                failed += 1
-
+        successful = sum(1 for response in results if response.success)
         return BatchClassificationResponse(
             results=results,
-            total=len(request.texts),
+            total=len(results),
             successful=successful,
-            failed=failed
+            failed=len(results) - successful,
         )
+
+    def run_agent(self, request: AgentRequest) -> AgentResponse:
+        """Run the LangGraph agent pipeline."""
+        try:
+            if self._agent is None:
+                from app.agents.classification_agent import ClassificationAgent
+
+                self._agent = ClassificationAgent(
+                    analysis_engine=self._analysis_engine,
+                    knowledge_graph=self._knowledge_graph,
+                    enable_knowledge_graph=request.enable_knowledge_graph,
+                )
+
+            return self._agent.analyze(
+                request.text,
+                include_knowledge_graph=request.enable_knowledge_graph,
+            )
+        except Exception as exc:
+            logger.exception("Agent analysis failed: %s", exc)
+            return AgentResponse(text=request.text, success=False, error=str(exc))
+
+    def graph_infer(self, request: GraphInferenceRequest) -> Dict[str, Any]:
+        """Run graph-centric inference for an entity."""
+        return self._knowledge_graph.infer_for_entity(
+            entity_name=request.entity,
+            entity_type=request.entity_type,
+            max_depth=request.max_depth,
+            relation_filter=request.relation_filter,
+        )
+
+    def get_knowledge_graph(self) -> Dict[str, Any]:
+        """Export the current knowledge graph."""
+        if self._agent is not None:
+            return self._agent.get_knowledge_graph()
+        return self._knowledge_graph.export_graph()

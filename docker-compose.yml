@@ -1,27 +1,33 @@
-version: '3.8'
-
 services:
-  dspy-classifier:
+  app:
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: dspy-classifier
+      target: production
+      args:
+        BUILDKIT_INLINE_CACHE: 1
     ports:
       - "8000:8000"
+    env_file:
+      - .env
     environment:
-      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
-      - GOOGLE_MODEL=${GOOGLE_MODEL:-gemini-2.0-flash-lite}
       - HOST=0.0.0.0
       - PORT=8000
-      - DEBUG=false
-      - LOG_LEVEL=INFO
+      - PROVIDER=${PROVIDER:-rule_based}
     volumes:
-      # Persist ChromaDB data
-      - ./chroma_db:/app/chroma_db
+      - ./data:/app/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://localhost:8000/health')"]
       interval: 30s
-      timeout: 10s
+      timeout: 5s
+      start_period: 15s
       retries: 3
-      start_period: 60s
+
+  test:
+    build:
+      context: .
+      target: dev
+      args:
+        BUILDKIT_INLINE_CACHE: 1
+    profiles: ["test"]
+    command: ["python", "-m", "pytest", "tests/", "-v", "--tb=short"]

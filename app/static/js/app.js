@@ -1,363 +1,161 @@
-/**
- * DSPy Text Classifier - Frontend JavaScript
- */
+/* AngularJS MVC Application - DSPy Classification Studio */
+(function() {
+'use strict';
 
-// State
-let currentClassifier = 'sentiment';
-let history = [];
+var app = angular.module('classifierApp', []);
 
-// DOM Elements
-const inputText = document.getElementById('input-text');
-const classifyBtn = document.getElementById('classify-btn');
-const resultsSection = document.getElementById('results-section');
-const loading = document.getElementById('loading');
-const resultsContent = document.getElementById('results-content');
-const errorDisplay = document.getElementById('error-display');
-const errorMessage = document.getElementById('error-message');
-const historyList = document.getElementById('history-list');
-const clearHistoryBtn = document.getElementById('clear-history');
-const customOptions = document.getElementById('custom-options');
-const topicOptions = document.getElementById('topic-options');
-const intentOptions = document.getElementById('intent-options');
-
-// Classifier tabs
-const tabButtons = document.querySelectorAll('.tab-btn');
-const resultTypes = {
-    sentiment: document.getElementById('sentiment-results'),
-    topic: document.getElementById('topic-results'),
-    intent: document.getElementById('intent-results')
-};
-
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    // Tab switching
-    tabButtons.forEach(btn => {
-        btn.addEventListener('click', () => switchClassifier(btn.dataset.classifier));
-    });
-
-    // Classify button
-    classifyBtn.addEventListener('click', classify);
-
-    // Enter key in textarea
-    inputText.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && e.ctrlKey) {
-            classify();
-        }
-    });
-
-    // Example buttons
-    document.querySelectorAll('.example-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            inputText.value = btn.dataset.text;
-            switchClassifier(btn.dataset.type);
-            classify();
-        });
-    });
-
-    // Clear history
-    clearHistoryBtn.addEventListener('click', clearHistory);
-
-    // Load history from localStorage
-    loadHistory();
+/* ===== HistoryService (localStorage persistence) ===== */
+app.factory('HistoryService', function() {
+    var KEY = 'classifier_history';
+    return {
+        getAll: function() {
+            try { return JSON.parse(localStorage.getItem(KEY)) || []; }
+            catch(e) { return []; }
+        },
+        add: function(item) {
+            var history = this.getAll();
+            history.unshift(item);
+            if (history.length > 50) history = history.slice(0, 50);
+            localStorage.setItem(KEY, JSON.stringify(history));
+        },
+        clear: function() { localStorage.removeItem(KEY); }
+    };
 });
 
-/**
- * Switch active classifier
- */
-function switchClassifier(type) {
-    currentClassifier = type;
+/* ===== ClassifierService (API communication) ===== */
+app.factory('ClassifierService', ['$http', function($http) {
+    var BASE = '/api';
+    return {
+        classify: function(text, type) {
+            return $http.post(BASE + '/classify', {text: text, classifier_type: type});
+        },
+        batchClassify: function(texts, type) {
+            return $http.post(BASE + '/classify/batch', {texts: texts, classifier_type: type || 'sentiment'});
+        },
+        runAgent: function(text) {
+            return $http.post(BASE + '/agent/analyze', {text: text, enable_knowledge_graph: true});
+        },
+        getKnowledgeGraph: function() {
+            return $http.get(BASE + '/knowledge-graph');
+        },
+        inferGraph: function(query) {
+            return $http.post(BASE + '/graph/infer', query);
+        },
+        getClassifiers: function() {
+            return $http.get(BASE + '/classifiers');
+        },
+        getHealth: function() {
+            return $http.get('/health');
+        }
+    };
+}]);
 
-    // Update tabs
-    tabButtons.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.classifier === type);
-    });
+/* ===== MainController ===== */
+app.controller('MainController', ['$scope', 'ClassifierService', 'HistoryService',
+function($scope, ClassifierService, HistoryService) {
+    $scope.currentTab = 'classify';
+    $scope.classifierType = 'sentiment';
+    $scope.inputText = '';
+    $scope.batchText = '';
+    $scope.agentText = '';
+    $scope.loading = false;
+    $scope.error = null;
+    $scope.classifyResult = null;
+    $scope.batchResult = null;
+    $scope.agentResult = null;
+    $scope.graphData = null;
+    $scope.graphInference = null;
+    $scope.graphQuery = {
+        entity: '',
+        entity_type: '',
+        max_depth: 2,
+        relation_filter: ''
+    };
+    $scope.history = HistoryService.getAll();
 
-    // Show/hide custom options
-    topicOptions.classList.toggle('hidden', type !== 'topic');
-    intentOptions.classList.toggle('hidden', type !== 'intent');
-    customOptions.classList.toggle('hidden', type === 'sentiment');
-
-    // Hide all result types
-    Object.values(resultTypes).forEach(el => el.classList.add('hidden'));
-}
-
-/**
- * Perform classification
- */
-async function classify() {
-    const text = inputText.value.trim();
-
-    if (!text) {
-        showError('Please enter some text to classify.');
-        return;
-    }
-
-    // Prepare request
-    const payload = {
-        text: text,
-        classifier_type: currentClassifier
+    $scope.classify = function() {
+        if (!$scope.inputText.trim()) return;
+        $scope.loading = true;
+        $scope.error = null;
+        ClassifierService.classify($scope.inputText, $scope.classifierType)
+            .then(function(resp) {
+                $scope.classifyResult = resp.data;
+                HistoryService.add(resp.data);
+                $scope.history = HistoryService.getAll();
+            })
+            .catch(function(err) {
+                $scope.error = (err.data && err.data.error) ? err.data.error : 'Request failed';
+            })
+            .finally(function() { $scope.loading = false; });
     };
 
-    // Add custom options if applicable
-    if (currentClassifier === 'topic') {
-        const customCats = document.getElementById('custom-categories').value.trim();
-        if (customCats) {
-            payload.categories = customCats.split(',').map(c => c.trim()).filter(c => c);
-        }
-    } else if (currentClassifier === 'intent') {
-        const customIntents = document.getElementById('custom-intents').value.trim();
-        if (customIntents) {
-            payload.intents = customIntents.split(',').map(i => i.trim()).filter(i => i);
-        }
-    }
-
-    // Show loading
-    resultsSection.classList.remove('hidden');
-    loading.classList.remove('hidden');
-    resultsContent.classList.add('hidden');
-    errorDisplay.classList.add('hidden');
-    classifyBtn.disabled = true;
-
-    try {
-        const response = await fetch('/api/classify', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            displayResults(data);
-            addToHistory(data);
-        } else {
-            showError(data.error || 'Classification failed');
-        }
-    } catch (error) {
-        showError('Network error: ' + error.message);
-    } finally {
-        loading.classList.add('hidden');
-        resultsContent.classList.remove('hidden');
-        classifyBtn.disabled = false;
-    }
-}
-
-/**
- * Display classification results
- */
-function displayResults(data) {
-    const type = data.classifier_type;
-    const result = data.result;
-
-    // Hide all result types first
-    Object.values(resultTypes).forEach(el => el.classList.add('hidden'));
-    errorDisplay.classList.add('hidden');
-
-    if (type === 'sentiment') {
-        displaySentimentResults(result);
-    } else if (type === 'topic') {
-        displayTopicResults(result);
-    } else if (type === 'intent') {
-        displayIntentResults(result);
-    }
-}
-
-/**
- * Display sentiment results
- */
-function displaySentimentResults(result) {
-    const container = resultTypes.sentiment;
-    container.classList.remove('hidden');
-
-    const valueEl = document.getElementById('sentiment-value');
-    valueEl.textContent = result.sentiment;
-    valueEl.className = 'result-value sentiment-' + result.sentiment;
-
-    const confidenceEl = document.getElementById('sentiment-confidence');
-    confidenceEl.textContent = result.confidence;
-    confidenceEl.className = 'confidence-badge confidence-' + result.confidence;
-
-    document.getElementById('sentiment-reasoning').textContent = result.reasoning;
-}
-
-/**
- * Display topic results
- */
-function displayTopicResults(result) {
-    const container = resultTypes.topic;
-    container.classList.remove('hidden');
-
-    document.getElementById('topic-value').textContent = result.topic;
-
-    const confidenceEl = document.getElementById('topic-confidence');
-    confidenceEl.textContent = result.confidence;
-    confidenceEl.className = 'confidence-badge confidence-' + result.confidence;
-
-    // Display categories
-    const categoriesEl = document.getElementById('topic-categories');
-    categoriesEl.innerHTML = '';
-    if (result.available_categories) {
-        result.available_categories.forEach(cat => {
-            const tag = document.createElement('span');
-            tag.className = 'tag' + (cat === result.topic ? ' active' : '');
-            tag.textContent = cat;
-            categoriesEl.appendChild(tag);
-        });
-    }
-
-    document.getElementById('topic-reasoning').textContent = result.reasoning;
-}
-
-/**
- * Display intent results
- */
-function displayIntentResults(result) {
-    const container = resultTypes.intent;
-    container.classList.remove('hidden');
-
-    document.getElementById('intent-value').textContent = result.intent;
-
-    const confidenceEl = document.getElementById('intent-confidence');
-    confidenceEl.textContent = result.confidence;
-    confidenceEl.className = 'confidence-badge confidence-' + result.confidence;
-
-    // Format entities
-    let entitiesText = result.entities;
-    try {
-        // Try to parse and pretty-print JSON
-        const parsed = JSON.parse(result.entities);
-        entitiesText = JSON.stringify(parsed, null, 2);
-    } catch (e) {
-        // Keep original text if not valid JSON
-    }
-    document.getElementById('intent-entities').textContent = entitiesText;
-
-    document.getElementById('intent-reasoning').textContent = result.reasoning;
-}
-
-/**
- * Show error message
- */
-function showError(message) {
-    resultsSection.classList.remove('hidden');
-    loading.classList.add('hidden');
-    resultsContent.classList.remove('hidden');
-
-    Object.values(resultTypes).forEach(el => el.classList.add('hidden'));
-
-    errorDisplay.classList.remove('hidden');
-    errorMessage.textContent = message;
-}
-
-/**
- * Add classification to history
- */
-function addToHistory(data) {
-    const historyItem = {
-        text: data.text,
-        type: data.classifier_type,
-        result: data.result,
-        timestamp: new Date().toISOString()
+    $scope.batchClassify = function() {
+        if (!$scope.batchText.trim()) return;
+        var texts = $scope.batchText.split('\n').filter(function(t) { return t.trim(); });
+        if (!texts.length) return;
+        $scope.loading = true;
+        $scope.error = null;
+        ClassifierService.batchClassify(texts)
+            .then(function(resp) { $scope.batchResult = resp.data; })
+            .catch(function(err) {
+                $scope.error = (err.data && err.data.error) ? err.data.error : 'Request failed';
+            })
+            .finally(function() { $scope.loading = false; });
     };
 
-    history.unshift(historyItem);
+    $scope.runAgent = function() {
+        if (!$scope.agentText.trim()) return;
+        $scope.loading = true;
+        $scope.error = null;
+        ClassifierService.runAgent($scope.agentText)
+            .then(function(resp) {
+                $scope.agentResult = resp.data;
+                HistoryService.add({classifier_type: 'agent', text: $scope.agentText, result: resp.data});
+                $scope.history = HistoryService.getAll();
+            })
+            .catch(function(err) {
+                $scope.error = (err.data && err.data.error) ? err.data.error : 'Request failed';
+            })
+            .finally(function() { $scope.loading = false; });
+    };
 
-    // Keep only last 20 items
-    if (history.length > 20) {
-        history = history.slice(0, 20);
-    }
+    $scope.loadKnowledgeGraph = function() {
+        ClassifierService.getKnowledgeGraph()
+            .then(function(resp) { $scope.graphData = resp.data; })
+            .catch(function() { $scope.error = 'Failed to load knowledge graph'; });
+    };
 
-    saveHistory();
-    renderHistory();
-}
-
-/**
- * Render history list
- */
-function renderHistory() {
-    if (history.length === 0) {
-        historyList.innerHTML = '<p class="empty-history">No classifications yet. Try classifying some text!</p>';
-        return;
-    }
-
-    historyList.innerHTML = history.map(item => {
-        let resultValue = '';
-        let resultClass = '';
-
-        if (item.type === 'sentiment') {
-            resultValue = item.result.sentiment;
-            resultClass = 'sentiment-' + resultValue;
-        } else if (item.type === 'topic') {
-            resultValue = item.result.topic;
-            resultClass = 'topic-value';
-        } else if (item.type === 'intent') {
-            resultValue = item.result.intent;
-            resultClass = 'intent-value';
+    $scope.runGraphInference = function() {
+        if (!$scope.graphQuery.entity || !$scope.graphQuery.entity.trim()) {
+            $scope.error = 'Entity is required for graph inference.';
+            return;
         }
 
-        return `
-            <div class="history-item">
-                <span class="history-text" title="${escapeHtml(item.text)}">${escapeHtml(truncate(item.text, 50))}</span>
-                <div class="history-result">
-                    <span class="history-type">${item.type}</span>
-                    <span class="history-value ${resultClass}">${escapeHtml(resultValue)}</span>
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
-/**
- * Clear history
- */
-function clearHistory() {
-    history = [];
-    saveHistory();
-    renderHistory();
-}
-
-/**
- * Save history to localStorage
- */
-function saveHistory() {
-    try {
-        localStorage.setItem('classification_history', JSON.stringify(history));
-    } catch (e) {
-        console.error('Failed to save history:', e);
-    }
-}
-
-/**
- * Load history from localStorage
- */
-function loadHistory() {
-    try {
-        const saved = localStorage.getItem('classification_history');
-        if (saved) {
-            history = JSON.parse(saved);
-            renderHistory();
+        $scope.loading = true;
+        $scope.error = null;
+        var query = {
+            entity: $scope.graphQuery.entity,
+            max_depth: Number($scope.graphQuery.max_depth || 2)
+        };
+        if ($scope.graphQuery.entity_type && $scope.graphQuery.entity_type.trim()) {
+            query.entity_type = $scope.graphQuery.entity_type;
         }
-    } catch (e) {
-        console.error('Failed to load history:', e);
-        history = [];
-    }
-}
+        if ($scope.graphQuery.relation_filter && $scope.graphQuery.relation_filter.trim()) {
+            query.relation_filter = $scope.graphQuery.relation_filter;
+        }
 
-/**
- * Utility: Escape HTML
- */
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
+        ClassifierService.inferGraph(query)
+            .then(function(resp) { $scope.graphInference = resp.data; })
+            .catch(function(err) {
+                $scope.error = (err.data && err.data.error) ? err.data.error : 'Graph inference failed';
+            })
+            .finally(function() { $scope.loading = false; });
+    };
 
-/**
- * Utility: Truncate text
- */
-function truncate(text, maxLength) {
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + '...';
-}
+    $scope.clearHistory = function() {
+        HistoryService.clear();
+        $scope.history = [];
+    };
+}]);
+
+})();

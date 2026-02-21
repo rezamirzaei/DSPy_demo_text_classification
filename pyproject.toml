@@ -1,19 +1,47 @@
 [project]
-name = "dspy-classifier"
-version = "1.0.0"
-description = "DSPy Text Classification Application with MVC Architecture"
+name = "dspy-classification-studio"
+version = "2.0.0"
+description = "Production-grade text classification with DSPy, LangGraph, and Knowledge Graphs"
+readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "dspy>=3.1.2",
-    "python-dotenv>=1.0.0",
-    "chromadb>=0.4.0",
+    "dspy>=2.5.0",
+    "langgraph>=0.2.0",
     "flask>=3.0.0",
-    "pydantic>=2.0.0",
     "gunicorn>=21.0.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "python-dotenv>=1.0.0",
+    "litellm>=1.40.0",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=7.0.0",
-    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.0.0",
+    "pytest-mock>=3.10.0",
+    "flake8>=6.0.0",
+    "mypy>=1.5.0",
+    "ruff>=0.9.0",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+
+[tool.coverage.run]
+source = ["app", "config"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 80
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]

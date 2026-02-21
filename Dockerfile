@@ -1,42 +1,36 @@
-# DSPy Text Classification Application
-# Docker image for Mac Intel (x86_64) compatibility
+# syntax=docker/dockerfile:1.7
 
-FROM python:3.11-slim
-
-# Set environment variables
+FROM python:3.11-slim AS base
+WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
-# Set work directory
-WORKDIR /app
+FROM base AS builder
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --upgrade pip uv
+COPY requirements-runtime.txt ./
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv pip install --system -r requirements-runtime.txt
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy requirements first for caching
-COPY requirements.txt .
-
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy application code
-COPY . .
-
-# Create non-root user
-RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
-USER appuser
-
-# Expose port
+FROM base AS production
+RUN addgroup --system app && adduser --system --ingroup app app
+COPY --from=builder /usr/local /usr/local
+COPY app/ ./app/
+COPY config.py run.py wsgi.py ./
+RUN mkdir -p /app/data && chown -R app:app /app
+USER app
 EXPOSE 8000
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+    CMD python -c "import urllib.request;urllib.request.urlopen('http://localhost:8000/health')" || exit 1
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "--threads", "4", "--timeout", "60", "wsgi:app"]
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:8000/health || exit 1
-
-# Run the application
-CMD ["python", "run.py", "--host", "0.0.0.0", "--port", "8000"]
+FROM production AS dev
+USER root
+COPY requirements-dev.txt ./
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --no-cache-dir -r requirements-dev.txt
+COPY tests/ ./tests/
+COPY pyproject.toml ./
+USER app
+CMD ["python", "-m", "pytest", "tests/", "-v", "--tb=short"]

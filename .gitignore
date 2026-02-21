@@ -1,120 +1,34 @@
-# ============================================
-# DSPy Text Classification Studio
-# Git Ignore Configuration
-# ============================================
-
-# ============================================
-# Environment & Secrets
-# ============================================
-.env
-.env.local
-.env.*.local
-*.pem
-*.key
-
-# ============================================
-# Python
-# ============================================
+# ── Python ────────────────────────────────
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
+*.pyc
+*.pyo
 *.egg-info/
-.installed.cfg
-*.egg
+dist/
+build/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+coverage.xml
 
-# ============================================
-# Virtual Environments
-# ============================================
+# ── Virtual environments ─────────────────
 .venv/
 venv/
-ENV/
-env/
-.conda/
 
-# ============================================
-# IDE & Editors
-# ============================================
+# ── IDE ───────────────────────────────────
 .idea/
 .vscode/
 *.swp
-*.swo
-*~
-.project
-.pydevproject
-.settings/
-*.sublime-workspace
-*.sublime-project
 
-# ============================================
-# Testing & Coverage
-# ============================================
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-
-# ============================================
-# Data & Databases
-# ============================================
+# ── Runtime data ─────────────────────────
+data/
 chroma_db/
-*.db
-*.sqlite
 *.sqlite3
-*.csv
-*.json
-!package.json
-!tsconfig.json
 
-# ============================================
-# Logs
-# ============================================
-*.log
-logs/
-log/
+# ── Environment ──────────────────────────
+.env
 
-# ============================================
-# OS Files
-# ============================================
+# ── OS ───────────────────────────────────
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
-
-# ============================================
-# Docker
-# ============================================
-docker-compose.override.yml
-
-# ============================================
-# Temporary Files
-# ============================================
-tmp/
-temp/
-*.tmp
-*.bak
-*.swp

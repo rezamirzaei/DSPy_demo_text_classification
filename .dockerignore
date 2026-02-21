@@ -1,0 +1,49 @@
+# ── VCS / IDE ──
+.git
+.gitignore
+.idea
+.vscode
+*.swp
+
+# ── Python caches ──
+__pycache__
+*.pyc
+*.pyo
+*.egg-info
+.mypy_cache
+.pytest_cache
+.ruff_cache
+htmlcov
+.coverage
+coverage.xml
+
+# ── Virtual envs ──
+.venv
+venv
+
+# ── Data / runtime artefacts ──
+chroma_db
+data
+*.sqlite3
+
+# ── CI/CD & docs ──
+.github
+.editorconfig
+.pre-commit-config.yaml
+README.md
+Makefile
+LICENSE
+
+# ── Docker (avoid recursive copy) ──
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# ── Old code ──
+src
+tests/unit
+tests/api
+
+# ── OS junk ──
+.DS_Store
+Thumbs.db

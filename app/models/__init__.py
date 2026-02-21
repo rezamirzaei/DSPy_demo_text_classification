@@ -1,13 +1,25 @@
-"""Models package - DSPy classifiers and data models"""
-from .classifier import TextClassifier, SentimentClassifier, TopicClassifier, IntentClassifier
-from .schemas import ClassificationRequest, ClassificationResponse, TrainingExample
+"""Models package — classifiers, schemas."""
+
+from app.models.classifier import ClassifierFactory
+from app.models.schemas import (
+    AgentRequest,
+    AgentResponse,
+    BatchClassificationRequest,
+    BatchClassificationResponse,
+    ClassificationRequest,
+    ClassificationResponse,
+    GraphInferenceRequest,
+    HealthResponse,
+)
 
 __all__ = [
-    'TextClassifier',
-    'SentimentClassifier',
-    'TopicClassifier',
-    'IntentClassifier',
-    'ClassificationRequest',
-    'ClassificationResponse',
-    'TrainingExample'
+    "AgentRequest",
+    "AgentResponse",
+    "BatchClassificationRequest",
+    "BatchClassificationResponse",
+    "ClassificationRequest",
+    "ClassificationResponse",
+    "ClassifierFactory",
+    "GraphInferenceRequest",
+    "HealthResponse",
 ]

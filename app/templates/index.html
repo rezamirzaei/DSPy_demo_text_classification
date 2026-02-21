@@ -1,199 +1,154 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="classifierApp">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DSPy Text Classifier</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DSPy Classification Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
 </head>
-<body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="logo">
-                <span class="logo-icon">🧠</span>
-                <h1>DSPy Text Classifier</h1>
-            </div>
-            <p class="subtitle">Powered by Google Gemini & DSPy Framework</p>
-        </header>
+<body ng-controller="MainController">
+{% raw %}
+<div class="page-bg"></div>
+<main class="layout">
+  <header class="hero">
+    <h1>&#x1f9e0; DSPy Classification Studio</h1>
+    <p>AngularJS MVC + DSPy + LangGraph Agent + Knowledge Graph Inference</p>
+    <nav>
+      <button ng-class="{'active': currentTab === 'classify'}" ng-click="currentTab = 'classify'">Classify</button>
+      <button ng-class="{'active': currentTab === 'batch'}" ng-click="currentTab = 'batch'">Batch</button>
+      <button ng-class="{'active': currentTab === 'agent'}" ng-click="currentTab = 'agent'">AI Agent</button>
+      <button ng-class="{'active': currentTab === 'graph'}" ng-click="currentTab = 'graph'; loadKnowledgeGraph()">Knowledge Graph</button>
+      <button ng-class="{'active': currentTab === 'history'}" ng-click="currentTab = 'history'">History</button>
+    </nav>
+  </header>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Input Section -->
-            <section class="input-section card">
-                <h2>📝 Input Text</h2>
-                <textarea
-                    id="input-text"
-                    placeholder="Enter text to classify... (e.g., 'I absolutely love this new smartphone! The camera quality is amazing.')"
-                    rows="4"
-                ></textarea>
+  <section class="panel" ng-show="currentTab === 'classify'">
+    <h2>Text Classification</h2>
+    <div class="form-group">
+      <label>Classifier Type:</label>
+      <select ng-model="classifierType">
+        <option value="sentiment">Sentiment</option>
+        <option value="topic">Topic</option>
+        <option value="intent">Intent</option>
+        <option value="multi_label">Multi-Label</option>
+        <option value="entity">Entity</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Text:</label>
+      <textarea ng-model="inputText" rows="4" placeholder="Enter text to classify..."></textarea>
+    </div>
+    <div class="controls-row">
+      <button ng-click="classify()" ng-disabled="loading">
+        {{ loading ? 'Classifying...' : 'Classify' }}
+      </button>
+    </div>
+    <pre class="result" ng-show="classifyResult">{{ classifyResult | json }}</pre>
+  </section>
 
-                <!-- Classifier Selection -->
-                <div class="classifier-selection">
-                    <h3>🎯 Select Classifier</h3>
-                    <div class="classifier-tabs">
-                        <button class="tab-btn active" data-classifier="sentiment">
-                            <span class="tab-icon">😊</span>
-                            <span class="tab-text">Sentiment</span>
-                        </button>
-                        <button class="tab-btn" data-classifier="topic">
-                            <span class="tab-icon">📂</span>
-                            <span class="tab-text">Topic</span>
-                        </button>
-                        <button class="tab-btn" data-classifier="intent">
-                            <span class="tab-icon">🎯</span>
-                            <span class="tab-text">Intent</span>
-                        </button>
-                    </div>
-                </div>
+  <section class="panel" ng-show="currentTab === 'batch'">
+    <h2>Batch Classification</h2>
+    <div class="form-group">
+      <label>Texts (one per line):</label>
+      <textarea ng-model="batchText" rows="6" placeholder="Enter texts, one per line..."></textarea>
+    </div>
+    <div class="controls-row">
+      <button ng-click="batchClassify()" ng-disabled="loading">
+        {{ loading ? 'Processing...' : 'Batch Classify' }}
+      </button>
+    </div>
+    <div ng-show="batchResult">
+      <h3>Results ({{ batchResult.total }} texts — {{ batchResult.successful }} OK, {{ batchResult.failed }} failed)</h3>
+      <pre class="result">{{ batchResult | json }}</pre>
+    </div>
+  </section>
 
-                <!-- Custom Options -->
-                <div id="custom-options" class="custom-options hidden">
-                    <div id="topic-options" class="option-group hidden">
-                        <label>Custom Categories (comma-separated):</label>
-                        <input type="text" id="custom-categories" placeholder="e.g., Tech, Finance, Healthcare">
-                    </div>
-                    <div id="intent-options" class="option-group hidden">
-                        <label>Custom Intents (comma-separated):</label>
-                        <input type="text" id="custom-intents" placeholder="e.g., book_flight, check_weather, order_food">
-                    </div>
-                </div>
+  <section class="panel" ng-show="currentTab === 'agent'">
+    <h2>AI Agent Analysis</h2>
+    <p class="description">Run a complete multi-step analysis pipeline using LangGraph.</p>
+    <div class="form-group">
+      <textarea ng-model="agentText" rows="4" placeholder="Enter text for comprehensive analysis..."></textarea>
+    </div>
+    <div class="controls-row">
+      <button ng-click="runAgent()" ng-disabled="loading">
+        {{ loading ? 'Analyzing...' : 'Analyze' }}
+      </button>
+    </div>
+    <div ng-show="agentResult">
+      <h3>Agent Analysis</h3>
+      <div class="agent-steps" ng-show="agentResult.steps.length">
+        <strong>Steps:</strong>
+        <span ng-repeat="s in agentResult.steps" class="step-badge">{{ s }}</span>
+      </div>
+      <pre class="result">{{ agentResult | json }}</pre>
+    </div>
+  </section>
 
-                <!-- Classify Button -->
-                <button id="classify-btn" class="classify-btn">
-                    <span class="btn-icon">🚀</span>
-                    <span>Classify Text</span>
-                </button>
-            </section>
+  <section class="panel" ng-show="currentTab === 'graph'">
+    <h2>Knowledge Graph</h2>
 
-            <!-- Results Section -->
-            <section id="results-section" class="results-section card hidden">
-                <h2>📊 Classification Results</h2>
-
-                <div id="loading" class="loading hidden">
-                    <div class="spinner"></div>
-                    <p>Analyzing text...</p>
-                </div>
-
-                <div id="results-content" class="results-content">
-                    <!-- Sentiment Results -->
-                    <div id="sentiment-results" class="result-type hidden">
-                        <div class="result-header">
-                            <span class="result-label">Sentiment</span>
-                            <span id="sentiment-value" class="result-value sentiment-neutral">—</span>
-                        </div>
-                        <div class="confidence-bar">
-                            <label>Confidence:</label>
-                            <span id="sentiment-confidence" class="confidence-badge">—</span>
-                        </div>
-                        <div class="reasoning">
-                            <label>Reasoning:</label>
-                            <p id="sentiment-reasoning">—</p>
-                        </div>
-                    </div>
-
-                    <!-- Topic Results -->
-                    <div id="topic-results" class="result-type hidden">
-                        <div class="result-header">
-                            <span class="result-label">Topic</span>
-                            <span id="topic-value" class="result-value topic-value">—</span>
-                        </div>
-                        <div class="confidence-bar">
-                            <label>Confidence:</label>
-                            <span id="topic-confidence" class="confidence-badge">—</span>
-                        </div>
-                        <div class="categories-used">
-                            <label>Categories:</label>
-                            <div id="topic-categories" class="tag-list"></div>
-                        </div>
-                        <div class="reasoning">
-                            <label>Reasoning:</label>
-                            <p id="topic-reasoning">—</p>
-                        </div>
-                    </div>
-
-                    <!-- Intent Results -->
-                    <div id="intent-results" class="result-type hidden">
-                        <div class="result-header">
-                            <span class="result-label">Intent</span>
-                            <span id="intent-value" class="result-value intent-value">—</span>
-                        </div>
-                        <div class="confidence-bar">
-                            <label>Confidence:</label>
-                            <span id="intent-confidence" class="confidence-badge">—</span>
-                        </div>
-                        <div class="entities">
-                            <label>Entities:</label>
-                            <pre id="intent-entities" class="entities-json">—</pre>
-                        </div>
-                        <div class="reasoning">
-                            <label>Reasoning:</label>
-                            <p id="intent-reasoning">—</p>
-                        </div>
-                    </div>
-
-                    <!-- Error Display -->
-                    <div id="error-display" class="error-display hidden">
-                        <span class="error-icon">⚠️</span>
-                        <p id="error-message"></p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Examples Section -->
-            <section class="examples-section card">
-                <h2>💡 Try These Examples</h2>
-                <div class="examples-grid">
-                    <button class="example-btn" data-text="I absolutely love this product! It exceeded all my expectations and I would highly recommend it to everyone." data-type="sentiment">
-                        <span class="example-icon">😍</span>
-                        <span class="example-label">Positive Review</span>
-                    </button>
-                    <button class="example-btn" data-text="This is the worst experience I've ever had. The service was terrible and I want a refund immediately." data-type="sentiment">
-                        <span class="example-icon">😤</span>
-                        <span class="example-label">Negative Review</span>
-                    </button>
-                    <button class="example-btn" data-text="Scientists have discovered a new method for quantum error correction that could revolutionize computing within the next decade." data-type="topic">
-                        <span class="example-icon">🔬</span>
-                        <span class="example-label">Science Article</span>
-                    </button>
-                    <button class="example-btn" data-text="Apple announced record quarterly earnings today, with iPhone sales driving significant growth in the Asian market." data-type="topic">
-                        <span class="example-icon">📈</span>
-                        <span class="example-label">Business News</span>
-                    </button>
-                    <button class="example-btn" data-text="Can you help me book a flight to New York for next Friday morning?" data-type="intent">
-                        <span class="example-icon">✈️</span>
-                        <span class="example-label">Travel Request</span>
-                    </button>
-                    <button class="example-btn" data-text="What's the weather going to be like in San Francisco tomorrow?" data-type="intent">
-                        <span class="example-icon">🌤️</span>
-                        <span class="example-label">Weather Query</span>
-                    </button>
-                </div>
-            </section>
-
-            <!-- History Section -->
-            <section class="history-section card">
-                <div class="history-header">
-                    <h2>📜 Classification History</h2>
-                    <button id="clear-history" class="clear-btn">Clear All</button>
-                </div>
-                <div id="history-list" class="history-list">
-                    <p class="empty-history">No classifications yet. Try classifying some text!</p>
-                </div>
-            </section>
-        </main>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <p>Built with <span class="heart">❤️</span> using DSPy 3.1.2 & Google Gemini</p>
-            <p class="footer-links">
-                <a href="/health" target="_blank">Health Check</a> |
-                <a href="/api/classifiers" target="_blank">API Info</a>
-            </p>
-        </footer>
+    <div class="status-grid" ng-show="graphData">
+      <div><label>Nodes</label><p>{{ graphData.node_count }}</p></div>
+      <div><label>Edges</label><p>{{ graphData.edge_count }}</p></div>
     </div>
 
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <div class="form-group">
+      <label>Entity Name</label>
+      <input type="text" ng-model="graphQuery.entity" placeholder="Entity to infer around (e.g. Python)">
+    </div>
+    <div class="form-group">
+      <label>Entity Type (optional)</label>
+      <input type="text" ng-model="graphQuery.entity_type" placeholder="CONCEPT, ORG, TOPIC, ...">
+    </div>
+    <div class="form-group">
+      <label>Max Depth (1-6)</label>
+      <input type="number" min="1" max="6" ng-model="graphQuery.max_depth">
+    </div>
+    <div class="form-group">
+      <label>Relation Filter (optional)</label>
+      <input type="text" ng-model="graphQuery.relation_filter" placeholder="co_occurs, belongs_to, ...">
+    </div>
+
+    <div class="controls-row">
+      <button ng-click="runGraphInference()" ng-disabled="loading">
+        {{ loading ? 'Inferring...' : 'Run Graph Inference' }}
+      </button>
+      <button class="ghost" ng-click="loadKnowledgeGraph()">Reload Graph</button>
+    </div>
+
+    <h3>Inference Result</h3>
+    <pre class="result" ng-show="graphInference">{{ graphInference | json }}</pre>
+
+    <h3>Graph Snapshot</h3>
+    <pre class="result" ng-show="graphData">{{ graphData | json }}</pre>
+    <p ng-hide="graphData">Click the tab to load the graph.</p>
+  </section>
+
+  <section class="panel" ng-show="currentTab === 'history'">
+    <div class="history-head">
+      <h2>Classification History</h2>
+      <button class="ghost" ng-click="clearHistory()" ng-show="history.length">Clear</button>
+    </div>
+    <p ng-hide="history.length">No history yet.</p>
+    <ul class="history-list">
+      <li ng-repeat="item in history track by $index">
+        <strong>{{ item.classifier_type || item.type }}</strong>
+        <span>{{ item.text | limitTo:80 }}</span>
+        <pre class="result">{{ item.result || item | json }}</pre>
+      </li>
+    </ul>
+  </section>
+
+  <section class="panel error" ng-show="error">
+    <h2>Error</h2>
+    <p>{{ error }}</p>
+  </section>
+</main>
+{% endraw %}
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>

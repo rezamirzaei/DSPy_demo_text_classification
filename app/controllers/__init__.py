@@ -1,4 +1,5 @@
-"""Controllers package - Business logic for classification"""
-from .classification_controller import ClassificationController
+"""Controllers package."""
 
-__all__ = ['ClassificationController']
+from app.controllers.classification_controller import ClassificationController
+
+__all__ = ["ClassificationController"]

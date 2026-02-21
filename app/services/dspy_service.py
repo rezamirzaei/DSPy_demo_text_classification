@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import logging
+import socket
 from typing import Any, Optional
+from urllib.parse import urlparse
 
 import dspy
 
@@ -51,6 +53,18 @@ class DSPyService:
             self._provider,
             self._model_name,
         )
+
+        # Avoid noisy per-request connection failures when Ollama is unreachable.
+        if self._provider == "ollama":
+            api_base = str(config.get("api_base", ""))
+            if not self._is_ollama_reachable(api_base):
+                logger.warning(
+                    "Ollama is unreachable at %s. Falling back to rule-based analysis engine.",
+                    api_base or "<empty>",
+                )
+                self._initialized = False
+                return False
+
         try:
             lm_kwargs: dict[str, Any] = {"model": config["model"]}
             if config.get("api_key"):
@@ -74,3 +88,26 @@ class DSPyService:
             "provider": self._provider,
             "model": self._model_name,
         }
+
+    @staticmethod
+    def _is_ollama_reachable(api_base: str) -> bool:
+        if not api_base:
+            return False
+
+        parsed = urlparse(api_base)
+        host = parsed.hostname
+        if not host:
+            return False
+
+        if parsed.port:
+            port = parsed.port
+        elif parsed.scheme == "https":
+            port = 443
+        else:
+            port = 80
+
+        try:
+            with socket.create_connection((host, port), timeout=1.5):
+                return True
+        except OSError:
+            return False

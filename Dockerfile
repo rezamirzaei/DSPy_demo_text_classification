@@ -4,7 +4,10 @@ FROM python:3.11-slim AS base
 WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    HOME=/app \
+    XDG_CACHE_HOME=/app/.cache \
+    DSPY_CACHEDIR=/app/.dspy_cache
 
 FROM base AS builder
 RUN --mount=type=cache,target=/root/.cache/pip \
@@ -18,7 +21,7 @@ RUN addgroup --system app && adduser --system --ingroup app app
 COPY --from=builder /usr/local /usr/local
 COPY app/ ./app/
 COPY config.py run.py wsgi.py ./
-RUN mkdir -p /app/data && chown -R app:app /app
+RUN mkdir -p /app/data /app/.cache /app/.dspy_cache && chown -R app:app /app
 USER app
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \

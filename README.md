@@ -68,6 +68,12 @@ Open: `http://localhost:8000`
 docker compose up --build
 ```
 
+Provider selection in Docker compose:
+
+- default: `rule_based` (no external model required)
+- use Ollama: `APP_PROVIDER=ollama docker compose up --build`
+- custom Ollama URL: `APP_OLLAMA_BASE_URL=http://host.docker.internal:11434`
+
 Run tests in Docker:
 
 ```bash

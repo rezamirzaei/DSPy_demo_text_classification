@@ -12,7 +12,8 @@ services:
     environment:
       - HOST=0.0.0.0
       - PORT=8000
-      - PROVIDER=${PROVIDER:-rule_based}
+      - PROVIDER=${APP_PROVIDER:-rule_based}
+      - OLLAMA_BASE_URL=${APP_OLLAMA_BASE_URL:-http://host.docker.internal:11434}
     volumes:
       - ./data:/app/data
     restart: unless-stopped

@@ -47,6 +47,20 @@ def create_app(controller: Any = None) -> Flask:
         controller = ClassificationController()
         controller.initialize()
 
+    # ── Error handlers ───────────────────────────────
+    @app.errorhandler(404)
+    def not_found(_error):
+        return jsonify({"error": "Not found", "status": 404}), 404
+
+    @app.errorhandler(405)
+    def method_not_allowed(_error):
+        return jsonify({"error": "Method not allowed", "status": 405}), 405
+
+    @app.errorhandler(500)
+    def internal_error(_error):
+        logger.exception("Internal server error")
+        return jsonify({"error": "Internal server error", "status": 500}), 500
+
     @app.route("/")
     def index():
         return render_template("index.html")

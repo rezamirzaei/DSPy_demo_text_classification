@@ -24,6 +24,7 @@ venv/
 # ── Runtime data ─────────────────────────
 data/chroma/
 data/graph/conceptnet_raw.json
+data/dspy_optimized/
 chroma_db/
 *.sqlite3
 

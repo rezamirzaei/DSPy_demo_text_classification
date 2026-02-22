@@ -14,6 +14,8 @@ services:
       - PORT=8000
       - PROVIDER=${PROVIDER:-rule_based}
       - OLLAMA_BASE_URL=${APP_OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY:-}
+      - GOOGLE_MODEL=${GOOGLE_MODEL:-gemini-2.0-flash-lite}
       - WEB_CONCURRENCY=${WEB_CONCURRENCY:-1}
     volumes:
       - ./data:/app/data

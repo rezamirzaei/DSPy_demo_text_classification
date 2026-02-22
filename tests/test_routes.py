@@ -149,3 +149,18 @@ class TestSeedEndpoint:
         assert "message" in data
         assert data["node_count"] >= 0
 
+
+class TestErrorHandlers:
+    def test_404_returns_json(self, app_client):
+        resp = app_client.get("/nonexistent-path")
+        assert resp.status_code == 404
+        data = resp.get_json()
+        assert data["error"] == "Not found"
+
+    def test_405_returns_json(self, app_client):
+        resp = app_client.delete("/api/classify")
+        assert resp.status_code == 405
+        data = resp.get_json()
+        assert data["error"] == "Method not allowed"
+
+

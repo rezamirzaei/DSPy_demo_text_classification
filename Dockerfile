@@ -20,6 +20,7 @@ FROM base AS production
 RUN addgroup --system app && adduser --system --ingroup app app
 COPY --from=builder /usr/local /usr/local
 COPY app/ ./app/
+COPY scripts/ ./scripts/
 COPY config.py run.py wsgi.py ./
 RUN mkdir -p /app/data /app/.cache /app/.dspy_cache && chown -R app:app /app
 USER app

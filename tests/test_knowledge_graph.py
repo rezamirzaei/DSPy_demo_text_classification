@@ -1,6 +1,7 @@
 """Tests for app.services.knowledge_graph."""
 
 import json
+from typing import Dict, cast
 
 import pytest
 
@@ -110,7 +111,7 @@ class TestKnowledgeGraph:
         kg.add_relationship(a, b, "knows")
         kg.add_relationship(b, c, "knows")
         related = kg.find_related(a, max_depth=2)
-        names = {r["entity"]["name"] for r in related}
+        names = {cast(Dict[str, str], r["entity"])["name"] for r in related}
         assert "B" in names
         assert "C" in names
 
@@ -126,7 +127,7 @@ class TestKnowledgeGraph:
         kg.add_relationship(b, shared, "uses")
         inferences = kg.infer_connections([a, b])
         assert len(inferences) == 1
-        assert inferences[0]["inference_strength"] > 0
+        assert float(inferences[0]["inference_strength"]) > 0
 
     def test_build_from_entities(self, kg):
         dicts = [
@@ -221,6 +222,7 @@ class TestKnowledgeGraphSeed:
         kg = KnowledgeGraph()
         kg.seed_default_graph()
         dspy = kg.get_entity("DSPy", "FRAMEWORK")
+        assert dspy is not None
         neighbors = kg.get_neighbors(dspy)
         neighbor_names = {n[0].name for n in neighbors}
         assert "Python" in neighbor_names
@@ -238,6 +240,7 @@ class TestKnowledgeGraphSeed:
         kg = KnowledgeGraph()
         kg.seed_default_graph()
         dspy = kg.get_entity("DSPy", "FRAMEWORK")
+        assert dspy is not None
         predictions = kg._predict_links(dspy)
         # DSPy connects to Python, Stanford, etc. which connect onwards
         assert len(predictions) > 0
@@ -247,6 +250,8 @@ class TestKnowledgeGraphSeed:
         kg.seed_default_graph()
         dspy = kg.get_entity("DSPy", "FRAMEWORK")
         bert = kg.get_entity("BERT", "MODEL")
+        assert dspy is not None
+        assert bert is not None
         inferences = kg.infer_connections([dspy, bert])
         # Both connect to similar entities (NLP tasks, etc.)
         assert isinstance(inferences, list)
@@ -307,7 +312,7 @@ class TestKnowledgeGraphEdgeCases:
         kg.add_relationship(a, b, "r1")
         kg.add_relationship(b, c, "r2")
         related = kg.find_related(a, max_depth=1)
-        names = {r["entity"]["name"] for r in related}
+        names = {cast(Dict[str, str], r["entity"])["name"] for r in related}
         assert "B" in names
         assert "C" not in names
 

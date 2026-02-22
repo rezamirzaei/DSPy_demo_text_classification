@@ -11,10 +11,11 @@ external API being available at build time.
 """
 
 import json
-import urllib.request
 import urllib.error
 import urllib.parse
+import urllib.request
 from pathlib import Path
+from typing import Any
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 GRAPH_DIR = PROJECT_ROOT / "data" / "graph"
@@ -58,7 +59,7 @@ WIKIDATA_QUERIES = {
 }
 
 
-def query_wikidata(sparql: str) -> list[dict]:
+def query_wikidata(sparql: str) -> list[dict[str, Any]]:
     """Execute a SPARQL query against Wikidata."""
     params = urllib.parse.urlencode({"query": sparql, "format": "json"})
     url = f"{WIKIDATA_ENDPOINT}?{params}"
@@ -72,7 +73,8 @@ def query_wikidata(sparql: str) -> list[dict]:
     try:
         with urllib.request.urlopen(req, timeout=20) as resp:
             data = json.loads(resp.read().decode("utf-8"))
-        return data.get("results", {}).get("bindings", [])
+        result: list[dict[str, Any]] = data.get("results", {}).get("bindings", [])
+        return result
     except Exception as exc:
         print(f"  WARN: Wikidata query failed: {exc}")
         return []
@@ -267,7 +269,7 @@ def merge_graphs(
 ) -> dict:
     """Merge multiple (nodes, edges) pairs with existing graph."""
     # Load existing
-    existing = {"nodes": [], "edges": []}
+    existing: dict[str, Any] = {"nodes": [], "edges": []}
     if existing_path.exists():
         with open(existing_path, "r", encoding="utf-8") as f:
             existing = json.load(f)

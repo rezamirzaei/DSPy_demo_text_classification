@@ -169,7 +169,7 @@ class RuleBasedTextAnalysisEngine(TextAnalysisEngine):
         for category, keywords in candidate_map.items():
             scores[category] = len(tokens.intersection(keywords))
 
-        best_category = max(scores, key=scores.get)
+        best_category = max(scores, key=lambda k: scores[k])
         confidence = (
             ConfidenceLevel.HIGH.value if scores[best_category] >= 2 else ConfidenceLevel.MEDIUM.value
         )
@@ -607,11 +607,11 @@ class HybridTextAnalysisEngine(TextAnalysisEngine):
         self,
         fallback: TextAnalysisEngine | None = None,
         primary: TextAnalysisEngine | None = None,
-        primary_timeout_seconds: int = 40,
+        primary_timeout_seconds: float = 40,
     ) -> None:
         self._fallback = fallback or RuleBasedTextAnalysisEngine()
         self._primary = primary
-        self._primary_timeout_seconds = max(1, int(primary_timeout_seconds))
+        self._primary_timeout_seconds: float = max(0.01, float(primary_timeout_seconds))
         self._executor = ThreadPoolExecutor(max_workers=2, thread_name_prefix="primary-analysis")
 
     @property
@@ -643,37 +643,52 @@ class HybridTextAnalysisEngine(TextAnalysisEngine):
         return fallback_call()
 
     def classify_sentiment(self, text: str) -> AnalysisResult:
+        primary = self._primary
+        if primary is None:
+            return self._fallback.classify_sentiment(text)
         return self._execute(
             "sentiment",
-            lambda: self._primary.classify_sentiment(text),
+            lambda: primary.classify_sentiment(text),
             lambda: self._fallback.classify_sentiment(text),
         )
 
     def classify_topic(self, text: str, categories: Sequence[str] | None = None) -> AnalysisResult:
+        primary = self._primary
+        if primary is None:
+            return self._fallback.classify_topic(text, categories)
         return self._execute(
             "topic",
-            lambda: self._primary.classify_topic(text, categories),
+            lambda: primary.classify_topic(text, categories),
             lambda: self._fallback.classify_topic(text, categories),
         )
 
     def classify_intent(self, text: str, intents: Sequence[str] | None = None) -> AnalysisResult:
+        primary = self._primary
+        if primary is None:
+            return self._fallback.classify_intent(text, intents)
         return self._execute(
             "intent",
-            lambda: self._primary.classify_intent(text, intents),
+            lambda: primary.classify_intent(text, intents),
             lambda: self._fallback.classify_intent(text, intents),
         )
 
     def classify_multi_label(self, text: str, labels: Sequence[str] | None = None) -> AnalysisResult:
+        primary = self._primary
+        if primary is None:
+            return self._fallback.classify_multi_label(text, labels)
         return self._execute(
             "multi_label",
-            lambda: self._primary.classify_multi_label(text, labels),
+            lambda: primary.classify_multi_label(text, labels),
             lambda: self._fallback.classify_multi_label(text, labels),
         )
 
     def extract_entities(self, text: str) -> List[dict[str, str]]:
+        primary = self._primary
+        if primary is None:
+            return self._fallback.extract_entities(text)
         return self._execute(
             "entity",
-            lambda: self._primary.extract_entities(text),
+            lambda: primary.extract_entities(text),
             lambda: self._fallback.extract_entities(text),
         )
 
@@ -685,9 +700,12 @@ class HybridTextAnalysisEngine(TextAnalysisEngine):
         intent: dict[str, Any],
         entities: list[dict[str, str]],
     ) -> str:
+        primary = self._primary
+        if primary is None:
+            return self._fallback.summarize(text, sentiment, topic, intent, entities)
         return self._execute(
             "summary",
-            lambda: self._primary.summarize(text, sentiment, topic, intent, entities),
+            lambda: primary.summarize(text, sentiment, topic, intent, entities),
             lambda: self._fallback.summarize(text, sentiment, topic, intent, entities),
         )
 

@@ -1,5 +1,7 @@
 """Tests for config.py — Settings."""
 
+from typing import Any, cast
+
 from config import Settings
 
 
@@ -16,7 +18,7 @@ class TestSettings:
 
     def test_provider_options(self):
         for p in ["rule_based", "ollama", "openai", "huggingface", "google"]:
-            s = Settings(provider=p)
+            s = Settings(provider=cast(Any, p))
             assert s.provider == p
 
     def test_get_lm_config_ollama(self):

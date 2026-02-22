@@ -8,9 +8,10 @@ Source: https://conceptnet.io/
 
 import json
 import time
-import urllib.request
 import urllib.error
+import urllib.request
 from pathlib import Path
+from typing import Any
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 GRAPH_DIR = PROJECT_ROOT / "data" / "graph"
@@ -70,7 +71,7 @@ RELATION_MAP = {
 }
 
 
-def fetch_concept(concept: str) -> list[dict]:
+def fetch_concept(concept: str) -> list[dict[str, Any]]:
     """Fetch edges for a single concept from the ConceptNet API."""
     url = f"http://api.conceptnet.io/c/en/{concept}?limit=25"
     req = urllib.request.Request(
@@ -79,7 +80,8 @@ def fetch_concept(concept: str) -> list[dict]:
     try:
         with urllib.request.urlopen(req, timeout=15) as resp:
             data = json.loads(resp.read().decode("utf-8"))
-        return data.get("edges", [])
+        result: list[dict[str, Any]] = data.get("edges", [])
+        return result
     except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
         print(f"  WARN: skip {concept}: {exc}")
         return []
@@ -165,7 +167,7 @@ def merge_with_existing(conceptnet_data: dict) -> dict:
     """Merge ConceptNet data with our curated AI/ML graph."""
     # Load existing curated graph
     existing_path = MERGED_PATH
-    existing = {"nodes": [], "edges": []}
+    existing: dict[str, Any] = {"nodes": [], "edges": []}
     if existing_path.exists():
         with open(existing_path, "r", encoding="utf-8") as f:
             existing = json.load(f)

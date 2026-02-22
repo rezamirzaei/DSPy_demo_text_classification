@@ -6,236 +6,418 @@
   <title>DSPy Classification Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-animate.min.js"></script>
 </head>
-<body ng-controller="MainController">
+<body ng-controller="AppController">
 {% raw %}
-<div class="page-bg"></div>
-<main class="layout">
-  <header class="hero">
-    <h1>&#x1f9e0; DSPy Classification Studio</h1>
-    <p>AngularJS MVC + DSPy + LangGraph Agent + Knowledge Graph Inference</p>
-    <nav>
-      <button ng-class="{'active': currentTab === 'classify'}" ng-click="currentTab = 'classify'">Classify</button>
-      <button ng-class="{'active': currentTab === 'batch'}" ng-click="currentTab = 'batch'">Batch</button>
-      <button ng-class="{'active': currentTab === 'agent'}" ng-click="currentTab = 'agent'">AI Agent</button>
-      <button ng-class="{'active': currentTab === 'graph'}" ng-click="currentTab = 'graph'; loadKnowledgeGraph()">Knowledge Graph</button>
-      <button ng-class="{'active': currentTab === 'history'}" ng-click="currentTab = 'history'">History</button>
-    </nav>
-  </header>
 
-  <section class="panel" ng-show="currentTab === 'classify'">
-    <h2>Text Classification</h2>
-    <div class="form-group">
-      <label>Classifier Type:</label>
-      <select ng-model="classifierType">
-        <option value="sentiment">Sentiment</option>
-        <option value="topic">Topic</option>
-        <option value="intent">Intent</option>
-        <option value="multi_label">Multi-Label</option>
-        <option value="entity">Entity</option>
-      </select>
+<!-- ─── Top Navigation Bar ───────────────────────────── -->
+<nav class="top-bar">
+  <div class="top-bar-inner">
+    <div class="brand">
+      <i class="fas fa-brain"></i>
+      <span>DSPy Classification Studio</span>
     </div>
-    <div class="form-group">
-      <label>Text:</label>
-      <textarea ng-model="inputText" rows="4" placeholder="Enter text to classify..."></textarea>
+    <div class="status-indicator" ng-class="{'online': health.initialized, 'offline': !health.initialized}">
+      <span class="dot"></span>
+      <span ng-show="health.initialized">{{ health.provider }} / {{ health.model }}</span>
+      <span ng-hide="health.initialized">Connecting…</span>
     </div>
-    <div class="controls-row">
-      <button ng-click="classify()" ng-disabled="loading">
-        {{ loading ? 'Classifying...' : 'Classify' }}
-      </button>
-    </div>
-    <pre class="result" ng-show="classifyResult">{{ classifyResult | json }}</pre>
-  </section>
+  </div>
+</nav>
 
-  <section class="panel" ng-show="currentTab === 'batch'">
-    <h2>Batch Classification</h2>
-    <div class="form-group">
-      <label>Texts (one per line):</label>
-      <textarea ng-model="batchText" rows="6" placeholder="Enter texts, one per line..."></textarea>
-    </div>
-    <div class="controls-row">
-      <button ng-click="batchClassify()" ng-disabled="loading">
-        {{ loading ? 'Processing...' : 'Batch Classify' }}
-      </button>
-    </div>
-    <div ng-show="batchResult">
-      <h3>Results ({{ batchResult.total }} texts — {{ batchResult.successful }} OK, {{ batchResult.failed }} failed)</h3>
-      <pre class="result">{{ batchResult | json }}</pre>
-    </div>
-  </section>
+<!-- ─── Main Layout ──────────────────────────────────── -->
+<div class="app-shell">
 
-  <section class="panel" ng-show="currentTab === 'agent'">
-    <h2>AI Agent Analysis</h2>
-    <p class="description">Run a complete multi-step analysis pipeline using LangGraph.</p>
-    <div class="form-group">
-      <textarea ng-model="agentText" rows="4" placeholder="Enter text for comprehensive analysis..."></textarea>
-    </div>
-    <div class="controls-row">
-      <button ng-click="runAgent()" ng-disabled="loading">
-        {{ loading ? 'Analyzing...' : 'Analyze' }}
-      </button>
-    </div>
-    <div ng-show="agentResult">
-      <h3>Agent Analysis</h3>
-      <div class="agent-steps" ng-show="agentResult.steps.length">
-        <strong>Steps:</strong>
-        <span ng-repeat="s in agentResult.steps" class="step-badge">{{ s }}</span>
-      </div>
-      <pre class="result">{{ agentResult | json }}</pre>
-    </div>
-  </section>
-
-  <section class="panel" ng-show="currentTab === 'graph'">
-    <h2>&#x1f578; Knowledge Graph Explorer</h2>
-
-    <div class="kg-stats-bar" ng-show="graphData">
-      <div class="kg-stat-card">
-        <div class="stat-value">{{ graphData.node_count }}</div>
-        <div class="stat-label">Entities</div>
-      </div>
-      <div class="kg-stat-card">
-        <div class="stat-value">{{ graphData.edge_count }}</div>
-        <div class="stat-label">Relationships</div>
-      </div>
-      <div class="kg-stat-card">
-        <div class="stat-value">{{ getEntityTypes().length }}</div>
-        <div class="stat-label">Entity Types</div>
-      </div>
-      <div class="kg-stat-card">
-        <div class="stat-value">{{ getRelationTypes().length }}</div>
-        <div class="stat-label">Relation Types</div>
-      </div>
-    </div>
-
-    <div class="sub-nav">
-      <button ng-class="{'active': graphSubTab === 'explore'}" ng-click="graphSubTab = 'explore'">Explore</button>
-      <button ng-class="{'active': graphSubTab === 'infer'}" ng-click="graphSubTab = 'infer'">Infer</button>
-      <button ng-class="{'active': graphSubTab === 'raw'}" ng-click="graphSubTab = 'raw'">Raw Data</button>
-    </div>
-
-    <!-- Explore Sub-Tab -->
-    <div ng-show="graphSubTab === 'explore'" ng-if="graphData">
-      <div class="quick-search">
-        <input type="text" ng-model="entitySearch" placeholder="Filter entities...">
-      </div>
-      <div ng-repeat="entityType in getEntityTypes()">
-        <h3 style="margin: 12px 0 6px; font-size: 0.9rem; color: #5f5f5f;">
-          <span class="entity-type-badge" ng-class="entityType">{{ entityType }}</span>
-          ({{ getEntitiesByType(entityType).length }})
-        </h3>
-        <div class="entity-list">
-          <span class="entity-item"
-                ng-repeat="entity in getEntitiesByType(entityType) | filter:{name: entitySearch}"
-                ng-click="quickInfer(entity.name, entity.type)">
-            {{ entity.name }}
-          </span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Infer Sub-Tab -->
-    <div ng-show="graphSubTab === 'infer'">
-      <div class="form-group">
-        <label>Entity Name</label>
-        <input type="text" ng-model="graphQuery.entity" placeholder="e.g. DSPy, BERT, Python, GPT-4">
-      </div>
-      <div class="form-group">
-        <label>Entity Type (optional)</label>
-        <select ng-model="graphQuery.entity_type">
-          <option value="">Any Type</option>
-          <option value="MODEL">MODEL</option>
-          <option value="FRAMEWORK">FRAMEWORK</option>
-          <option value="LANGUAGE">LANGUAGE</option>
-          <option value="ORG">ORG</option>
-          <option value="CONCEPT">CONCEPT</option>
-          <option value="FIELD">FIELD</option>
-          <option value="TASK">TASK</option>
-          <option value="PERSON">PERSON</option>
-          <option value="TECHNOLOGY">TECHNOLOGY</option>
-          <option value="PAPER">PAPER</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Max Depth (1-6)</label>
-        <input type="number" min="1" max="6" ng-model="graphQuery.max_depth">
-      </div>
-      <div class="form-group">
-        <label>Relation Filter (optional)</label>
-        <input type="text" ng-model="graphQuery.relation_filter" placeholder="developed_by, used_for, based_on, ...">
-      </div>
-
-      <div class="controls-row">
-        <button ng-click="runGraphInference()" ng-disabled="loading">
-          {{ loading ? 'Inferring...' : 'Run Graph Inference' }}
-        </button>
-        <button class="ghost" ng-click="loadKnowledgeGraph()">Reload</button>
-        <button class="ghost" ng-click="seedKnowledgeGraph()" ng-disabled="loading">Re-seed</button>
-      </div>
-
-      <div ng-show="graphInference">
-        <h3 style="margin-top: 16px;">Matches ({{ graphInference.matches.length }})</h3>
-        <div ng-repeat="match in graphInference.matches" class="inference-card">
-          <span class="entity-type-badge" ng-class="match.type">{{ match.type }}</span>
-          <strong>{{ match.name }}</strong>
-        </div>
-
-        <h3 ng-show="graphInference.related.length">Related Entities ({{ graphInference.related.length }})</h3>
-        <div ng-repeat="rel in graphInference.related" class="inference-card">
-          <span class="entity-type-badge" ng-class="rel.entity.type">{{ rel.entity.type }}</span>
-          <strong>{{ rel.entity.name }}</strong>
-          <span class="relation-label">{{ rel.relation }}</span>
-          <span class="depth-label">depth {{ rel.depth }}</span>
-          <span class="weight-bar" ng-style="{'width': (rel.weight * 60) + 'px'}"></span>
-          <span style="font-size: 11px; color: #aaa; margin-left: 4px;">{{ rel.weight }}</span>
-        </div>
-
-        <h3 ng-show="graphInference.predicted_links.length">Predicted Links ({{ graphInference.predicted_links.length }})</h3>
-        <div ng-repeat="pred in graphInference.predicted_links" class="prediction-card">
-          <span class="entity-type-badge" ng-class="pred.source.type">{{ pred.source.name }}</span>
-          &#x2192;
-          <span class="entity-type-badge" ng-class="pred.target.type">{{ pred.target.name }}</span>
-          <br>
-          <small>via <strong>{{ pred.via.name }}</strong> | {{ pred.suggested_relation }}</small>
-          <span class="confidence">{{ (pred.confidence * 100).toFixed(0) }}%</span>
-        </div>
-
-        <div ng-hide="graphInference.related.length || graphInference.predicted_links.length" style="color: var(--muted); margin-top: 12px;">
-          No inference results found. Try a different entity or increase depth.
-        </div>
-      </div>
-    </div>
-
-    <!-- Raw Data Sub-Tab -->
-    <div ng-show="graphSubTab === 'raw'">
-      <pre class="result" ng-show="graphInference">{{ graphInference | json }}</pre>
-      <pre class="result" ng-show="graphData">{{ graphData | json }}</pre>
-      <p ng-hide="graphData">Click the tab to load the graph.</p>
-    </div>
-  </section>
-
-  <section class="panel" ng-show="currentTab === 'history'">
-    <div class="history-head">
-      <h2>Classification History</h2>
-      <button class="ghost" ng-click="clearHistory()" ng-show="history.length">Clear</button>
-    </div>
-    <p ng-hide="history.length">No history yet.</p>
-    <ul class="history-list">
-      <li ng-repeat="item in history track by $index">
-        <strong>{{ item.classifier_type || item.type }}</strong>
-        <span>{{ item.text | limitTo:80 }}</span>
-        <pre class="result">{{ item.result || item | json }}</pre>
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar">
+    <ul class="nav-list">
+      <li ng-class="{'active': view === 'classify'}" ng-click="view = 'classify'">
+        <i class="fas fa-tags"></i><span>Classify</span>
+      </li>
+      <li ng-class="{'active': view === 'batch'}" ng-click="view = 'batch'">
+        <i class="fas fa-layer-group"></i><span>Batch</span>
+      </li>
+      <li ng-class="{'active': view === 'agent'}" ng-click="view = 'agent'">
+        <i class="fas fa-robot"></i><span>AI Agent</span>
+      </li>
+      <li ng-class="{'active': view === 'graph'}" ng-click="view = 'graph'; loadGraph()">
+        <i class="fas fa-diagram-project"></i><span>Knowledge Graph</span>
+      </li>
+      <li ng-class="{'active': view === 'history'}" ng-click="view = 'history'">
+        <i class="fas fa-clock-rotate-left"></i><span>History</span>
       </li>
     </ul>
-  </section>
+    <div class="sidebar-footer">
+      <small>v2.1.0 &middot; AngularJS MVC</small>
+    </div>
+  </aside>
 
-  <section class="panel error" ng-show="error">
-    <h2>Error</h2>
-    <p>{{ error }}</p>
-  </section>
-</main>
+  <!-- Content Area -->
+  <main class="content">
+
+    <!-- ════════ CLASSIFY VIEW ════════ -->
+    <section class="view-panel" ng-show="view === 'classify'">
+      <div class="view-header">
+        <h1><i class="fas fa-tags"></i> Text Classification</h1>
+        <p class="subtitle">Classify text using DSPy-powered or rule-based engines</p>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-col form-col-3">
+              <label>Classifier</label>
+              <select ng-model="classify.type" class="form-control">
+                <option value="sentiment">Sentiment</option>
+                <option value="topic">Topic</option>
+                <option value="intent">Intent</option>
+                <option value="multi_label">Multi-Label</option>
+                <option value="entity">Entity Extraction</option>
+              </select>
+            </div>
+            <div class="form-col form-col-9">
+              <label>Input Text</label>
+              <textarea ng-model="classify.text" class="form-control" rows="3"
+                        placeholder="Enter text to classify…"></textarea>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" ng-click="doClassify()" ng-disabled="busy || !classify.text.trim()">
+              <i class="fas fa-play" ng-hide="busy"></i>
+              <i class="fas fa-spinner fa-spin" ng-show="busy"></i>
+              {{ busy ? 'Classifying…' : 'Classify' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Classify Result -->
+      <div class="card result-card" ng-show="classify.result">
+        <div class="card-header">
+          <h3><i class="fas fa-check-circle"></i> Result</h3>
+          <span class="badge badge-success" ng-show="classify.result.success">Success</span>
+          <span class="badge badge-error" ng-hide="classify.result.success">Failed</span>
+        </div>
+        <div class="card-body">
+          <div class="result-grid" ng-show="classify.result.result">
+            <div class="result-item" ng-repeat="(key, value) in classify.result.result">
+              <span class="result-label">{{ key }}</span>
+              <span class="result-value">{{ value }}</span>
+            </div>
+          </div>
+          <pre class="code-block" ng-show="classify.result">{{ classify.result | json }}</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════ BATCH VIEW ════════ -->
+    <section class="view-panel" ng-show="view === 'batch'">
+      <div class="view-header">
+        <h1><i class="fas fa-layer-group"></i> Batch Classification</h1>
+        <p class="subtitle">Process multiple texts at once</p>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <label>Texts <span class="hint">(one per line)</span></label>
+          <textarea ng-model="batch.text" class="form-control" rows="6"
+                    placeholder="Enter texts, one per line…"></textarea>
+          <div class="form-actions">
+            <button class="btn btn-primary" ng-click="doBatch()" ng-disabled="busy || !batch.text.trim()">
+              <i class="fas fa-play" ng-hide="busy"></i>
+              <i class="fas fa-spinner fa-spin" ng-show="busy"></i>
+              {{ busy ? 'Processing…' : 'Run Batch' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card result-card" ng-show="batch.result">
+        <div class="card-header">
+          <h3><i class="fas fa-chart-bar"></i> Batch Results</h3>
+          <div class="stat-chips">
+            <span class="chip chip-info">Total: {{ batch.result.total }}</span>
+            <span class="chip chip-success">OK: {{ batch.result.successful }}</span>
+            <span class="chip chip-error" ng-show="batch.result.failed">Failed: {{ batch.result.failed }}</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <pre class="code-block">{{ batch.result | json }}</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════ AGENT VIEW ════════ -->
+    <section class="view-panel" ng-show="view === 'agent'">
+      <div class="view-header">
+        <h1><i class="fas fa-robot"></i> AI Agent Pipeline</h1>
+        <p class="subtitle">Multi-step LangGraph analysis with knowledge-graph enrichment</p>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <label>Text for Analysis</label>
+          <textarea ng-model="agent.text" class="form-control" rows="4"
+                    placeholder="Enter text for comprehensive AI agent analysis…"></textarea>
+          <div class="form-actions">
+            <button class="btn btn-primary" ng-click="doAgent()" ng-disabled="busy || !agent.text.trim()">
+              <i class="fas fa-play" ng-hide="busy"></i>
+              <i class="fas fa-spinner fa-spin" ng-show="busy"></i>
+              {{ busy ? 'Analyzing…' : 'Run Agent' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card result-card" ng-show="agent.result">
+        <div class="card-header">
+          <h3><i class="fas fa-list-check"></i> Agent Analysis</h3>
+          <span class="badge badge-success" ng-show="agent.result.success">Complete</span>
+        </div>
+        <div class="card-body">
+          <!-- Pipeline Steps -->
+          <div class="pipeline-steps" ng-show="agent.result.steps.length">
+            <h4>Pipeline Steps</h4>
+            <div class="step-flow">
+              <span class="step-chip" ng-repeat="step in agent.result.steps">
+                <i class="fas fa-circle-check"></i> {{ step }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Summary -->
+          <div class="summary-box" ng-show="agent.result.summary">
+            <h4>Summary</h4>
+            <p>{{ agent.result.summary }}</p>
+          </div>
+
+          <!-- Quality -->
+          <div class="quality-box" ng-show="agent.result.quality.score">
+            <h4>Quality Score</h4>
+            <div class="quality-meter">
+              <div class="quality-fill"
+                   ng-style="{'width': agent.result.quality.score + '%'}"
+                   ng-class="{'high': agent.result.quality.score >= 80,
+                              'medium': agent.result.quality.score >= 50 && agent.result.quality.score < 80,
+                              'low': agent.result.quality.score < 50}">
+                {{ agent.result.quality.score }}% — {{ agent.result.quality.grade }}
+              </div>
+            </div>
+          </div>
+
+          <pre class="code-block">{{ agent.result | json }}</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════ KNOWLEDGE GRAPH VIEW ════════ -->
+    <section class="view-panel" ng-show="view === 'graph'">
+      <div class="view-header">
+        <h1><i class="fas fa-diagram-project"></i> Knowledge Graph Explorer</h1>
+        <p class="subtitle">Browse, search and infer over the AI/ML knowledge graph</p>
+      </div>
+
+      <!-- Stats Bar -->
+      <div class="stats-bar" ng-show="graph.data">
+        <div class="stat-card">
+          <div class="stat-number">{{ graph.data.node_count }}</div>
+          <div class="stat-text">Entities</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">{{ graph.data.edge_count }}</div>
+          <div class="stat-text">Relationships</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">{{ graphEntityTypes().length }}</div>
+          <div class="stat-text">Entity Types</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">{{ graphRelationTypes().length }}</div>
+          <div class="stat-text">Relation Types</div>
+        </div>
+      </div>
+
+      <!-- Sub-tabs -->
+      <div class="tab-bar">
+        <button ng-class="{'active': graph.tab === 'explore'}" ng-click="graph.tab = 'explore'">
+          <i class="fas fa-search"></i> Explore
+        </button>
+        <button ng-class="{'active': graph.tab === 'infer'}" ng-click="graph.tab = 'infer'">
+          <i class="fas fa-lightbulb"></i> Infer
+        </button>
+        <button ng-class="{'active': graph.tab === 'raw'}" ng-click="graph.tab = 'raw'">
+          <i class="fas fa-code"></i> Raw
+        </button>
+        <div class="tab-bar-spacer"></div>
+        <button class="btn btn-sm btn-ghost" ng-click="loadGraph()"><i class="fas fa-rotate"></i> Reload</button>
+        <button class="btn btn-sm btn-ghost" ng-click="seedGraph()" ng-disabled="busy">
+          <i class="fas fa-seedling"></i> Re-seed
+        </button>
+      </div>
+
+      <!-- Explore -->
+      <div class="card" ng-show="graph.tab === 'explore' && graph.data">
+        <div class="card-body">
+          <input type="text" ng-model="graph.search" class="form-control"
+                 placeholder="Search entities…">
+          <div class="entity-group" ng-repeat="et in graphEntityTypes()">
+            <h4 class="entity-group-title">
+              <span class="type-badge" ng-class="et">{{ et }}</span>
+              <span class="count">({{ entitiesByType(et).length }})</span>
+            </h4>
+            <div class="entity-chips">
+              <span class="entity-chip"
+                    ng-repeat="e in entitiesByType(et) | filter:{name: graph.search} | limitTo:50"
+                    ng-click="inferEntity(e.name, e.type)">
+                {{ e.name }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Infer -->
+      <div class="card" ng-show="graph.tab === 'infer'">
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-col form-col-4">
+              <label>Entity Name</label>
+              <input type="text" ng-model="graph.query.entity" class="form-control"
+                     placeholder="e.g. DSPy, BERT, Python">
+            </div>
+            <div class="form-col form-col-3">
+              <label>Entity Type</label>
+              <select ng-model="graph.query.entity_type" class="form-control">
+                <option value="">Any</option>
+                <option ng-repeat="t in graphEntityTypes()" value="{{ t }}">{{ t }}</option>
+              </select>
+            </div>
+            <div class="form-col form-col-2">
+              <label>Max Depth</label>
+              <input type="number" min="1" max="6" ng-model="graph.query.max_depth"
+                     class="form-control">
+            </div>
+            <div class="form-col form-col-3">
+              <label>Relation Filter</label>
+              <input type="text" ng-model="graph.query.relation_filter" class="form-control"
+                     placeholder="e.g. developed_by">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" ng-click="doInfer()"
+                    ng-disabled="busy || !graph.query.entity.trim()">
+              <i class="fas fa-magnifying-glass-chart" ng-hide="busy"></i>
+              <i class="fas fa-spinner fa-spin" ng-show="busy"></i>
+              {{ busy ? 'Inferring…' : 'Run Inference' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inference Results -->
+      <div class="card result-card" ng-show="graph.inference && graph.tab === 'infer'">
+        <div class="card-header">
+          <h3><i class="fas fa-lightbulb"></i> Inference Results</h3>
+        </div>
+        <div class="card-body">
+          <h4 ng-show="graph.inference.matches.length">
+            Matches ({{ graph.inference.matches.length }})
+          </h4>
+          <div class="match-list">
+            <div class="match-item" ng-repeat="m in graph.inference.matches">
+              <span class="type-badge" ng-class="m.type">{{ m.type }}</span>
+              <strong>{{ m.name }}</strong>
+            </div>
+          </div>
+
+          <h4 ng-show="graph.inference.related.length">
+            Related ({{ graph.inference.related.length }})
+          </h4>
+          <div class="related-list">
+            <div class="related-item" ng-repeat="r in graph.inference.related">
+              <span class="type-badge" ng-class="r.entity.type">{{ r.entity.type }}</span>
+              <strong>{{ r.entity.name }}</strong>
+              <span class="relation-tag">{{ r.relation }}</span>
+              <span class="depth-tag">depth {{ r.depth }}</span>
+              <span class="weight-indicator"
+                    ng-style="{'width': (r.weight * 80) + 'px'}"></span>
+            </div>
+          </div>
+
+          <h4 ng-show="graph.inference.predicted_links.length">
+            Predicted Links ({{ graph.inference.predicted_links.length }})
+          </h4>
+          <div class="predicted-list">
+            <div class="predicted-item" ng-repeat="p in graph.inference.predicted_links">
+              <span class="type-badge" ng-class="p.source.type">{{ p.source.name }}</span>
+              <i class="fas fa-arrow-right"></i>
+              <span class="type-badge" ng-class="p.target.type">{{ p.target.name }}</span>
+              <small>via <strong>{{ p.via.name }}</strong> &middot;
+                {{ p.suggested_relation }}</small>
+              <span class="confidence-badge">
+                {{ (p.confidence * 100).toFixed(0) }}%
+              </span>
+            </div>
+          </div>
+
+          <p class="empty-state"
+             ng-hide="graph.inference.related.length || graph.inference.predicted_links.length">
+            No inference results. Try a different entity or increase depth.
+          </p>
+        </div>
+      </div>
+
+      <!-- Raw -->
+      <div class="card" ng-show="graph.tab === 'raw'">
+        <div class="card-body">
+          <pre class="code-block" ng-show="graph.inference">{{ graph.inference | json }}</pre>
+          <pre class="code-block"
+               ng-show="graph.data && !graph.inference">{{ graph.data | json }}</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════ HISTORY VIEW ════════ -->
+    <section class="view-panel" ng-show="view === 'history'">
+      <div class="view-header">
+        <h1><i class="fas fa-clock-rotate-left"></i> Classification History</h1>
+        <button class="btn btn-sm btn-ghost" ng-click="clearHistory()" ng-show="history.length">
+          <i class="fas fa-trash"></i> Clear
+        </button>
+      </div>
+
+      <p class="empty-state" ng-hide="history.length">
+        No history yet. Run a classification to get started.
+      </p>
+
+      <div class="history-grid">
+        <div class="history-item" ng-repeat="item in history track by $index">
+          <div class="history-meta">
+            <span class="badge" ng-class="'badge-' + (item.classifier_type || 'agent')">
+              {{ item.classifier_type || 'agent' }}
+            </span>
+            <span class="history-text">{{ item.text | limitTo:100 }}</span>
+          </div>
+          <pre class="code-block code-sm">{{ item.result || item | json }}</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════ ERROR TOAST ════════ -->
+    <div class="toast toast-error" ng-show="error" ng-click="error = null">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>{{ error }}</span>
+      <i class="fas fa-xmark close"></i>
+    </div>
+
+  </main>
+</div>
+
 {% endraw %}
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>

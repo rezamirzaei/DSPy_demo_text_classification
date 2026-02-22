@@ -222,9 +222,20 @@ class TestBuildAnalysisEngine:
         engine = build_analysis_engine(enable_dspy=True)
         assert engine.has_primary is True
 
+    @patch("app.services.text_analysis._is_ollama_reachable", return_value=True)
     @patch("app.services.text_analysis.OllamaTextAnalysisEngine")
-    def test_build_with_ollama_provider(self, mock_engine):
-        settings = SimpleNamespace(provider="ollama")
+    def test_build_with_ollama_provider(self, mock_engine, _mock_reachable):
+        settings = SimpleNamespace(provider="ollama", ollama_base_url="http://localhost:11434")
         mock_engine.return_value = MagicMock()
         engine = build_analysis_engine(enable_dspy=True, settings=settings)
         assert engine.has_primary is True
+
+    @patch("app.services.text_analysis._is_ollama_reachable", return_value=False)
+    def test_build_with_ollama_unreachable_skips_primary(self, _mock_reachable):
+        settings = SimpleNamespace(
+            provider="ollama",
+            ollama_base_url="http://localhost:11434",
+            primary_engine_timeout_seconds=40,
+        )
+        engine = build_analysis_engine(enable_dspy=True, settings=settings)
+        assert engine.has_primary is False

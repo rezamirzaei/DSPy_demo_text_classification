@@ -716,10 +716,14 @@ def build_analysis_engine(enable_dspy: bool, settings: Any | None = None) -> Hyb
     provider = str(getattr(settings, "provider", "")).strip().lower() if settings is not None else ""
 
     if provider == "ollama" and settings is not None:
-        try:
-            primary = OllamaTextAnalysisEngine(settings)
-        except Exception as exc:
-            logger.warning("Unable to initialize native Ollama analysis engine: %s", exc)
+        # Only attempt Ollama if reachable — avoids 40s timeout on every request
+        if _is_ollama_reachable(getattr(settings, "ollama_base_url", "")):
+            try:
+                primary = OllamaTextAnalysisEngine(settings)
+            except Exception as exc:
+                logger.warning("Unable to initialize native Ollama analysis engine: %s", exc)
+        else:
+            logger.info("Ollama not reachable — using rule-based engine (no timeout delay)")
     elif provider == "google" and settings is not None:
         # Google Gemini uses DSPy under the hood via litellm
         if enable_dspy:
@@ -738,3 +742,20 @@ def build_analysis_engine(enable_dspy: bool, settings: Any | None = None) -> Hyb
         timeout_seconds = int(getattr(settings, "primary_engine_timeout_seconds", 40))
 
     return HybridTextAnalysisEngine(primary=primary, primary_timeout_seconds=timeout_seconds)
+
+
+def _is_ollama_reachable(base_url: str) -> bool:
+    """Quick TCP check to see if Ollama is running."""
+    import socket
+    from urllib.parse import urlparse
+
+    if not base_url:
+        return False
+    parsed = urlparse(base_url)
+    host = parsed.hostname or "localhost"
+    port = parsed.port or (443 if parsed.scheme == "https" else 11434)
+    try:
+        with socket.create_connection((host, port), timeout=1.0):
+            return True
+    except OSError:
+        return False

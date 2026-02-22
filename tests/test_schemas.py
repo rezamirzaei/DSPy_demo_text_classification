@@ -106,4 +106,4 @@ class TestGraphInferenceRequest:
 class TestHealthResponse:
     def test_fields(self):
         resp = HealthResponse(status="healthy", provider="test", model="m")
-        assert resp.version == "2.0.0"
+        assert resp.version == "2.1.0"

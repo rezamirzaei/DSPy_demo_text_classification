@@ -15,7 +15,7 @@ class TestSettings:
         assert s.log_level == "INFO"
 
     def test_provider_options(self):
-        for p in ["rule_based", "ollama", "openai", "huggingface"]:
+        for p in ["rule_based", "ollama", "openai", "huggingface", "google"]:
             s = Settings(provider=p)
             assert s.provider == p
 
@@ -40,6 +40,13 @@ class TestSettings:
         s = Settings(provider="rule_based")
         config = s.get_lm_config()
         assert config["provider"] == "rule_based"
+
+    def test_get_lm_config_google(self):
+        s = Settings(provider="google", google_api_key="test-gemini-key", google_model="gemini-2.0-flash-lite")
+        config = s.get_lm_config()
+        assert config["provider"] == "google"
+        assert config["api_key"] == "test-gemini-key"
+        assert "gemini/" in config["model"]
 
     def test_chroma_persist_dir(self):
         s = Settings(provider="rule_based")

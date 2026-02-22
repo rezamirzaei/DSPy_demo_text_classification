@@ -8,7 +8,6 @@ the result so that subsequent cold starts are instant.
 
 from __future__ import annotations
 
-import json
 import logging
 from pathlib import Path
 from typing import Any, Sequence
@@ -213,4 +212,5 @@ class DSPyOptimizer:
         )
 
         return results
+
 

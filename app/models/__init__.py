@@ -1,6 +1,7 @@
-"""Models package — classifiers, schemas."""
+"""Models package — classifiers, schemas, optimizer."""
 
 from app.models.classifier import ClassifierFactory
+from app.models.optimizer import DSPyOptimizer
 from app.models.schemas import (
     AgentRequest,
     AgentResponse,
@@ -20,6 +21,7 @@ __all__ = [
     "ClassificationRequest",
     "ClassificationResponse",
     "ClassifierFactory",
+    "DSPyOptimizer",
     "GraphInferenceRequest",
     "HealthResponse",
 ]

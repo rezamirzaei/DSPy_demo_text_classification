@@ -139,3 +139,13 @@ class TestGraphInferEndpoint:
             content_type="application/json",
         )
         assert resp.status_code == 400
+
+
+class TestSeedEndpoint:
+    def test_seed_knowledge_graph(self, app_client):
+        resp = app_client.post("/api/knowledge-graph/seed")
+        assert resp.status_code == 200
+        data = resp.get_json()
+        assert "message" in data
+        assert data["node_count"] >= 0
+

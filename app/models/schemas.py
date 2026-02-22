@@ -140,4 +140,4 @@ class HealthResponse(BaseModel):
     model: str
     initialized: bool = False
     classifiers_available: List[str] = Field(default_factory=list)
-    version: str = "2.0.0"
+    version: str = "2.1.0"

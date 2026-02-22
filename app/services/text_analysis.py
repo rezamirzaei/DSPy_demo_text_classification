@@ -705,6 +705,13 @@ def build_analysis_engine(enable_dspy: bool, settings: Any | None = None) -> Hyb
             primary = OllamaTextAnalysisEngine(settings)
         except Exception as exc:
             logger.warning("Unable to initialize native Ollama analysis engine: %s", exc)
+    elif provider == "google" and settings is not None:
+        # Google Gemini uses DSPy under the hood via litellm
+        if enable_dspy:
+            try:
+                primary = DSPyTextAnalysisEngine()
+            except Exception as exc:
+                logger.warning("Unable to initialize DSPy engine for Google Gemini: %s", exc)
     elif enable_dspy:
         try:
             primary = DSPyTextAnalysisEngine()

@@ -22,7 +22,12 @@ logger = logging.getLogger(__name__)
 
 
 class ClassificationController:
-    """Central controller managing classification pipeline."""
+    """Central controller managing classification pipeline.
+
+    Orchestrates DSPy initialization, analysis engine construction,
+    knowledge-graph lifecycle, and (optionally) DSPy prompt optimization
+    via BootstrapFewShot.
+    """
 
     def __init__(self, settings: Any = None) -> None:
         if settings is None:
@@ -61,11 +66,36 @@ class ClassificationController:
         return self._dspy_service.is_initialized
 
     def initialize(self) -> bool:
-        """Initialize primary backend and build hybrid engine."""
+        """Initialize primary backend and build hybrid engine.
+
+        When an LLM-backed provider is active (not rule_based), the
+        controller also attempts DSPy prompt optimization via
+        ``BootstrapFewShot`` to improve classification quality.
+        """
         self._initialized = self._dspy_service.initialize()
         use_dspy = self._dspy_service.is_initialized and self._dspy_service.provider != "rule_based"
         self._analysis_engine = build_analysis_engine(enable_dspy=use_dspy, settings=self._settings)
+
+        # Run DSPy optimizer when an LLM backend is available
+        if use_dspy:
+            self._run_optimizer()
+
         return self.is_initialized
+
+    def _run_optimizer(self) -> None:
+        """Attempt to optimize DSPy classifiers with BootstrapFewShot."""
+        try:
+            from app.models.optimizer import DSPyOptimizer
+
+            cache_dir = self._settings.data_dir / "dspy_optimized"
+            optimizer = DSPyOptimizer(cache_dir=cache_dir)
+            optimized = optimizer.optimize_all_classifiers()
+            logger.info(
+                "DSPy optimizer completed: %d modules optimized",
+                len(optimized),
+            )
+        except Exception as exc:
+            logger.warning("DSPy optimization skipped: %s", exc)
 
     def get_available_classifiers(self) -> List[str]:
         """Return registered classifier type names."""

@@ -184,3 +184,20 @@ class TestClassificationController:
         controller._agent.get_knowledge_graph.return_value = {"nodes": ["x"], "edges": []}
         result = controller.get_knowledge_graph()
         assert result["nodes"] == ["x"]
+
+    def test_reseed_knowledge_graph(self, controller):
+        result = controller.reseed_knowledge_graph()
+        assert result["message"] == "Knowledge graph seeded successfully"
+        assert result["node_count"] > 0
+        assert result["edge_count"] > 0
+
+    def test_reseed_clears_and_rebuilds(self, controller):
+        # First seed should have nodes
+        kg_before = controller.get_knowledge_graph()
+        initial_count = kg_before["node_count"]
+        assert initial_count > 0
+
+        # Reseed clears and rebuilds
+        result = controller.reseed_knowledge_graph()
+        assert result["node_count"] > 0
+

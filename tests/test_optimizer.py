@@ -1,7 +1,6 @@
 """Tests for app.models.optimizer — DSPy BootstrapFewShot integration."""
 
 import os
-import tempfile
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -134,4 +133,5 @@ class TestDSPyOptimizer:
     def test_default_cache_dir(self):
         opt = DSPyOptimizer()
         assert opt._cache_dir == Path("data/dspy_optimized")
+
 

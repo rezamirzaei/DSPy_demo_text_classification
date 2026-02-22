@@ -11,16 +11,16 @@ from app.services.text_analysis import AnalysisResult, TextAnalysisEngine
 
 class FakeEngine(TextAnalysisEngine):
     def classify_sentiment(self, text: str) -> AnalysisResult:
-        return AnalysisResult({"sentiment": "positive", "confidence": "high", "reasoning": "test"})
+        return AnalysisResult(data={"sentiment": "positive", "confidence": "high", "reasoning": "test"})
 
     def classify_topic(self, text: str, categories=None) -> AnalysisResult:
-        return AnalysisResult({"topic": "Technology", "confidence": "high", "reasoning": "test"})
+        return AnalysisResult(data={"topic": "Technology", "confidence": "high", "reasoning": "test"})
 
     def classify_intent(self, text: str, intents=None) -> AnalysisResult:
-        return AnalysisResult({"intent": "question", "confidence": "high", "reasoning": "test"})
+        return AnalysisResult(data={"intent": "question", "confidence": "high", "reasoning": "test"})
 
     def classify_multi_label(self, text: str, labels=None) -> AnalysisResult:
-        return AnalysisResult({"labels": "informative", "confidence": "medium", "reasoning": "test"})
+        return AnalysisResult(data={"labels": "informative", "confidence": "medium", "reasoning": "test"})
 
     def extract_entities(self, text: str):
         return [
@@ -86,8 +86,8 @@ class TestAgentAnalysis:
         )
         agent.analyze("Tell me about Python")
         inference = agent.infer_entity("Python")
-        assert inference["query"]["name"] == "Python"
-        assert isinstance(inference["related"], list)
+        assert inference.query["name"] == "Python"
+        assert isinstance(inference.related, list)
 
     def test_agent_steps_include_router(self):
         """The new agent starts with a router node."""
@@ -308,8 +308,8 @@ class TestAgentGraphOperations:
             knowledge_graph=kg,
         )
         graph = agent.get_knowledge_graph()
-        assert "nodes" in graph
-        assert "edges" in graph
+        assert hasattr(graph, "nodes")
+        assert hasattr(graph, "edges")
 
     def test_clear_knowledge_graph(self):
         kg = KnowledgeGraph()
@@ -356,9 +356,9 @@ class TestAgentGraphOperations:
             knowledge_graph=kg,
         )
         inference = agent.infer_entity("DSPy", entity_type="FRAMEWORK", max_depth=2)
-        assert len(inference["matches"]) == 1
-        assert len(inference["related"]) > 0
-        related_names = {r["entity"]["name"] for r in inference["related"]}
+        assert len(inference.matches) == 1
+        assert len(inference.related) > 0
+        related_names = {r["entity"]["name"] for r in inference.related}
         assert "Python" in related_names
 
     def test_infer_entity_with_relation_filter(self):
@@ -369,5 +369,5 @@ class TestAgentGraphOperations:
             knowledge_graph=kg,
         )
         inference = agent.infer_entity("BERT", entity_type="MODEL", relation_filter="used_for")
-        for rel in inference["related"]:
+        for rel in inference.related:
             assert "used_for" in rel["relation"].lower()

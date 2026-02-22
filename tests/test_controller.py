@@ -54,13 +54,11 @@ class TestClassificationController:
 
     def test_classify_success(self, controller):
         controller._analysis_engine = MagicMock()
-        controller._analysis_engine.classify_sentiment.return_value = AnalysisResult(
-            {
+        controller._analysis_engine.classify_sentiment.return_value = AnalysisResult(data={
                 "sentiment": "positive",
                 "confidence": "high",
                 "reasoning": "test",
-            }
-        )
+            })
 
         req = ClassificationRequest(
             text="I love this!",
@@ -82,7 +80,7 @@ class TestClassificationController:
     def test_batch_classify(self, controller):
         controller._analysis_engine = MagicMock()
         controller._analysis_engine.classify_sentiment.return_value = AnalysisResult(
-            {
+            data={
                 "sentiment": "positive",
                 "confidence": "high",
                 "reasoning": "test",
@@ -101,7 +99,7 @@ class TestClassificationController:
     def test_classify_topic(self, controller):
         controller._analysis_engine = MagicMock()
         controller._analysis_engine.classify_topic.return_value = AnalysisResult(
-            {"topic": "Technology", "confidence": "high"}
+            data={"topic": "Technology", "confidence": "high"}
         )
         req = ClassificationRequest(
             text="Python code",
@@ -114,7 +112,7 @@ class TestClassificationController:
     def test_classify_intent(self, controller):
         controller._analysis_engine = MagicMock()
         controller._analysis_engine.classify_intent.return_value = AnalysisResult(
-            {"intent": "question", "confidence": "high"}
+            data={"intent": "question", "confidence": "high"}
         )
         req = ClassificationRequest(
             text="How are you?",
@@ -127,7 +125,7 @@ class TestClassificationController:
     def test_classify_multi_label(self, controller):
         controller._analysis_engine = MagicMock()
         controller._analysis_engine.classify_multi_label.return_value = AnalysisResult(
-            {"labels": "question,informative", "confidence": "medium"}
+            data={"labels": "question,informative", "confidence": "medium"}
         )
         req = ClassificationRequest(
             text="How to install Python 3?",
@@ -152,14 +150,15 @@ class TestClassificationController:
 
     def test_get_knowledge_graph_default(self, controller):
         kg = controller.get_knowledge_graph()
-        assert "nodes" in kg
-        assert "edges" in kg
+        assert hasattr(kg, "nodes")
+        assert hasattr(kg, "edges")
+        assert hasattr(kg, "node_count")
 
     def test_graph_infer(self, controller):
         req = GraphInferenceRequest(entity="unknown")
         result = controller.graph_infer(req)
-        assert result["query"]["name"] == "unknown"
-        assert result["matches"] == []
+        assert result.query["name"] == "unknown"
+        assert result.matches == []
 
     @patch("app.agents.classification_agent.ClassificationAgent")
     def test_run_agent_success(self, mock_agent_cls, controller):
@@ -180,24 +179,27 @@ class TestClassificationController:
         assert "agent boom" in (result.error or "")
 
     def test_get_knowledge_graph_from_agent(self, controller):
+        from app.models.schemas import KnowledgeGraphExport
         controller._agent = MagicMock()
-        controller._agent.get_knowledge_graph.return_value = {"nodes": ["x"], "edges": []}
+        controller._agent.get_knowledge_graph.return_value = KnowledgeGraphExport(
+            nodes=[{"name": "x", "type": "TEST"}], edges=[], node_count=1, edge_count=0,
+        )
         result = controller.get_knowledge_graph()
-        assert result["nodes"] == ["x"]
+        assert result.nodes == [{"name": "x", "type": "TEST"}]
 
     def test_reseed_knowledge_graph(self, controller):
         result = controller.reseed_knowledge_graph()
-        assert result["message"] == "Knowledge graph seeded successfully"
-        assert result["node_count"] > 0
-        assert result["edge_count"] > 0
+        assert result.message == "Knowledge graph seeded successfully"
+        assert result.node_count > 0
+        assert result.edge_count > 0
 
     def test_reseed_clears_and_rebuilds(self, controller):
         # First seed should have nodes
         kg_before = controller.get_knowledge_graph()
-        initial_count = kg_before["node_count"]
+        initial_count = kg_before.node_count
         assert initial_count > 0
 
         # Reseed clears and rebuilds
         result = controller.reseed_knowledge_graph()
-        assert result["node_count"] > 0
+        assert result.node_count > 0
 

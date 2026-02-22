@@ -121,19 +121,7 @@
       "type": "ORG"
     },
     {
-      "name": "Databricks",
-      "type": "ORG"
-    },
-    {
-      "name": "Elastic",
-      "type": "ORG"
-    },
-    {
       "name": "GPT-4",
-      "type": "MODEL"
-    },
-    {
-      "name": "GPT-4o",
       "type": "MODEL"
     },
     {
@@ -161,15 +149,7 @@
       "type": "MODEL"
     },
     {
-      "name": "Stable Diffusion",
-      "type": "MODEL"
-    },
-    {
       "name": "Whisper",
-      "type": "MODEL"
-    },
-    {
-      "name": "DALL-E",
       "type": "MODEL"
     },
     {
@@ -206,10 +186,6 @@
     },
     {
       "name": "Knowledge Graphs",
-      "type": "FIELD"
-    },
-    {
-      "name": "Robotics",
       "type": "FIELD"
     },
     {
@@ -257,23 +233,7 @@
       "type": "CONCEPT"
     },
     {
-      "name": "Zero-Shot Learning",
-      "type": "CONCEPT"
-    },
-    {
       "name": "Transfer Learning",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "Tokenization",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "Backpropagation",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "Gradient Descent",
       "type": "CONCEPT"
     },
     {
@@ -281,15 +241,7 @@
       "type": "CONCEPT"
     },
     {
-      "name": "Convolutional Neural Network",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "Recurrent Neural Network",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "Graph Neural Network",
+      "name": "Backpropagation",
       "type": "CONCEPT"
     },
     {
@@ -297,27 +249,11 @@
       "type": "CONCEPT"
     },
     {
-      "name": "Multi-Agent Systems",
-      "type": "CONCEPT"
-    },
-    {
       "name": "Tool Use",
       "type": "CONCEPT"
     },
     {
-      "name": "Agentic Workflows",
-      "type": "CONCEPT"
-    },
-    {
       "name": "RLHF",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "Distillation",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "Quantization",
       "type": "CONCEPT"
     },
     {
@@ -341,44 +277,12 @@
       "type": "TASK"
     },
     {
-      "name": "Machine Translation",
-      "type": "TASK"
-    },
-    {
-      "name": "Image Classification",
-      "type": "TASK"
-    },
-    {
-      "name": "Object Detection",
-      "type": "TASK"
-    },
-    {
-      "name": "Speech Recognition",
-      "type": "TASK"
-    },
-    {
       "name": "Code Generation",
       "type": "TASK"
     },
     {
       "name": "Intent Detection",
       "type": "TASK"
-    },
-    {
-      "name": "Topic Modeling",
-      "type": "TASK"
-    },
-    {
-      "name": "Relation Extraction",
-      "type": "TASK"
-    },
-    {
-      "name": "PostgreSQL",
-      "type": "TECHNOLOGY"
-    },
-    {
-      "name": "Redis",
-      "type": "TECHNOLOGY"
     },
     {
       "name": "Docker",
@@ -390,30 +294,6 @@
     },
     {
       "name": "ChromaDB",
-      "type": "TECHNOLOGY"
-    },
-    {
-      "name": "Pinecone",
-      "type": "TECHNOLOGY"
-    },
-    {
-      "name": "Elasticsearch",
-      "type": "TECHNOLOGY"
-    },
-    {
-      "name": "Apache Kafka",
-      "type": "TECHNOLOGY"
-    },
-    {
-      "name": "GitHub Actions",
-      "type": "TECHNOLOGY"
-    },
-    {
-      "name": "Prometheus",
-      "type": "TECHNOLOGY"
-    },
-    {
-      "name": "Grafana",
       "type": "TECHNOLOGY"
     },
     {
@@ -429,10 +309,6 @@
       "type": "PERSON"
     },
     {
-      "name": "Andrej Karpathy",
-      "type": "PERSON"
-    },
-    {
       "name": "Omar Khattab",
       "type": "PERSON"
     },
@@ -443,634 +319,6 @@
     {
       "name": "Demis Hassabis",
       "type": "PERSON"
-    },
-    {
-      "name": "Ilya Sutskever",
-      "type": "PERSON"
-    },
-    {
-      "name": "Attention Is All You Need",
-      "type": "PAPER"
-    },
-    {
-      "name": "BERT Paper",
-      "type": "PAPER"
-    },
-    {
-      "name": "DSPy Paper",
-      "type": "PAPER"
-    },
-    {
-      "name": "ReAct Paper",
-      "type": "PAPER"
-    },
-    {
-      "name": "Chain-of-Thought Paper",
-      "type": "PAPER"
-    },
-    {
-      "name": "Constitutional AI Paper",
-      "type": "PAPER"
-    },
-    {
-      "name": "DPO Paper",
-      "type": "PAPER"
-    },
-    {
-      "name": "DSPy",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "AI",
-      "type": "ORG"
-    },
-    {
-      "name": "Python",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "positive",
-      "type": "SENTIMENT"
-    },
-    {
-      "name": "Technology",
-      "type": "TOPIC"
-    },
-    {
-      "name": "Portlet",
-      "type": "LANGUAGE"
-    },
-    {
-      "name": "Common Lisp",
-      "type": "LANGUAGE"
-    },
-    {
-      "name": "Common Lisp committee, J13",
-      "type": "PERSON"
-    },
-    {
-      "name": "object-oriented programming",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "functional programming",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "metaprogramming",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "generic programming",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "reflective programming",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "procedural programming",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "multi-paradigm programming",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "ML",
-      "type": "LANGUAGE"
-    },
-    {
-      "name": "Robin Milner",
-      "type": "PERSON"
-    },
-    {
-      "name": "imperative programming",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "ABLE",
-      "type": "LANGUAGE"
-    },
-    {
-      "name": "Boo",
-      "type": "LANGUAGE"
-    },
-    {
-      "name": "Rodrigo B. De Oliveira",
-      "type": "PERSON"
-    },
-    {
-      "name": "structured programming",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "Oxygene",
-      "type": "LANGUAGE"
-    },
-    {
-      "name": "RemObjects Software",
-      "type": "PERSON"
-    },
-    {
-      "name": "parallel computing",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "WMLScript",
-      "type": "LANGUAGE"
-    },
-    {
-      "name": "Sing#",
-      "type": "LANGUAGE"
-    },
-    {
-      "name": "Microsoft Research",
-      "type": "PERSON"
-    },
-    {
-      "name": "ROOT",
-      "type": "LANGUAGE"
-    },
-    {
-      "name": "CERN",
-      "type": "PERSON"
-    },
-    {
-      "name": "GAUSS",
-      "type": "LANGUAGE"
-    },
-    {
-      "name": "array programming",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "RPL",
-      "type": "LANGUAGE"
-    },
-    {
-      "name": "stack-oriented programming",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "declarative programming",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "reactive programming",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "Sawzall",
-      "type": "LANGUAGE"
-    },
-    {
-      "name": "Accent",
-      "type": "LANGUAGE"
-    },
-    {
-      "name": "Visual J++",
-      "type": "LANGUAGE"
-    },
-    {
-      "name": "JOSS",
-      "type": "LANGUAGE"
-    },
-    {
-      "name": "Cliff Shaw",
-      "type": "PERSON"
-    },
-    {
-      "name": "Cython",
-      "type": "LANGUAGE"
-    },
-    {
-      "name": "Microsoft",
-      "type": "PERSON"
-    },
-    {
-      "name": "event-driven programming",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "RGSS",
-      "type": "LANGUAGE"
-    },
-    {
-      "name": "P#",
-      "type": "LANGUAGE"
-    },
-    {
-      "name": "Larry Page",
-      "type": "PERSON"
-    },
-    {
-      "name": "Internet",
-      "type": "FIELD"
-    },
-    {
-      "name": "Sergey Brin",
-      "type": "PERSON"
-    },
-    {
-      "name": "information technology",
-      "type": "FIELD"
-    },
-    {
-      "name": "internet marketing",
-      "type": "FIELD"
-    },
-    {
-      "name": "software industry",
-      "type": "FIELD"
-    },
-    {
-      "name": "technology industry",
-      "type": "FIELD"
-    },
-    {
-      "name": "Internet industry",
-      "type": "FIELD"
-    },
-    {
-      "name": "Apple Inc.",
-      "type": "ORG"
-    },
-    {
-      "name": "Steve Jobs",
-      "type": "PERSON"
-    },
-    {
-      "name": "electronics",
-      "type": "FIELD"
-    },
-    {
-      "name": "Ronald Wayne",
-      "type": "PERSON"
-    },
-    {
-      "name": "Steve Wozniak",
-      "type": "PERSON"
-    },
-    {
-      "name": "digital distribution",
-      "type": "FIELD"
-    },
-    {
-      "name": "software development",
-      "type": "FIELD"
-    },
-    {
-      "name": "mobile phone industry",
-      "type": "FIELD"
-    },
-    {
-      "name": "consumer electronics industry",
-      "type": "FIELD"
-    },
-    {
-      "name": "Mark Zuckerberg",
-      "type": "PERSON"
-    },
-    {
-      "name": "Eduardo Saverin",
-      "type": "PERSON"
-    },
-    {
-      "name": "Dustin Moskovitz",
-      "type": "PERSON"
-    },
-    {
-      "name": "Chris Hughes",
-      "type": "PERSON"
-    },
-    {
-      "name": "Andrew McCollum",
-      "type": "PERSON"
-    },
-    {
-      "name": "Renaissance",
-      "type": "ORG"
-    },
-    {
-      "name": "A.S. Nancy-Lorraine",
-      "type": "ORG"
-    },
-    {
-      "name": "LeBron James",
-      "type": "ORG"
-    },
-    {
-      "name": "Goldman Sachs",
-      "type": "ORG"
-    },
-    {
-      "name": "Marcus Goldman",
-      "type": "PERSON"
-    },
-    {
-      "name": "financial services",
-      "type": "FIELD"
-    },
-    {
-      "name": "Samuel Sachs",
-      "type": "PERSON"
-    },
-    {
-      "name": "International Standard Industrial Classification",
-      "type": "FIELD"
-    },
-    {
-      "name": "financial service activities, except insurance and pension funding",
-      "type": "FIELD"
-    },
-    {
-      "name": "financial sector",
-      "type": "FIELD"
-    },
-    {
-      "name": "Mariette Hartley",
-      "type": "ORG"
-    },
-    {
-      "name": "Samarinka",
-      "type": "ORG"
-    },
-    {
-      "name": "machine learning",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "artificial intelligence",
-      "type": "FIELD"
-    },
-    {
-      "name": "deep learning",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "classification",
-      "type": "TASK"
-    },
-    {
-      "name": "clustering",
-      "type": "TASK"
-    },
-    {
-      "name": "regression",
-      "type": "TASK"
-    },
-    {
-      "name": "text summarization",
-      "type": "TASK"
-    },
-    {
-      "name": "image recognition",
-      "type": "TASK"
-    },
-    {
-      "name": "algorithm",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "problem solving",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "database",
-      "type": "TECHNOLOGY"
-    },
-    {
-      "name": "data storage",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "API",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "software integration",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "encryption",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "cybersecurity",
-      "type": "FIELD"
-    },
-    {
-      "name": "compiler",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "programming",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "version control",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "software development",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "Git",
-      "type": "TECHNOLOGY"
-    },
-    {
-      "name": "containerisation",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "container orchestration",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "dynamically typed",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "interpreted",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "memory safe",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "systems programming",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "web development",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "database querying",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "training data",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "overfitting",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "bias",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "GPU",
-      "type": "TECHNOLOGY"
-    },
-    {
-      "name": "tensor",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "gradient",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "loss function",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "activation function",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "epoch",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "training",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "batch size",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "learning rate",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "hyperparameter",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "linear algebra",
-      "type": "FIELD"
-    },
-    {
-      "name": "calculus",
-      "type": "FIELD"
-    },
-    {
-      "name": "probability",
-      "type": "FIELD"
-    },
-    {
-      "name": "statistics",
-      "type": "FIELD"
-    },
-    {
-      "name": "information theory",
-      "type": "FIELD"
-    },
-    {
-      "name": "optimisation",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "Bayes theorem",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "unit test",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "software quality",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "CI/CD",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "software deployment",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "microservice",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "software architecture",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "REST API",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "cloud computing",
-      "type": "FIELD"
-    },
-    {
-      "name": "serverless",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "open source",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "data pipeline",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "data engineering",
-      "type": "FIELD"
-    },
-    {
-      "name": "ETL",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "data lake",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "data warehouse",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "feature engineering",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "data augmentation",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "cross-validation",
-      "type": "CONCEPT"
-    },
-    {
-      "name": "BERT",
-      "type": "ORG"
-    },
-    {
-      "name": "NLP",
-      "type": "ORG"
     }
   ],
   "edges": [
@@ -1085,7 +333,7 @@
       },
       "relation": "implemented_in",
       "weight": 1.0,
-      "context": "DSPy is a Python framework for programming with foundation models"
+      "context": "DSPy is a Python framework"
     },
     {
       "source": {
@@ -1098,7 +346,7 @@
       },
       "relation": "developed_by",
       "weight": 1.0,
-      "context": "DSPy was created at Stanford NLP group"
+      "context": "DSPy from Stanford NLP"
     },
     {
       "source": {
@@ -1111,7 +359,7 @@
       },
       "relation": "created_by",
       "weight": 1.0,
-      "context": "Omar Khattab is the lead creator of DSPy"
+      "context": "Omar Khattab created DSPy"
     },
     {
       "source": {
@@ -1124,7 +372,7 @@
       },
       "relation": "automates",
       "weight": 0.9,
-      "context": "DSPy replaces manual prompt engineering with compiled programs"
+      "context": "DSPy automates prompt engineering"
     },
     {
       "source": {
@@ -1137,7 +385,7 @@
       },
       "relation": "used_for",
       "weight": 0.9,
-      "context": "DSPy excels at text classification via compiled prompts"
+      "context": "DSPy excels at text classification"
     },
     {
       "source": {
@@ -1163,7 +411,7 @@
       },
       "relation": "optimizes",
       "weight": 0.9,
-      "context": "DSPy optimizes few-shot examples via teleprompters"
+      "context": "DSPy optimizes few-shot examples"
     },
     {
       "source": {
@@ -1176,7 +424,7 @@
       },
       "relation": "implements",
       "weight": 0.9,
-      "context": "DSPy ChainOfThought module implements step-by-step reasoning"
+      "context": "DSPy ChainOfThought module"
     },
     {
       "source": {
@@ -1189,33 +437,7 @@
       },
       "relation": "used_for",
       "weight": 0.85,
-      "context": "DSPy builds QA pipelines"
-    },
-    {
-      "source": {
-        "name": "DSPy",
-        "type": "FRAMEWORK"
-      },
-      "target": {
-        "name": "Summarization",
-        "type": "TASK"
-      },
-      "relation": "used_for",
-      "weight": 0.8,
-      "context": "DSPy supports text summarization"
-    },
-    {
-      "source": {
-        "name": "DSPy",
-        "type": "FRAMEWORK"
-      },
-      "target": {
-        "name": "DSPy Paper",
-        "type": "PAPER"
-      },
-      "relation": "described_in",
-      "weight": 1.0,
-      "context": "The DSPy framework is described in its foundational paper"
+      "context": "DSPy for QA pipelines"
     },
     {
       "source": {
@@ -1228,7 +450,7 @@
       },
       "relation": "alternative_to",
       "weight": 0.7,
-      "context": "DSPy and LangChain are both LLM frameworks"
+      "context": "DSPy vs LangChain"
     },
     {
       "source": {
@@ -1241,7 +463,7 @@
       },
       "relation": "implemented_in",
       "weight": 1.0,
-      "context": "LangGraph is a Python library for agent workflows"
+      "context": "LangGraph is Python"
     },
     {
       "source": {
@@ -1254,7 +476,7 @@
       },
       "relation": "extends",
       "weight": 0.9,
-      "context": "LangGraph extends LangChain with stateful graphs"
+      "context": "LangGraph extends LangChain"
     },
     {
       "source": {
@@ -1267,33 +489,7 @@
       },
       "relation": "enables",
       "weight": 0.95,
-      "context": "LangGraph enables building autonomous AI agents"
-    },
-    {
-      "source": {
-        "name": "LangGraph",
-        "type": "FRAMEWORK"
-      },
-      "target": {
-        "name": "Agentic Workflows",
-        "type": "CONCEPT"
-      },
-      "relation": "implements",
-      "weight": 0.95,
-      "context": "LangGraph implements agentic workflows"
-    },
-    {
-      "source": {
-        "name": "LangGraph",
-        "type": "FRAMEWORK"
-      },
-      "target": {
-        "name": "Multi-Agent Systems",
-        "type": "CONCEPT"
-      },
-      "relation": "supports",
-      "weight": 0.85,
-      "context": "LangGraph supports multi-agent patterns"
+      "context": "LangGraph enables agents"
     },
     {
       "source": {
@@ -1306,7 +502,7 @@
       },
       "relation": "enables",
       "weight": 0.85,
-      "context": "LangGraph enables agents to use tools"
+      "context": "LangGraph enables tool use"
     },
     {
       "source": {
@@ -1319,7 +515,7 @@
       },
       "relation": "implemented_in",
       "weight": 1.0,
-      "context": "Flask is a lightweight Python web framework"
+      "context": "Flask is a Python web framework"
     },
     {
       "source": {
@@ -1332,7 +528,7 @@
       },
       "relation": "implemented_in",
       "weight": 1.0,
-      "context": "Django is a full-featured Python web framework"
+      "context": "Django is a Python web framework"
     },
     {
       "source": {
@@ -1345,7 +541,7 @@
       },
       "relation": "implemented_in",
       "weight": 1.0,
-      "context": "FastAPI is a modern Python API framework"
+      "context": "FastAPI is modern Python"
     },
     {
       "source": {
@@ -1358,7 +554,7 @@
       },
       "relation": "depends_on",
       "weight": 0.95,
-      "context": "FastAPI uses Pydantic for validation"
+      "context": "FastAPI uses Pydantic"
     },
     {
       "source": {
@@ -1371,7 +567,7 @@
       },
       "relation": "developed_by",
       "weight": 1.0,
-      "context": "GPT-4 is developed by OpenAI"
+      "context": "GPT-4 by OpenAI"
     },
     {
       "source": {
@@ -1384,7 +580,7 @@
       },
       "relation": "based_on",
       "weight": 1.0,
-      "context": "GPT-4 uses the transformer architecture"
+      "context": "GPT-4 uses transformers"
     },
     {
       "source": {
@@ -1397,7 +593,7 @@
       },
       "relation": "belongs_to",
       "weight": 0.95,
-      "context": "GPT-4 is a generative AI model"
+      "context": "GPT-4 is gen AI"
     },
     {
       "source": {
@@ -1410,7 +606,7 @@
       },
       "relation": "applies_to",
       "weight": 0.95,
-      "context": "GPT-4 is a frontier NLP model"
+      "context": "GPT-4 is frontier NLP"
     },
     {
       "source": {
@@ -1436,33 +632,7 @@
       },
       "relation": "used_for",
       "weight": 0.9,
-      "context": "GPT-4 excels at code generation"
-    },
-    {
-      "source": {
-        "name": "GPT-4o",
-        "type": "MODEL"
-      },
-      "target": {
-        "name": "OpenAI",
-        "type": "ORG"
-      },
-      "relation": "developed_by",
-      "weight": 1.0,
-      "context": "GPT-4o is a multimodal model from OpenAI"
-    },
-    {
-      "source": {
-        "name": "GPT-4o",
-        "type": "MODEL"
-      },
-      "target": {
-        "name": "GPT-4",
-        "type": "MODEL"
-      },
-      "relation": "successor_of",
-      "weight": 0.9,
-      "context": "GPT-4o is a multimodal successor of GPT-4"
+      "context": "GPT-4 for code generation"
     },
     {
       "source": {
@@ -1475,7 +645,7 @@
       },
       "relation": "developed_by",
       "weight": 1.0,
-      "context": "Gemini is developed by Google DeepMind"
+      "context": "Gemini by Google DeepMind"
     },
     {
       "source": {
@@ -1501,7 +671,7 @@
       },
       "relation": "based_on",
       "weight": 1.0,
-      "context": "Gemini uses transformer architecture"
+      "context": "Gemini uses transformers"
     },
     {
       "source": {
@@ -1514,7 +684,7 @@
       },
       "relation": "belongs_to",
       "weight": 0.95,
-      "context": "Gemini is Google's frontier gen AI model"
+      "context": "Gemini is gen AI"
     },
     {
       "source": {
@@ -1527,20 +697,7 @@
       },
       "relation": "developed_by",
       "weight": 1.0,
-      "context": "Claude is developed by Anthropic"
-    },
-    {
-      "source": {
-        "name": "Claude",
-        "type": "MODEL"
-      },
-      "target": {
-        "name": "Constitutional AI Paper",
-        "type": "PAPER"
-      },
-      "relation": "uses_technique_from",
-      "weight": 0.9,
-      "context": "Claude uses Constitutional AI"
+      "context": "Claude by Anthropic"
     },
     {
       "source": {
@@ -1553,7 +710,7 @@
       },
       "relation": "trained_with",
       "weight": 0.9,
-      "context": "Claude trained with RLHF"
+      "context": "Claude uses RLHF"
     },
     {
       "source": {
@@ -1566,7 +723,7 @@
       },
       "relation": "developed_by",
       "weight": 1.0,
-      "context": "Llama 3 by Meta AI"
+      "context": "Llama 3 by Meta"
     },
     {
       "source": {
@@ -1579,7 +736,7 @@
       },
       "relation": "based_on",
       "weight": 1.0,
-      "context": "Llama 3 uses transformer"
+      "context": "Llama 3 uses transformers"
     },
     {
       "source": {
@@ -1592,46 +749,7 @@
       },
       "relation": "belongs_to",
       "weight": 0.95,
-      "context": "Llama 3 is an open-weight gen AI model"
-    },
-    {
-      "source": {
-        "name": "Mistral",
-        "type": "MODEL"
-      },
-      "target": {
-        "name": "Transformer",
-        "type": "CONCEPT"
-      },
-      "relation": "based_on",
-      "weight": 1.0,
-      "context": "Mistral uses sliding window attention transformer"
-    },
-    {
-      "source": {
-        "name": "Phi-3",
-        "type": "MODEL"
-      },
-      "target": {
-        "name": "Microsoft",
-        "type": "ORG"
-      },
-      "relation": "developed_by",
-      "weight": 1.0,
-      "context": "Phi-3 is a small LM from Microsoft"
-    },
-    {
-      "source": {
-        "name": "Phi-3",
-        "type": "MODEL"
-      },
-      "target": {
-        "name": "Distillation",
-        "type": "CONCEPT"
-      },
-      "relation": "trained_with",
-      "weight": 0.8,
-      "context": "Phi-3 uses distillation techniques"
+      "context": "Llama 3 is open-weight gen AI"
     },
     {
       "source": {
@@ -1644,7 +762,7 @@
       },
       "relation": "developed_by",
       "weight": 1.0,
-      "context": "BERT was developed by Google"
+      "context": "BERT by Google"
     },
     {
       "source": {
@@ -1657,7 +775,7 @@
       },
       "relation": "based_on",
       "weight": 1.0,
-      "context": "BERT uses the transformer encoder"
+      "context": "BERT uses transformer encoder"
     },
     {
       "source": {
@@ -1683,7 +801,7 @@
       },
       "relation": "used_for",
       "weight": 0.95,
-      "context": "BERT is widely used for text classification"
+      "context": "BERT for text classification"
     },
     {
       "source": {
@@ -1696,20 +814,7 @@
       },
       "relation": "used_for",
       "weight": 0.9,
-      "context": "BERT achieves strong NER performance"
-    },
-    {
-      "source": {
-        "name": "BERT",
-        "type": "MODEL"
-      },
-      "target": {
-        "name": "Question Answering",
-        "type": "TASK"
-      },
-      "relation": "used_for",
-      "weight": 0.9,
-      "context": "BERT excels at extractive QA"
+      "context": "BERT for NER"
     },
     {
       "source": {
@@ -1722,7 +827,20 @@
       },
       "relation": "used_for",
       "weight": 0.9,
-      "context": "BERT-based models top sentiment analysis"
+      "context": "BERT for sentiment analysis"
+    },
+    {
+      "source": {
+        "name": "BERT",
+        "type": "MODEL"
+      },
+      "target": {
+        "name": "Question Answering",
+        "type": "TASK"
+      },
+      "relation": "used_for",
+      "weight": 0.9,
+      "context": "BERT for QA"
     },
     {
       "source": {
@@ -1735,20 +853,7 @@
       },
       "relation": "demonstrates",
       "weight": 0.9,
-      "context": "BERT pioneered transfer learning for NLP"
-    },
-    {
-      "source": {
-        "name": "BERT",
-        "type": "MODEL"
-      },
-      "target": {
-        "name": "BERT Paper",
-        "type": "PAPER"
-      },
-      "relation": "described_in",
-      "weight": 1.0,
-      "context": "BERT is described in its paper"
+      "context": "BERT pioneered transfer learning"
     },
     {
       "source": {
@@ -1774,7 +879,7 @@
       },
       "relation": "based_on",
       "weight": 1.0,
-      "context": "T5 is encoder-decoder transformer"
+      "context": "T5 encoder-decoder transformer"
     },
     {
       "source": {
@@ -1787,20 +892,7 @@
       },
       "relation": "used_for",
       "weight": 0.9,
-      "context": "T5 excels at summarization"
-    },
-    {
-      "source": {
-        "name": "T5",
-        "type": "MODEL"
-      },
-      "target": {
-        "name": "Machine Translation",
-        "type": "TASK"
-      },
-      "relation": "used_for",
-      "weight": 0.9,
-      "context": "T5 effective for translation"
+      "context": "T5 for summarization"
     },
     {
       "source": {
@@ -1813,46 +905,20 @@
       },
       "relation": "developed_by",
       "weight": 1.0,
-      "context": "Whisper is OpenAI's speech model"
+      "context": "Whisper by OpenAI"
     },
     {
       "source": {
-        "name": "Whisper",
+        "name": "Phi-3",
         "type": "MODEL"
       },
       "target": {
-        "name": "Speech Recognition",
-        "type": "TASK"
-      },
-      "relation": "used_for",
-      "weight": 1.0,
-      "context": "Whisper for speech recognition"
-    },
-    {
-      "source": {
-        "name": "DALL-E",
-        "type": "MODEL"
-      },
-      "target": {
-        "name": "OpenAI",
+        "name": "Microsoft",
         "type": "ORG"
       },
       "relation": "developed_by",
       "weight": 1.0,
-      "context": "DALL-E from OpenAI"
-    },
-    {
-      "source": {
-        "name": "Stable Diffusion",
-        "type": "MODEL"
-      },
-      "target": {
-        "name": "Computer Vision",
-        "type": "FIELD"
-      },
-      "relation": "applies_to",
-      "weight": 0.9,
-      "context": "Stable Diffusion for image generation"
+      "context": "Phi-3 by Microsoft"
     },
     {
       "source": {
@@ -1873,25 +939,12 @@
         "type": "CONCEPT"
       },
       "target": {
-        "name": "Attention Is All You Need",
-        "type": "PAPER"
-      },
-      "relation": "introduced_in",
-      "weight": 1.0,
-      "context": "Transformer introduced in 2017 paper"
-    },
-    {
-      "source": {
-        "name": "Transformer",
-        "type": "CONCEPT"
-      },
-      "target": {
         "name": "Deep Learning",
         "type": "FIELD"
       },
       "relation": "belongs_to",
       "weight": 0.95,
-      "context": "Core deep learning architecture"
+      "context": "Core DL architecture"
     },
     {
       "source": {
@@ -1917,7 +970,7 @@
       },
       "relation": "component_of",
       "weight": 0.9,
-      "context": "Attention is a neural network component"
+      "context": "Attention is NN component"
     },
     {
       "source": {
@@ -1930,7 +983,7 @@
       },
       "relation": "foundation_of",
       "weight": 1.0,
-      "context": "Neural networks are foundation of DL"
+      "context": "NNs are foundation of DL"
     },
     {
       "source": {
@@ -1944,71 +997,6 @@
       "relation": "trained_with",
       "weight": 1.0,
       "context": "NNs trained with backprop"
-    },
-    {
-      "source": {
-        "name": "Neural Network",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Deep Learning",
-        "type": "FIELD"
-      },
-      "relation": "used_in",
-      "weight": 0.9,
-      "context": "Commonsense: neural network used_in deep learning"
-    },
-    {
-      "source": {
-        "name": "Backpropagation",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Gradient Descent",
-        "type": "CONCEPT"
-      },
-      "relation": "uses",
-      "weight": 1.0,
-      "context": "Backprop uses gradient descent"
-    },
-    {
-      "source": {
-        "name": "Convolutional Neural Network",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Computer Vision",
-        "type": "FIELD"
-      },
-      "relation": "used_in",
-      "weight": 0.95,
-      "context": "CNNs used in computer vision"
-    },
-    {
-      "source": {
-        "name": "Recurrent Neural Network",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Natural Language Processing",
-        "type": "FIELD"
-      },
-      "relation": "used_in",
-      "weight": 0.8,
-      "context": "RNNs historically important for NLP"
-    },
-    {
-      "source": {
-        "name": "Graph Neural Network",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Knowledge Graphs",
-        "type": "FIELD"
-      },
-      "relation": "used_for",
-      "weight": 0.85,
-      "context": "GNNs for knowledge graph reasoning"
     },
     {
       "source": {
@@ -2060,33 +1048,7 @@
       },
       "relation": "implemented_by",
       "weight": 0.8,
-      "context": "ChromaDB is an open-source vector DB"
-    },
-    {
-      "source": {
-        "name": "Vector Database",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Pinecone",
-        "type": "TECHNOLOGY"
-      },
-      "relation": "implemented_by",
-      "weight": 0.8,
-      "context": "Pinecone is a managed vector DB"
-    },
-    {
-      "source": {
-        "name": "Embeddings",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Tokenization",
-        "type": "CONCEPT"
-      },
-      "relation": "requires",
-      "weight": 0.8,
-      "context": "Embeddings require tokenization"
+      "context": "ChromaDB is vector DB"
     },
     {
       "source": {
@@ -2099,7 +1061,7 @@
       },
       "relation": "subfield_of",
       "weight": 1.0,
-      "context": "DL is a subfield of ML"
+      "context": "DL is subfield of ML"
     },
     {
       "source": {
@@ -2112,20 +1074,7 @@
       },
       "relation": "subfield_of",
       "weight": 0.9,
-      "context": "Modern NLP relies on ML"
-    },
-    {
-      "source": {
-        "name": "Natural Language Processing",
-        "type": "FIELD"
-      },
-      "target": {
-        "name": "artificial intelligence",
-        "type": "FIELD"
-      },
-      "relation": "subfield_of",
-      "weight": 0.95,
-      "context": "Commonsense: natural language processing subfield_of artificial intelligence"
+      "context": "NLP relies on ML"
     },
     {
       "source": {
@@ -2138,20 +1087,7 @@
       },
       "relation": "subfield_of",
       "weight": 0.9,
-      "context": "CV is a major ML area"
-    },
-    {
-      "source": {
-        "name": "Computer Vision",
-        "type": "FIELD"
-      },
-      "target": {
-        "name": "artificial intelligence",
-        "type": "FIELD"
-      },
-      "relation": "subfield_of",
-      "weight": 0.95,
-      "context": "Commonsense: computer vision subfield_of artificial intelligence"
+      "context": "CV is ML application area"
     },
     {
       "source": {
@@ -2164,7 +1100,7 @@
       },
       "relation": "subfield_of",
       "weight": 0.95,
-      "context": "Gen AI built on deep learning"
+      "context": "Gen AI built on DL"
     },
     {
       "source": {
@@ -2177,20 +1113,7 @@
       },
       "relation": "subfield_of",
       "weight": 1.0,
-      "context": "RL is a branch of ML"
-    },
-    {
-      "source": {
-        "name": "Data Science",
-        "type": "FIELD"
-      },
-      "target": {
-        "name": "Machine Learning",
-        "type": "FIELD"
-      },
-      "relation": "uses",
-      "weight": 0.85,
-      "context": "Data science uses ML"
+      "context": "RL is branch of ML"
     },
     {
       "source": {
@@ -2203,7 +1126,7 @@
       },
       "relation": "enhances",
       "weight": 0.8,
-      "context": "KGs enhance information retrieval"
+      "context": "KGs enhance IR"
     },
     {
       "source": {
@@ -2216,7 +1139,7 @@
       },
       "relation": "subtype_of",
       "weight": 0.95,
-      "context": "Sentiment analysis is text classification"
+      "context": "Sentiment is text classification"
     },
     {
       "source": {
@@ -2229,46 +1152,7 @@
       },
       "relation": "subtype_of",
       "weight": 0.9,
-      "context": "Intent detection is text classification"
-    },
-    {
-      "source": {
-        "name": "Topic Modeling",
-        "type": "TASK"
-      },
-      "target": {
-        "name": "Text Classification",
-        "type": "TASK"
-      },
-      "relation": "related_to",
-      "weight": 0.85,
-      "context": "Topic modeling related to classification"
-    },
-    {
-      "source": {
-        "name": "Named Entity Recognition",
-        "type": "TASK"
-      },
-      "target": {
-        "name": "Natural Language Processing",
-        "type": "FIELD"
-      },
-      "relation": "belongs_to",
-      "weight": 0.95,
-      "context": "NER is a core NLP task"
-    },
-    {
-      "source": {
-        "name": "Relation Extraction",
-        "type": "TASK"
-      },
-      "target": {
-        "name": "Knowledge Graphs",
-        "type": "FIELD"
-      },
-      "relation": "feeds_into",
-      "weight": 0.9,
-      "context": "RE feeds into KG construction"
+      "context": "Intent detection is classification"
     },
     {
       "source": {
@@ -2281,7 +1165,7 @@
       },
       "relation": "belongs_to",
       "weight": 1.0,
-      "context": "Text classification is fundamental NLP"
+      "context": "Text classification is NLP"
     },
     {
       "source": {
@@ -2294,7 +1178,7 @@
       },
       "relation": "belongs_to",
       "weight": 0.95,
-      "context": "QA is a key NLP task"
+      "context": "QA is NLP task"
     },
     {
       "source": {
@@ -2307,7 +1191,20 @@
       },
       "relation": "belongs_to",
       "weight": 0.9,
-      "context": "Code gen is a gen AI application"
+      "context": "Code gen is gen AI"
+    },
+    {
+      "source": {
+        "name": "Named Entity Recognition",
+        "type": "TASK"
+      },
+      "target": {
+        "name": "Natural Language Processing",
+        "type": "FIELD"
+      },
+      "relation": "belongs_to",
+      "weight": 0.95,
+      "context": "NER is NLP task"
     },
     {
       "source": {
@@ -2320,7 +1217,7 @@
       },
       "relation": "implemented_in",
       "weight": 1.0,
-      "context": "PyTorch implemented in Python/C++"
+      "context": "PyTorch in Python"
     },
     {
       "source": {
@@ -2333,7 +1230,7 @@
       },
       "relation": "developed_by",
       "weight": 0.9,
-      "context": "PyTorch from Meta AI"
+      "context": "PyTorch by Meta"
     },
     {
       "source": {
@@ -2346,7 +1243,7 @@
       },
       "relation": "used_for",
       "weight": 1.0,
-      "context": "PyTorch is the leading DL framework"
+      "context": "PyTorch for DL"
     },
     {
       "source": {
@@ -2359,7 +1256,7 @@
       },
       "relation": "implemented_in",
       "weight": 1.0,
-      "context": "TensorFlow primary interface is Python"
+      "context": "TF in Python"
     },
     {
       "source": {
@@ -2372,7 +1269,7 @@
       },
       "relation": "developed_by",
       "weight": 1.0,
-      "context": "TensorFlow from Google Brain"
+      "context": "TF by Google"
     },
     {
       "source": {
@@ -2385,20 +1282,7 @@
       },
       "relation": "used_for",
       "weight": 1.0,
-      "context": "TensorFlow for deep learning"
-    },
-    {
-      "source": {
-        "name": "Hugging Face Transformers",
-        "type": "FRAMEWORK"
-      },
-      "target": {
-        "name": "Python",
-        "type": "LANGUAGE"
-      },
-      "relation": "implemented_in",
-      "weight": 1.0,
-      "context": "HF Transformers is a Python library"
+      "context": "TF for DL"
     },
     {
       "source": {
@@ -2411,7 +1295,7 @@
       },
       "relation": "developed_by",
       "weight": 1.0,
-      "context": "HF Transformers by Hugging Face"
+      "context": "HF Transformers by HF"
     },
     {
       "source": {
@@ -2437,20 +1321,7 @@
       },
       "relation": "supports",
       "weight": 0.9,
-      "context": "HF supports easy fine-tuning"
-    },
-    {
-      "source": {
-        "name": "scikit-learn",
-        "type": "FRAMEWORK"
-      },
-      "target": {
-        "name": "Python",
-        "type": "LANGUAGE"
-      },
-      "relation": "implemented_in",
-      "weight": 1.0,
-      "context": "scikit-learn is a Python ML library"
+      "context": "HF supports fine-tuning"
     },
     {
       "source": {
@@ -2463,33 +1334,7 @@
       },
       "relation": "used_for",
       "weight": 1.0,
-      "context": "scikit-learn for classical ML"
-    },
-    {
-      "source": {
-        "name": "scikit-learn",
-        "type": "FRAMEWORK"
-      },
-      "target": {
-        "name": "Text Classification",
-        "type": "TASK"
-      },
-      "relation": "used_for",
-      "weight": 0.85,
-      "context": "sklearn supports text classification"
-    },
-    {
-      "source": {
-        "name": "Pandas",
-        "type": "LIBRARY"
-      },
-      "target": {
-        "name": "Python",
-        "type": "LANGUAGE"
-      },
-      "relation": "implemented_in",
-      "weight": 1.0,
-      "context": "Pandas is a Python data library"
+      "context": "sklearn for ML"
     },
     {
       "source": {
@@ -2502,20 +1347,7 @@
       },
       "relation": "used_for",
       "weight": 0.95,
-      "context": "Pandas essential for data science"
-    },
-    {
-      "source": {
-        "name": "NumPy",
-        "type": "LIBRARY"
-      },
-      "target": {
-        "name": "Python",
-        "type": "LANGUAGE"
-      },
-      "relation": "implemented_in",
-      "weight": 1.0,
-      "context": "NumPy is Python numerical library"
+      "context": "Pandas for data science"
     },
     {
       "source": {
@@ -2532,19 +1364,6 @@
     },
     {
       "source": {
-        "name": "Pydantic",
-        "type": "LIBRARY"
-      },
-      "target": {
-        "name": "Python",
-        "type": "LANGUAGE"
-      },
-      "relation": "implemented_in",
-      "weight": 1.0,
-      "context": "Pydantic is a Python validation library"
-    },
-    {
-      "source": {
         "name": "Geoffrey Hinton",
         "type": "PERSON"
       },
@@ -2554,7 +1373,7 @@
       },
       "relation": "pioneer_of",
       "weight": 1.0,
-      "context": "Hinton is the godfather of deep learning"
+      "context": "Hinton is godfather of DL"
     },
     {
       "source": {
@@ -2567,20 +1386,7 @@
       },
       "relation": "popularized",
       "weight": 0.95,
-      "context": "Hinton popularized backpropagation"
-    },
-    {
-      "source": {
-        "name": "Yann LeCun",
-        "type": "PERSON"
-      },
-      "target": {
-        "name": "Convolutional Neural Network",
-        "type": "CONCEPT"
-      },
-      "relation": "pioneer_of",
-      "weight": 1.0,
-      "context": "LeCun pioneered CNNs"
+      "context": "Hinton popularized backprop"
     },
     {
       "source": {
@@ -2593,33 +1399,7 @@
       },
       "relation": "works_at",
       "weight": 0.9,
-      "context": "LeCun is Chief AI Scientist at Meta"
-    },
-    {
-      "source": {
-        "name": "Ilya Sutskever",
-        "type": "PERSON"
-      },
-      "target": {
-        "name": "OpenAI",
-        "type": "ORG"
-      },
-      "relation": "co-founded",
-      "weight": 0.9,
-      "context": "Sutskever co-founded OpenAI"
-    },
-    {
-      "source": {
-        "name": "Ilya Sutskever",
-        "type": "PERSON"
-      },
-      "target": {
-        "name": "Deep Learning",
-        "type": "FIELD"
-      },
-      "relation": "pioneer_of",
-      "weight": 0.95,
-      "context": "Sutskever made key DL contributions"
+      "context": "LeCun is at Meta"
     },
     {
       "source": {
@@ -2632,7 +1412,7 @@
       },
       "relation": "educator_in",
       "weight": 0.95,
-      "context": "Ng is an influential ML educator"
+      "context": "Ng is ML educator"
     },
     {
       "source": {
@@ -2645,20 +1425,7 @@
       },
       "relation": "affiliated_with",
       "weight": 0.9,
-      "context": "Ng is a Stanford professor"
-    },
-    {
-      "source": {
-        "name": "Andrej Karpathy",
-        "type": "PERSON"
-      },
-      "target": {
-        "name": "Deep Learning",
-        "type": "FIELD"
-      },
-      "relation": "expert_in",
-      "weight": 0.9,
-      "context": "Karpathy is a DL researcher"
+      "context": "Ng at Stanford"
     },
     {
       "source": {
@@ -2671,7 +1438,7 @@
       },
       "relation": "leads",
       "weight": 1.0,
-      "context": "Altman is CEO of OpenAI"
+      "context": "Altman leads OpenAI"
     },
     {
       "source": {
@@ -2684,228 +1451,7 @@
       },
       "relation": "leads",
       "weight": 1.0,
-      "context": "Hassabis is CEO of DeepMind"
-    },
-    {
-      "source": {
-        "name": "Docker",
-        "type": "TECHNOLOGY"
-      },
-      "target": {
-        "name": "Kubernetes",
-        "type": "TECHNOLOGY"
-      },
-      "relation": "orchestrated_by",
-      "weight": 0.85,
-      "context": "Docker orchestrated by Kubernetes"
-    },
-    {
-      "source": {
-        "name": "Docker",
-        "type": "TECHNOLOGY"
-      },
-      "target": {
-        "name": "MLOps",
-        "type": "FIELD"
-      },
-      "relation": "used_in",
-      "weight": 0.8,
-      "context": "Docker used in MLOps"
-    },
-    {
-      "source": {
-        "name": "Docker",
-        "type": "TECHNOLOGY"
-      },
-      "target": {
-        "name": "containerisation",
-        "type": "CONCEPT"
-      },
-      "relation": "used_for",
-      "weight": 0.95,
-      "context": "Commonsense: Docker used_for containerisation"
-    },
-    {
-      "source": {
-        "name": "GitHub Actions",
-        "type": "TECHNOLOGY"
-      },
-      "target": {
-        "name": "MLOps",
-        "type": "FIELD"
-      },
-      "relation": "used_in",
-      "weight": 0.75,
-      "context": "GitHub Actions for CI/CD in ML"
-    },
-    {
-      "source": {
-        "name": "Prometheus",
-        "type": "TECHNOLOGY"
-      },
-      "target": {
-        "name": "Grafana",
-        "type": "TECHNOLOGY"
-      },
-      "relation": "pairs_with",
-      "weight": 0.85,
-      "context": "Prometheus metrics visualized with Grafana"
-    },
-    {
-      "source": {
-        "name": "Elasticsearch",
-        "type": "TECHNOLOGY"
-      },
-      "target": {
-        "name": "Information Retrieval",
-        "type": "FIELD"
-      },
-      "relation": "used_for",
-      "weight": 0.9,
-      "context": "Elasticsearch for information retrieval"
-    },
-    {
-      "source": {
-        "name": "Elasticsearch",
-        "type": "TECHNOLOGY"
-      },
-      "target": {
-        "name": "Elastic",
-        "type": "ORG"
-      },
-      "relation": "developed_by",
-      "weight": 1.0,
-      "context": "Elasticsearch by Elastic"
-    },
-    {
-      "source": {
-        "name": "Chain-of-Thought",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Prompt Engineering",
-        "type": "CONCEPT"
-      },
-      "relation": "technique_of",
-      "weight": 0.9,
-      "context": "CoT is a prompting technique"
-    },
-    {
-      "source": {
-        "name": "Chain-of-Thought",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Chain-of-Thought Paper",
-        "type": "PAPER"
-      },
-      "relation": "described_in",
-      "weight": 1.0,
-      "context": "CoT formalized in the paper"
-    },
-    {
-      "source": {
-        "name": "Few-Shot Learning",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Prompt Engineering",
-        "type": "CONCEPT"
-      },
-      "relation": "technique_of",
-      "weight": 0.85,
-      "context": "Few-shot is a prompting approach"
-    },
-    {
-      "source": {
-        "name": "Zero-Shot Learning",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Transfer Learning",
-        "type": "CONCEPT"
-      },
-      "relation": "variant_of",
-      "weight": 0.8,
-      "context": "Zero-shot leverages transfer learning"
-    },
-    {
-      "source": {
-        "name": "Fine-Tuning",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Transfer Learning",
-        "type": "CONCEPT"
-      },
-      "relation": "method_of",
-      "weight": 0.95,
-      "context": "Fine-tuning is transfer learning method"
-    },
-    {
-      "source": {
-        "name": "RLHF",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Reinforcement Learning",
-        "type": "FIELD"
-      },
-      "relation": "applies",
-      "weight": 0.9,
-      "context": "RLHF applies RL to human feedback"
-    },
-    {
-      "source": {
-        "name": "Distillation",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Deep Learning",
-        "type": "FIELD"
-      },
-      "relation": "technique_in",
-      "weight": 0.85,
-      "context": "Distillation compresses models"
-    },
-    {
-      "source": {
-        "name": "Quantization",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Deep Learning",
-        "type": "FIELD"
-      },
-      "relation": "technique_in",
-      "weight": 0.85,
-      "context": "Quantization reduces model size"
-    },
-    {
-      "source": {
-        "name": "Autonomous Agents",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Tool Use",
-        "type": "CONCEPT"
-      },
-      "relation": "requires",
-      "weight": 0.85,
-      "context": "Agents require tool-use"
-    },
-    {
-      "source": {
-        "name": "Autonomous Agents",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "ReAct Paper",
-        "type": "PAPER"
-      },
-      "relation": "inspired_by",
-      "weight": 0.9,
-      "context": "Agents inspired by ReAct"
+      "context": "Hassabis leads DeepMind"
     },
     {
       "source": {
@@ -2918,176 +1464,7 @@
       },
       "relation": "subsidiary_of",
       "weight": 0.95,
-      "context": "DeepMind is Google/Alphabet subsidiary"
-    },
-    {
-      "source": {
-        "name": "Hugging Face",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "Generative AI",
-        "type": "FIELD"
-      },
-      "relation": "contributes_to",
-      "weight": 0.9,
-      "context": "HF contributes to gen AI ecosystem"
-    },
-    {
-      "source": {
-        "name": "NVIDIA",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "Deep Learning",
-        "type": "FIELD"
-      },
-      "relation": "enables",
-      "weight": 0.95,
-      "context": "NVIDIA GPUs enable DL training"
-    },
-    {
-      "source": {
-        "name": "Databricks",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "Data Science",
-        "type": "FIELD"
-      },
-      "relation": "platform_for",
-      "weight": 0.85,
-      "context": "Databricks is a data science platform"
-    },
-    {
-      "source": {
-        "name": "React",
-        "type": "FRAMEWORK"
-      },
-      "target": {
-        "name": "JavaScript",
-        "type": "LANGUAGE"
-      },
-      "relation": "implemented_in",
-      "weight": 1.0,
-      "context": "React is a JavaScript UI library"
-    },
-    {
-      "source": {
-        "name": "React",
-        "type": "FRAMEWORK"
-      },
-      "target": {
-        "name": "Meta",
-        "type": "ORG"
-      },
-      "relation": "developed_by",
-      "weight": 0.9,
-      "context": "React developed by Meta"
-    },
-    {
-      "source": {
-        "name": "TypeScript",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "JavaScript",
-        "type": "LANGUAGE"
-      },
-      "relation": "superset_of",
-      "weight": 1.0,
-      "context": "TypeScript is typed superset of JS"
-    },
-    {
-      "source": {
-        "name": "TypeScript",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "Microsoft",
-        "type": "ORG"
-      },
-      "relation": "developed_by",
-      "weight": 1.0,
-      "context": "TypeScript from Microsoft"
-    },
-    {
-      "source": {
-        "name": "TypeScript",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "Microsoft",
-        "type": "PERSON"
-      },
-      "relation": "designed_by",
-      "weight": 0.85,
-      "context": "Wikidata: TypeScript designed by Microsoft"
-    },
-    {
-      "source": {
-        "name": "TypeScript",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "object-oriented programming",
-        "type": "CONCEPT"
-      },
-      "relation": "supports_paradigm",
-      "weight": 0.85,
-      "context": "Wikidata: TypeScript supports object-oriented programming"
-    },
-    {
-      "source": {
-        "name": "TypeScript",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "functional programming",
-        "type": "CONCEPT"
-      },
-      "relation": "supports_paradigm",
-      "weight": 0.85,
-      "context": "Wikidata: TypeScript supports functional programming"
-    },
-    {
-      "source": {
-        "name": "TypeScript",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "imperative programming",
-        "type": "CONCEPT"
-      },
-      "relation": "supports_paradigm",
-      "weight": 0.85,
-      "context": "Wikidata: TypeScript supports imperative programming"
-    },
-    {
-      "source": {
-        "name": "TypeScript",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "generic programming",
-        "type": "CONCEPT"
-      },
-      "relation": "supports_paradigm",
-      "weight": 0.85,
-      "context": "Wikidata: TypeScript supports generic programming"
-    },
-    {
-      "source": {
-        "name": "TypeScript",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "event-driven programming",
-        "type": "CONCEPT"
-      },
-      "relation": "supports_paradigm",
-      "weight": 0.85,
-      "context": "Wikidata: TypeScript supports event-driven programming"
+      "context": "DeepMind is Google subsidiary"
     },
     {
       "source": {
@@ -3100,7 +1477,20 @@
       },
       "relation": "investor_in",
       "weight": 0.9,
-      "context": "Microsoft is major OpenAI investor"
+      "context": "Microsoft invests in OpenAI"
+    },
+    {
+      "source": {
+        "name": "NVIDIA",
+        "type": "ORG"
+      },
+      "target": {
+        "name": "Deep Learning",
+        "type": "FIELD"
+      },
+      "relation": "enables",
+      "weight": 0.95,
+      "context": "NVIDIA GPUs enable DL"
     },
     {
       "source": {
@@ -3113,1712 +1503,101 @@
       },
       "relation": "research_hub_for",
       "weight": 0.95,
-      "context": "Stanford is leading ML research institution"
+      "context": "Stanford is ML research hub"
     },
     {
       "source": {
-        "name": "Attention Is All You Need",
-        "type": "PAPER"
-      },
-      "target": {
-        "name": "Google",
-        "type": "ORG"
-      },
-      "relation": "authored_at",
-      "weight": 0.9,
-      "context": "Transformer paper by Google researchers"
-    },
-    {
-      "source": {
-        "name": "ReAct Paper",
-        "type": "PAPER"
-      },
-      "target": {
-        "name": "Autonomous Agents",
+        "name": "Chain-of-Thought",
         "type": "CONCEPT"
       },
-      "relation": "foundational_for",
+      "target": {
+        "name": "Prompt Engineering",
+        "type": "CONCEPT"
+      },
+      "relation": "technique_of",
       "weight": 0.9,
-      "context": "ReAct foundational for agent architectures"
+      "context": "CoT is prompting technique"
     },
     {
       "source": {
-        "name": "DPO Paper",
-        "type": "PAPER"
+        "name": "Few-Shot Learning",
+        "type": "CONCEPT"
       },
       "target": {
+        "name": "Prompt Engineering",
+        "type": "CONCEPT"
+      },
+      "relation": "technique_of",
+      "weight": 0.85,
+      "context": "Few-shot is prompting"
+    },
+    {
+      "source": {
+        "name": "Fine-Tuning",
+        "type": "CONCEPT"
+      },
+      "target": {
+        "name": "Transfer Learning",
+        "type": "CONCEPT"
+      },
+      "relation": "method_of",
+      "weight": 0.95,
+      "context": "Fine-tuning is transfer learning"
+    },
+    {
+      "source": {
         "name": "RLHF",
         "type": "CONCEPT"
       },
-      "relation": "simplifies",
-      "weight": 0.85,
-      "context": "DPO simplifies RLHF"
-    },
-    {
-      "source": {
-        "name": "DSPy",
-        "type": "CONCEPT"
-      },
       "target": {
-        "name": "AI",
-        "type": "ORG"
-      },
-      "relation": "co_occurs_with",
-      "weight": 1.0,
-      "context": "DSPy is a great framework for building AI classification systems"
-    },
-    {
-      "source": {
-        "name": "DSPy",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Python",
-        "type": "CONCEPT"
-      },
-      "relation": "co_occurs_with",
-      "weight": 1.0,
-      "context": "DSPy is a great framework for building AI classification systems with Python"
-    },
-    {
-      "source": {
-        "name": "DSPy",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "positive",
-        "type": "SENTIMENT"
-      },
-      "relation": "has_sentiment",
-      "weight": 1.0,
-      "context": "DSPy is a great framework for building AI classification systems"
-    },
-    {
-      "source": {
-        "name": "DSPy",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Technology",
-        "type": "TOPIC"
-      },
-      "relation": "belongs_to_topic",
-      "weight": 1.0,
-      "context": "DSPy is a great framework for building AI classification systems"
-    },
-    {
-      "source": {
-        "name": "AI",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "Python",
-        "type": "CONCEPT"
-      },
-      "relation": "co_occurs_with",
-      "weight": 1.0,
-      "context": "DSPy is a great framework for building AI classification systems with Python"
-    },
-    {
-      "source": {
-        "name": "AI",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "positive",
-        "type": "SENTIMENT"
-      },
-      "relation": "has_sentiment",
-      "weight": 1.0,
-      "context": "DSPy is a great framework for building AI classification systems"
-    },
-    {
-      "source": {
-        "name": "AI",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "Technology",
-        "type": "TOPIC"
-      },
-      "relation": "belongs_to_topic",
-      "weight": 1.0,
-      "context": "DSPy is a great framework for building AI classification systems"
-    },
-    {
-      "source": {
-        "name": "Python",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "positive",
-        "type": "SENTIMENT"
-      },
-      "relation": "has_sentiment",
-      "weight": 1.0,
-      "context": ""
-    },
-    {
-      "source": {
-        "name": "Python",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Technology",
-        "type": "TOPIC"
-      },
-      "relation": "belongs_to_topic",
-      "weight": 1.0,
-      "context": ""
-    },
-    {
-      "source": {
-        "name": "Common Lisp",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "Common Lisp committee, J13",
-        "type": "PERSON"
-      },
-      "relation": "designed_by",
-      "weight": 0.85,
-      "context": "Wikidata: Common Lisp designed by Common Lisp committee, J13"
-    },
-    {
-      "source": {
-        "name": "Common Lisp",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "object-oriented programming",
-        "type": "CONCEPT"
-      },
-      "relation": "supports_paradigm",
-      "weight": 0.85,
-      "context": "Wikidata: Common Lisp supports object-oriented programming"
-    },
-    {
-      "source": {
-        "name": "Common Lisp",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "functional programming",
-        "type": "CONCEPT"
-      },
-      "relation": "supports_paradigm",
-      "weight": 0.85,
-      "context": "Wikidata: Common Lisp supports functional programming"
-    },
-    {
-      "source": {
-        "name": "Common Lisp",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "metaprogramming",
-        "type": "CONCEPT"
-      },
-      "relation": "supports_paradigm",
-      "weight": 0.85,
-      "context": "Wikidata: Common Lisp supports metaprogramming"
-    },
-    {
-      "source": {
-        "name": "Common Lisp",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "generic programming",
-        "type": "CONCEPT"
-      },
-      "relation": "supports_paradigm",
-      "weight": 0.85,
-      "context": "Wikidata: Common Lisp supports generic programming"
-    },
-    {
-      "source": {
-        "name": "Common Lisp",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "reflective programming",
-        "type": "CONCEPT"
-      },
-      "relation": "supports_paradigm",
-      "weight": 0.85,
-      "context": "Wikidata: Common Lisp supports reflective programming"
-    },
-    {
-      "source": {
-        "name": "Common Lisp",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "procedural programming",
-        "type": "CONCEPT"
-      },
-      "relation": "supports_paradigm",
-      "weight": 0.85,
-      "context": "Wikidata: Common Lisp supports procedural programming"
-    },
-    {
-      "source": {
-        "name": "Common Lisp",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "multi-paradigm programming",
-        "type": "CONCEPT"
-      },
-      "relation": "supports_paradigm",
-      "weight": 0.85,
-      "context": "Wikidata: Common Lisp supports multi-paradigm programming"
-    },
-    {
-      "source": {
-        "name": "ML",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "Robin Milner",
-        "type": "PERSON"
-      },
-      "relation": "designed_by",
-      "weight": 0.85,
-      "context": "Wikidata: ML designed by Robin Milner"
-    },
-    {
-      "source": {
-        "name": "ML",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "functional programming",
-        "type": "CONCEPT"
-      },
-      "relation": "supports_paradigm",
-      "weight": 0.85,
-      "context": "Wikidata: ML supports functional programming"
-    },
-    {
-      "source": {
-        "name": "ML",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "imperative programming",
-        "type": "CONCEPT"
-      },
-      "relation": "supports_paradigm",
-      "weight": 0.85,
-      "context": "Wikidata: ML supports imperative programming"
-    },
-    {
-      "source": {
-        "name": "ML",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "procedural programming",
-        "type": "CONCEPT"
-      },
-      "relation": "supports_paradigm",
-      "weight": 0.85,
-      "context": "Wikidata: ML supports procedural programming"
-    },
-    {
-      "source": {
-        "name": "Boo",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "Rodrigo B. De Oliveira",
-        "type": "PERSON"
-      },
-      "relation": "designed_by",
-      "weight": 0.85,
-      "context": "Wikidata: Boo designed by Rodrigo B. De Oliveira"
-    },
-    {
-      "source": {
-        "name": "Boo",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "object-oriented programming",
-        "type": "CONCEPT"
-      },
-      "relation": "supports_paradigm",
-      "weight": 0.85,
-      "context": "Wikidata: Boo supports object-oriented programming"
-    },
-    {
-      "source": {
-        "name": "Oxygene",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "RemObjects Software",
-        "type": "PERSON"
-      },
-      "relation": "designed_by",
-      "weight": 0.85,
-      "context": "Wikidata: Oxygene designed by RemObjects Software"
-    },
-    {
-      "source": {
-        "name": "Oxygene",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "object-oriented programming",
-        "type": "CONCEPT"
-      },
-      "relation": "supports_paradigm",
-      "weight": 0.85,
-      "context": "Wikidata: Oxygene supports object-oriented programming"
-    },
-    {
-      "source": {
-        "name": "Oxygene",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "parallel computing",
-        "type": "CONCEPT"
-      },
-      "relation": "supports_paradigm",
-      "weight": 0.85,
-      "context": "Wikidata: Oxygene supports parallel computing"
-    },
-    {
-      "source": {
-        "name": "Sing#",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "Microsoft Research",
-        "type": "PERSON"
-      },
-      "relation": "designed_by",
-      "weight": 0.85,
-      "context": "Wikidata: Sing# designed by Microsoft Research"
-    },
-    {
-      "source": {
-        "name": "ROOT",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "CERN",
-        "type": "PERSON"
-      },
-      "relation": "designed_by",
-      "weight": 0.85,
-      "context": "Wikidata: ROOT designed by CERN"
-    },
-    {
-      "source": {
-        "name": "GAUSS",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "imperative programming",
-        "type": "CONCEPT"
-      },
-      "relation": "supports_paradigm",
-      "weight": 0.85,
-      "context": "Wikidata: GAUSS supports imperative programming"
-    },
-    {
-      "source": {
-        "name": "GAUSS",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "array programming",
-        "type": "CONCEPT"
-      },
-      "relation": "supports_paradigm",
-      "weight": 0.85,
-      "context": "Wikidata: GAUSS supports array programming"
-    },
-    {
-      "source": {
-        "name": "RPL",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "object-oriented programming",
-        "type": "CONCEPT"
-      },
-      "relation": "supports_paradigm",
-      "weight": 0.85,
-      "context": "Wikidata: RPL supports object-oriented programming"
-    },
-    {
-      "source": {
-        "name": "RPL",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "structured programming",
-        "type": "CONCEPT"
-      },
-      "relation": "supports_paradigm",
-      "weight": 0.85,
-      "context": "Wikidata: RPL supports structured programming"
-    },
-    {
-      "source": {
-        "name": "RPL",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "stack-oriented programming",
-        "type": "CONCEPT"
-      },
-      "relation": "supports_paradigm",
-      "weight": 0.85,
-      "context": "Wikidata: RPL supports stack-oriented programming"
-    },
-    {
-      "source": {
-        "name": "Sawzall",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "procedural programming",
-        "type": "CONCEPT"
-      },
-      "relation": "supports_paradigm",
-      "weight": 0.85,
-      "context": "Wikidata: Sawzall supports procedural programming"
-    },
-    {
-      "source": {
-        "name": "JOSS",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "Cliff Shaw",
-        "type": "PERSON"
-      },
-      "relation": "designed_by",
-      "weight": 0.85,
-      "context": "Wikidata: JOSS designed by Cliff Shaw"
-    },
-    {
-      "source": {
-        "name": "Google",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "Larry Page",
-        "type": "PERSON"
-      },
-      "relation": "founded_by",
-      "weight": 0.85,
-      "context": "Wikidata: Google founded by Larry Page"
-    },
-    {
-      "source": {
-        "name": "Google",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "Internet",
+        "name": "Reinforcement Learning",
         "type": "FIELD"
       },
-      "relation": "operates_in",
-      "weight": 0.85,
-      "context": "Wikidata: Google operates in Internet"
-    },
-    {
-      "source": {
-        "name": "Google",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "Sergey Brin",
-        "type": "PERSON"
-      },
-      "relation": "founded_by",
-      "weight": 0.85,
-      "context": "Wikidata: Google founded by Sergey Brin"
-    },
-    {
-      "source": {
-        "name": "Google",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "information technology",
-        "type": "FIELD"
-      },
-      "relation": "operates_in",
-      "weight": 0.85,
-      "context": "Wikidata: Google operates in information technology"
-    },
-    {
-      "source": {
-        "name": "Google",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "internet marketing",
-        "type": "FIELD"
-      },
-      "relation": "operates_in",
-      "weight": 0.85,
-      "context": "Wikidata: Google operates in internet marketing"
-    },
-    {
-      "source": {
-        "name": "Google",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "software industry",
-        "type": "FIELD"
-      },
-      "relation": "operates_in",
-      "weight": 0.85,
-      "context": "Wikidata: Google operates in software industry"
-    },
-    {
-      "source": {
-        "name": "Google",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "technology industry",
-        "type": "FIELD"
-      },
-      "relation": "operates_in",
-      "weight": 0.85,
-      "context": "Wikidata: Google operates in technology industry"
-    },
-    {
-      "source": {
-        "name": "Google",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "Internet industry",
-        "type": "FIELD"
-      },
-      "relation": "operates_in",
-      "weight": 0.85,
-      "context": "Wikidata: Google operates in Internet industry"
-    },
-    {
-      "source": {
-        "name": "Apple Inc.",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "Steve Jobs",
-        "type": "PERSON"
-      },
-      "relation": "founded_by",
-      "weight": 0.85,
-      "context": "Wikidata: Apple Inc. founded by Steve Jobs"
-    },
-    {
-      "source": {
-        "name": "Apple Inc.",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "electronics",
-        "type": "FIELD"
-      },
-      "relation": "operates_in",
-      "weight": 0.85,
-      "context": "Wikidata: Apple Inc. operates in electronics"
-    },
-    {
-      "source": {
-        "name": "Apple Inc.",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "Ronald Wayne",
-        "type": "PERSON"
-      },
-      "relation": "founded_by",
-      "weight": 0.85,
-      "context": "Wikidata: Apple Inc. founded by Ronald Wayne"
-    },
-    {
-      "source": {
-        "name": "Apple Inc.",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "Steve Wozniak",
-        "type": "PERSON"
-      },
-      "relation": "founded_by",
-      "weight": 0.85,
-      "context": "Wikidata: Apple Inc. founded by Steve Wozniak"
-    },
-    {
-      "source": {
-        "name": "Apple Inc.",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "information technology",
-        "type": "FIELD"
-      },
-      "relation": "operates_in",
-      "weight": 0.85,
-      "context": "Wikidata: Apple Inc. operates in information technology"
-    },
-    {
-      "source": {
-        "name": "Apple Inc.",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "digital distribution",
-        "type": "FIELD"
-      },
-      "relation": "operates_in",
-      "weight": 0.85,
-      "context": "Wikidata: Apple Inc. operates in digital distribution"
-    },
-    {
-      "source": {
-        "name": "Apple Inc.",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "software development",
-        "type": "FIELD"
-      },
-      "relation": "operates_in",
-      "weight": 0.85,
-      "context": "Wikidata: Apple Inc. operates in software development"
-    },
-    {
-      "source": {
-        "name": "Apple Inc.",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "software industry",
-        "type": "FIELD"
-      },
-      "relation": "operates_in",
-      "weight": 0.85,
-      "context": "Wikidata: Apple Inc. operates in software industry"
-    },
-    {
-      "source": {
-        "name": "Apple Inc.",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "mobile phone industry",
-        "type": "FIELD"
-      },
-      "relation": "operates_in",
-      "weight": 0.85,
-      "context": "Wikidata: Apple Inc. operates in mobile phone industry"
-    },
-    {
-      "source": {
-        "name": "Apple Inc.",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "consumer electronics industry",
-        "type": "FIELD"
-      },
-      "relation": "operates_in",
-      "weight": 0.85,
-      "context": "Wikidata: Apple Inc. operates in consumer electronics industry"
-    },
-    {
-      "source": {
-        "name": "Meta",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "Mark Zuckerberg",
-        "type": "PERSON"
-      },
-      "relation": "founded_by",
-      "weight": 0.85,
-      "context": "Wikidata: Meta founded by Mark Zuckerberg"
-    },
-    {
-      "source": {
-        "name": "Meta",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "information technology",
-        "type": "FIELD"
-      },
-      "relation": "operates_in",
-      "weight": 0.85,
-      "context": "Wikidata: Meta operates in information technology"
-    },
-    {
-      "source": {
-        "name": "Meta",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "Eduardo Saverin",
-        "type": "PERSON"
-      },
-      "relation": "founded_by",
-      "weight": 0.85,
-      "context": "Wikidata: Meta founded by Eduardo Saverin"
-    },
-    {
-      "source": {
-        "name": "Meta",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "Dustin Moskovitz",
-        "type": "PERSON"
-      },
-      "relation": "founded_by",
-      "weight": 0.85,
-      "context": "Wikidata: Meta founded by Dustin Moskovitz"
-    },
-    {
-      "source": {
-        "name": "Meta",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "Chris Hughes",
-        "type": "PERSON"
-      },
-      "relation": "founded_by",
-      "weight": 0.85,
-      "context": "Wikidata: Meta founded by Chris Hughes"
-    },
-    {
-      "source": {
-        "name": "Meta",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "Andrew McCollum",
-        "type": "PERSON"
-      },
-      "relation": "founded_by",
-      "weight": 0.85,
-      "context": "Wikidata: Meta founded by Andrew McCollum"
-    },
-    {
-      "source": {
-        "name": "Goldman Sachs",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "Marcus Goldman",
-        "type": "PERSON"
-      },
-      "relation": "founded_by",
-      "weight": 0.85,
-      "context": "Wikidata: Goldman Sachs founded by Marcus Goldman"
-    },
-    {
-      "source": {
-        "name": "Goldman Sachs",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "financial services",
-        "type": "FIELD"
-      },
-      "relation": "operates_in",
-      "weight": 0.85,
-      "context": "Wikidata: Goldman Sachs operates in financial services"
-    },
-    {
-      "source": {
-        "name": "Goldman Sachs",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "Samuel Sachs",
-        "type": "PERSON"
-      },
-      "relation": "founded_by",
-      "weight": 0.85,
-      "context": "Wikidata: Goldman Sachs founded by Samuel Sachs"
-    },
-    {
-      "source": {
-        "name": "Goldman Sachs",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "International Standard Industrial Classification",
-        "type": "FIELD"
-      },
-      "relation": "operates_in",
-      "weight": 0.85,
-      "context": "Wikidata: Goldman Sachs operates in International Standard Industrial Classification"
-    },
-    {
-      "source": {
-        "name": "Goldman Sachs",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "financial service activities, except insurance and pension funding",
-        "type": "FIELD"
-      },
-      "relation": "operates_in",
-      "weight": 0.85,
-      "context": "Wikidata: Goldman Sachs operates in financial service activities, except insurance and pension funding"
-    },
-    {
-      "source": {
-        "name": "Goldman Sachs",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "financial sector",
-        "type": "FIELD"
-      },
-      "relation": "operates_in",
-      "weight": 0.85,
-      "context": "Wikidata: Goldman Sachs operates in financial sector"
-    },
-    {
-      "source": {
-        "name": "machine learning",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "artificial intelligence",
-        "type": "FIELD"
-      },
-      "relation": "is_a",
-      "weight": 0.95,
-      "context": "Commonsense: machine learning is_a artificial intelligence"
-    },
-    {
-      "source": {
-        "name": "deep learning",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Machine Learning",
-        "type": "FIELD"
-      },
-      "relation": "is_a",
-      "weight": 0.95,
-      "context": "Commonsense: deep learning is_a machine learning"
-    },
-    {
-      "source": {
-        "name": "classification",
-        "type": "TASK"
-      },
-      "target": {
-        "name": "Machine Learning",
-        "type": "FIELD"
-      },
-      "relation": "is_a",
+      "relation": "applies",
       "weight": 0.9,
-      "context": "Commonsense: classification is_a machine learning"
+      "context": "RLHF applies RL"
     },
     {
       "source": {
-        "name": "clustering",
-        "type": "TASK"
-      },
-      "target": {
-        "name": "Machine Learning",
-        "type": "FIELD"
-      },
-      "relation": "is_a",
-      "weight": 0.85,
-      "context": "Commonsense: clustering is_a machine learning"
-    },
-    {
-      "source": {
-        "name": "regression",
-        "type": "TASK"
-      },
-      "target": {
-        "name": "Machine Learning",
-        "type": "FIELD"
-      },
-      "relation": "is_a",
-      "weight": 0.85,
-      "context": "Commonsense: regression is_a machine learning"
-    },
-    {
-      "source": {
-        "name": "Robotics",
-        "type": "FIELD"
-      },
-      "target": {
-        "name": "artificial intelligence",
-        "type": "FIELD"
-      },
-      "relation": "subfield_of",
-      "weight": 0.85,
-      "context": "Commonsense: robotics subfield_of artificial intelligence"
-    },
-    {
-      "source": {
-        "name": "Speech Recognition",
-        "type": "TASK"
-      },
-      "target": {
-        "name": "Natural Language Processing",
-        "type": "FIELD"
-      },
-      "relation": "belongs_to",
-      "weight": 0.9,
-      "context": "Commonsense: speech recognition belongs_to natural language processing"
-    },
-    {
-      "source": {
-        "name": "Machine Translation",
-        "type": "TASK"
-      },
-      "target": {
-        "name": "Natural Language Processing",
-        "type": "FIELD"
-      },
-      "relation": "belongs_to",
-      "weight": 0.9,
-      "context": "Commonsense: machine translation belongs_to natural language processing"
-    },
-    {
-      "source": {
-        "name": "text summarization",
-        "type": "TASK"
-      },
-      "target": {
-        "name": "Natural Language Processing",
-        "type": "FIELD"
-      },
-      "relation": "belongs_to",
-      "weight": 0.9,
-      "context": "Commonsense: text summarization belongs_to natural language processing"
-    },
-    {
-      "source": {
-        "name": "image recognition",
-        "type": "TASK"
-      },
-      "target": {
-        "name": "Computer Vision",
-        "type": "FIELD"
-      },
-      "relation": "belongs_to",
-      "weight": 0.9,
-      "context": "Commonsense: image recognition belongs_to computer vision"
-    },
-    {
-      "source": {
-        "name": "Object Detection",
-        "type": "TASK"
-      },
-      "target": {
-        "name": "Computer Vision",
-        "type": "FIELD"
-      },
-      "relation": "belongs_to",
-      "weight": 0.9,
-      "context": "Commonsense: object detection belongs_to computer vision"
-    },
-    {
-      "source": {
-        "name": "algorithm",
+        "name": "Autonomous Agents",
         "type": "CONCEPT"
       },
       "target": {
-        "name": "problem solving",
+        "name": "Tool Use",
         "type": "CONCEPT"
       },
-      "relation": "used_for",
-      "weight": 0.9,
-      "context": "Commonsense: algorithm used_for problem solving"
+      "relation": "requires",
+      "weight": 0.85,
+      "context": "Agents require tool use"
     },
     {
       "source": {
-        "name": "database",
+        "name": "Docker",
         "type": "TECHNOLOGY"
       },
       "target": {
-        "name": "data storage",
-        "type": "CONCEPT"
-      },
-      "relation": "used_for",
-      "weight": 0.95,
-      "context": "Commonsense: database used_for data storage"
-    },
-    {
-      "source": {
-        "name": "API",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "software integration",
-        "type": "CONCEPT"
-      },
-      "relation": "used_for",
-      "weight": 0.85,
-      "context": "Commonsense: API used_for software integration"
-    },
-    {
-      "source": {
-        "name": "encryption",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "cybersecurity",
-        "type": "FIELD"
-      },
-      "relation": "used_for",
-      "weight": 0.9,
-      "context": "Commonsense: encryption used_for cybersecurity"
-    },
-    {
-      "source": {
-        "name": "compiler",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "programming",
-        "type": "CONCEPT"
-      },
-      "relation": "used_in",
-      "weight": 0.9,
-      "context": "Commonsense: compiler used_in programming"
-    },
-    {
-      "source": {
-        "name": "version control",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "software development",
-        "type": "CONCEPT"
-      },
-      "relation": "used_in",
-      "weight": 0.9,
-      "context": "Commonsense: version control used_in software development"
-    },
-    {
-      "source": {
-        "name": "Git",
-        "type": "TECHNOLOGY"
-      },
-      "target": {
-        "name": "version control",
-        "type": "CONCEPT"
-      },
-      "relation": "is_a",
-      "weight": 0.95,
-      "context": "Commonsense: Git is_a version control"
-    },
-    {
-      "source": {
         "name": "Kubernetes",
         "type": "TECHNOLOGY"
       },
-      "target": {
-        "name": "container orchestration",
-        "type": "CONCEPT"
-      },
-      "relation": "used_for",
-      "weight": 0.95,
-      "context": "Commonsense: Kubernetes used_for container orchestration"
-    },
-    {
-      "source": {
-        "name": "Python",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "dynamically typed",
-        "type": "CONCEPT"
-      },
-      "relation": "has_property",
-      "weight": 0.9,
-      "context": "Commonsense: Python has_property dynamically typed"
-    },
-    {
-      "source": {
-        "name": "Python",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "interpreted",
-        "type": "CONCEPT"
-      },
-      "relation": "has_property",
-      "weight": 0.9,
-      "context": "Commonsense: Python has_property interpreted"
-    },
-    {
-      "source": {
-        "name": "Rust",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "memory safe",
-        "type": "CONCEPT"
-      },
-      "relation": "has_property",
-      "weight": 0.95,
-      "context": "Commonsense: Rust has_property memory safe"
-    },
-    {
-      "source": {
-        "name": "Rust",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "systems programming",
-        "type": "CONCEPT"
-      },
-      "relation": "used_for",
-      "weight": 0.9,
-      "context": "Commonsense: Rust used_for systems programming"
-    },
-    {
-      "source": {
-        "name": "JavaScript",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "web development",
-        "type": "CONCEPT"
-      },
-      "relation": "used_for",
-      "weight": 0.95,
-      "context": "Commonsense: JavaScript used_for web development"
-    },
-    {
-      "source": {
-        "name": "SQL",
-        "type": "LANGUAGE"
-      },
-      "target": {
-        "name": "database querying",
-        "type": "CONCEPT"
-      },
-      "relation": "used_for",
-      "weight": 0.95,
-      "context": "Commonsense: SQL used_for database querying"
-    },
-    {
-      "source": {
-        "name": "training data",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Machine Learning",
-        "type": "FIELD"
-      },
-      "relation": "required_by",
-      "weight": 0.9,
-      "context": "Commonsense: training data required_by machine learning"
-    },
-    {
-      "source": {
-        "name": "overfitting",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Machine Learning",
-        "type": "FIELD"
-      },
-      "relation": "problem_in",
+      "relation": "orchestrated_by",
       "weight": 0.85,
-      "context": "Commonsense: overfitting problem_in machine learning"
+      "context": "Docker orchestrated by K8s"
     },
     {
       "source": {
-        "name": "bias",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "artificial intelligence",
-        "type": "FIELD"
-      },
-      "relation": "problem_in",
-      "weight": 0.85,
-      "context": "Commonsense: bias problem_in artificial intelligence"
-    },
-    {
-      "source": {
-        "name": "GPU",
+        "name": "Docker",
         "type": "TECHNOLOGY"
       },
       "target": {
-        "name": "Deep Learning",
-        "type": "FIELD"
-      },
-      "relation": "accelerates",
-      "weight": 0.95,
-      "context": "Commonsense: GPU accelerates deep learning"
-    },
-    {
-      "source": {
-        "name": "tensor",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Deep Learning",
-        "type": "FIELD"
-      },
-      "relation": "data_structure_of",
-      "weight": 0.85,
-      "context": "Commonsense: tensor data_structure_of deep learning"
-    },
-    {
-      "source": {
-        "name": "gradient",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Neural Network",
-        "type": "CONCEPT"
-      },
-      "relation": "used_in",
-      "weight": 0.9,
-      "context": "Commonsense: gradient used_in neural network"
-    },
-    {
-      "source": {
-        "name": "loss function",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Neural Network",
-        "type": "CONCEPT"
-      },
-      "relation": "component_of",
-      "weight": 0.9,
-      "context": "Commonsense: loss function component_of neural network"
-    },
-    {
-      "source": {
-        "name": "activation function",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Neural Network",
-        "type": "CONCEPT"
-      },
-      "relation": "component_of",
-      "weight": 0.9,
-      "context": "Commonsense: activation function component_of neural network"
-    },
-    {
-      "source": {
-        "name": "epoch",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "training",
-        "type": "CONCEPT"
-      },
-      "relation": "measured_by",
-      "weight": 0.8,
-      "context": "Commonsense: epoch measured_by training"
-    },
-    {
-      "source": {
-        "name": "batch size",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "training",
-        "type": "CONCEPT"
-      },
-      "relation": "parameter_of",
-      "weight": 0.8,
-      "context": "Commonsense: batch size parameter_of training"
-    },
-    {
-      "source": {
-        "name": "learning rate",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "training",
-        "type": "CONCEPT"
-      },
-      "relation": "parameter_of",
-      "weight": 0.85,
-      "context": "Commonsense: learning rate parameter_of training"
-    },
-    {
-      "source": {
-        "name": "hyperparameter",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Machine Learning",
-        "type": "FIELD"
-      },
-      "relation": "concept_in",
-      "weight": 0.85,
-      "context": "Commonsense: hyperparameter concept_in machine learning"
-    },
-    {
-      "source": {
-        "name": "linear algebra",
-        "type": "FIELD"
-      },
-      "target": {
-        "name": "Machine Learning",
-        "type": "FIELD"
-      },
-      "relation": "foundation_of",
-      "weight": 0.9,
-      "context": "Commonsense: linear algebra foundation_of machine learning"
-    },
-    {
-      "source": {
-        "name": "calculus",
-        "type": "FIELD"
-      },
-      "target": {
-        "name": "Machine Learning",
-        "type": "FIELD"
-      },
-      "relation": "foundation_of",
-      "weight": 0.85,
-      "context": "Commonsense: calculus foundation_of machine learning"
-    },
-    {
-      "source": {
-        "name": "probability",
-        "type": "FIELD"
-      },
-      "target": {
-        "name": "Machine Learning",
-        "type": "FIELD"
-      },
-      "relation": "foundation_of",
-      "weight": 0.9,
-      "context": "Commonsense: probability foundation_of machine learning"
-    },
-    {
-      "source": {
-        "name": "statistics",
-        "type": "FIELD"
-      },
-      "target": {
-        "name": "Data Science",
-        "type": "FIELD"
-      },
-      "relation": "foundation_of",
-      "weight": 0.9,
-      "context": "Commonsense: statistics foundation_of data science"
-    },
-    {
-      "source": {
-        "name": "information theory",
-        "type": "FIELD"
-      },
-      "target": {
-        "name": "Machine Learning",
-        "type": "FIELD"
-      },
-      "relation": "foundation_of",
-      "weight": 0.8,
-      "context": "Commonsense: information theory foundation_of machine learning"
-    },
-    {
-      "source": {
-        "name": "optimisation",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Machine Learning",
+        "name": "MLOps",
         "type": "FIELD"
       },
       "relation": "used_in",
-      "weight": 0.9,
-      "context": "Commonsense: optimisation used_in machine learning"
-    },
-    {
-      "source": {
-        "name": "Bayes theorem",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "probability",
-        "type": "FIELD"
-      },
-      "relation": "part_of",
-      "weight": 0.9,
-      "context": "Commonsense: Bayes theorem part_of probability"
-    },
-    {
-      "source": {
-        "name": "unit test",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "software quality",
-        "type": "CONCEPT"
-      },
-      "relation": "ensures",
-      "weight": 0.85,
-      "context": "Commonsense: unit test ensures software quality"
-    },
-    {
-      "source": {
-        "name": "CI/CD",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "software deployment",
-        "type": "CONCEPT"
-      },
-      "relation": "automates",
-      "weight": 0.9,
-      "context": "Commonsense: CI/CD automates software deployment"
-    },
-    {
-      "source": {
-        "name": "microservice",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "software architecture",
-        "type": "CONCEPT"
-      },
-      "relation": "pattern_of",
-      "weight": 0.85,
-      "context": "Commonsense: microservice pattern_of software architecture"
-    },
-    {
-      "source": {
-        "name": "REST API",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "web development",
-        "type": "CONCEPT"
-      },
-      "relation": "pattern_of",
-      "weight": 0.9,
-      "context": "Commonsense: REST API pattern_of web development"
-    },
-    {
-      "source": {
-        "name": "cloud computing",
-        "type": "FIELD"
-      },
-      "target": {
-        "name": "software deployment",
-        "type": "CONCEPT"
-      },
-      "relation": "enables",
-      "weight": 0.9,
-      "context": "Commonsense: cloud computing enables software deployment"
-    },
-    {
-      "source": {
-        "name": "serverless",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "cloud computing",
-        "type": "FIELD"
-      },
-      "relation": "paradigm_of",
       "weight": 0.8,
-      "context": "Commonsense: serverless paradigm_of cloud computing"
-    },
-    {
-      "source": {
-        "name": "open source",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "software development",
-        "type": "CONCEPT"
-      },
-      "relation": "methodology_of",
-      "weight": 0.85,
-      "context": "Commonsense: open source methodology_of software development"
-    },
-    {
-      "source": {
-        "name": "data pipeline",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "data engineering",
-        "type": "FIELD"
-      },
-      "relation": "tool_in",
-      "weight": 0.9,
-      "context": "Commonsense: data pipeline tool_in data engineering"
-    },
-    {
-      "source": {
-        "name": "ETL",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "data pipeline",
-        "type": "CONCEPT"
-      },
-      "relation": "is_a",
-      "weight": 0.9,
-      "context": "Commonsense: ETL is_a data pipeline"
-    },
-    {
-      "source": {
-        "name": "data lake",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "data storage",
-        "type": "CONCEPT"
-      },
-      "relation": "is_a",
-      "weight": 0.85,
-      "context": "Commonsense: data lake is_a data storage"
-    },
-    {
-      "source": {
-        "name": "data warehouse",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "data storage",
-        "type": "CONCEPT"
-      },
-      "relation": "is_a",
-      "weight": 0.85,
-      "context": "Commonsense: data warehouse is_a data storage"
-    },
-    {
-      "source": {
-        "name": "feature engineering",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Machine Learning",
-        "type": "FIELD"
-      },
-      "relation": "technique_in",
-      "weight": 0.9,
-      "context": "Commonsense: feature engineering technique_in machine learning"
-    },
-    {
-      "source": {
-        "name": "data augmentation",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Machine Learning",
-        "type": "FIELD"
-      },
-      "relation": "technique_in",
-      "weight": 0.85,
-      "context": "Commonsense: data augmentation technique_in machine learning"
-    },
-    {
-      "source": {
-        "name": "cross-validation",
-        "type": "CONCEPT"
-      },
-      "target": {
-        "name": "Machine Learning",
-        "type": "FIELD"
-      },
-      "relation": "technique_in",
-      "weight": 0.9,
-      "context": "Commonsense: cross-validation technique_in machine learning"
-    },
-    {
-      "source": {
-        "name": "BERT",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "NLP",
-        "type": "ORG"
-      },
-      "relation": "co_occurs_with",
-      "weight": 1.0,
-      "context": "BERT is great for NLP tasks like sentiment analysis"
-    },
-    {
-      "source": {
-        "name": "BERT",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "positive",
-        "type": "SENTIMENT"
-      },
-      "relation": "has_sentiment",
-      "weight": 1.0,
-      "context": "BERT is great for NLP tasks like sentiment analysis"
-    },
-    {
-      "source": {
-        "name": "BERT",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "Technology",
-        "type": "TOPIC"
-      },
-      "relation": "belongs_to_topic",
-      "weight": 1.0,
-      "context": "BERT is great for NLP tasks like sentiment analysis"
-    },
-    {
-      "source": {
-        "name": "NLP",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "positive",
-        "type": "SENTIMENT"
-      },
-      "relation": "has_sentiment",
-      "weight": 1.0,
-      "context": "BERT is great for NLP tasks like sentiment analysis"
-    },
-    {
-      "source": {
-        "name": "NLP",
-        "type": "ORG"
-      },
-      "target": {
-        "name": "Technology",
-        "type": "TOPIC"
-      },
-      "relation": "belongs_to_topic",
-      "weight": 1.0,
-      "context": "BERT is great for NLP tasks like sentiment analysis"
+      "context": "Docker in MLOps"
     }
   ],
-  "node_count": 268,
-  "edge_count": 288
+  "node_count": 80,
+  "edge_count": 98,
+  "inferences": null
 }

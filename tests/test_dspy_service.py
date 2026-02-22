@@ -59,8 +59,8 @@ def test_health_check():
     service = DSPyService(_settings({"provider": "rule_based", "model": "rule_based"}))
     service.initialize()
     health = service.health_check()
-    assert health["initialized"] is True
-    assert health["provider"] == "rule_based"
+    assert health.initialized is True
+    assert health.provider == "rule_based"
 
 
 @patch("app.services.dspy_service.dspy")

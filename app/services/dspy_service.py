@@ -9,6 +9,8 @@ from urllib.parse import urlparse
 
 import dspy
 
+from app.models.schemas import ServiceHealthInfo
+
 logger = logging.getLogger(__name__)
 
 
@@ -97,13 +99,13 @@ class DSPyService:
             self._initialized = False
             return False
 
-    def health_check(self) -> dict[str, Any]:
-        """Return LM health info."""
-        return {
-            "initialized": self._initialized,
-            "provider": self._provider,
-            "model": self._model_name,
-        }
+    def health_check(self) -> ServiceHealthInfo:
+        """Return LM health info as a validated Pydantic model."""
+        return ServiceHealthInfo(
+            initialized=self._initialized,
+            provider=self._provider,
+            model=self._model_name,
+        )
 
     @staticmethod
     def _is_ollama_reachable(api_base: str) -> bool:

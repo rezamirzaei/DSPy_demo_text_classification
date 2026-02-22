@@ -1,6 +1,7 @@
 """Tests for app.domain.enums."""
 
 import pytest
+
 from app.domain.enums import (
     ClassifierType,
     ConfidenceLevel,

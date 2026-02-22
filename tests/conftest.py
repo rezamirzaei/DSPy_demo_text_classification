@@ -84,23 +84,26 @@ def app_client():
             )
 
         def get_knowledge_graph(self):
-            return {"nodes": [], "edges": [], "node_count": 0, "edge_count": 0}
+            from app.models.schemas import KnowledgeGraphExport
+            return KnowledgeGraphExport(nodes=[], edges=[], node_count=0, edge_count=0)
 
         def reseed_knowledge_graph(self):
-            return {"message": "Knowledge graph seeded successfully", "node_count": 10, "edge_count": 20}
+            from app.models.schemas import ReseedResponse
+            return ReseedResponse(message="Knowledge graph seeded successfully", node_count=10, edge_count=20)
 
         def graph_infer(self, request):
-            return {
-                "query": {
+            from app.models.schemas import GraphInferenceResponse
+            return GraphInferenceResponse(
+                query={
                     "name": request.entity,
                     "type": request.entity_type,
                     "max_depth": request.max_depth,
                     "relation_filter": request.relation_filter,
                 },
-                "matches": [],
-                "related": [],
-                "predicted_links": [],
-            }
+                matches=[],
+                related=[],
+                predicted_links=[],
+            )
 
     app = create_app(MockController())
     app.config["TESTING"] = True

@@ -14,6 +14,9 @@ from app.models.schemas import (
     ClassificationRequest,
     ClassificationResponse,
     GraphInferenceRequest,
+    GraphInferenceResponse,
+    KnowledgeGraphExport,
+    ReseedResponse,
 )
 from app.services import KnowledgeGraph, build_analysis_engine
 from app.services.dspy_service import DSPyService
@@ -187,15 +190,16 @@ class ClassificationController:
                     enable_knowledge_graph=request.enable_knowledge_graph,
                 )
 
-            return self._agent.analyze(
+            result: AgentResponse = self._agent.analyze(
                 request.text,
                 include_knowledge_graph=request.enable_knowledge_graph,
             )
+            return result
         except Exception as exc:
             logger.exception("Agent analysis failed: %s", exc)
             return AgentResponse(text=request.text, success=False, error=str(exc))
 
-    def graph_infer(self, request: GraphInferenceRequest) -> Dict[str, Any]:
+    def graph_infer(self, request: GraphInferenceRequest) -> GraphInferenceResponse:
         """Run graph-centric inference for an entity."""
         return self._knowledge_graph.infer_for_entity(
             entity_name=request.entity,
@@ -204,19 +208,20 @@ class ClassificationController:
             relation_filter=request.relation_filter,
         )
 
-    def get_knowledge_graph(self) -> Dict[str, Any]:
+    def get_knowledge_graph(self) -> KnowledgeGraphExport:
         """Export the current knowledge graph."""
         if self._agent is not None:
-            return self._agent.get_knowledge_graph()
+            result: KnowledgeGraphExport = self._agent.get_knowledge_graph()
+            return result
         return self._knowledge_graph.export_graph()
 
-    def reseed_knowledge_graph(self) -> Dict[str, Any]:
+    def reseed_knowledge_graph(self) -> ReseedResponse:
         """Clear and re-seed the knowledge graph with curated data."""
         self._knowledge_graph.clear()
         self._knowledge_graph.seed_default_graph()
-        return {
-            "message": "Knowledge graph seeded successfully",
-            "node_count": self._knowledge_graph.node_count,
-            "edge_count": self._knowledge_graph.edge_count,
-        }
+        return ReseedResponse(
+            message="Knowledge graph seeded successfully",
+            node_count=self._knowledge_graph.node_count,
+            edge_count=self._knowledge_graph.edge_count,
+        )
 

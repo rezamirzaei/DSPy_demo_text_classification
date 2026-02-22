@@ -8,7 +8,9 @@ from collections import defaultdict, deque
 from dataclasses import dataclass
 from pathlib import Path
 from threading import RLock
-from typing import Dict, Iterable, List, Set
+from typing import Any, Dict, Iterable, List, Optional, Set
+
+from app.models.schemas import GraphInferenceResponse, KnowledgeGraphExport
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +65,7 @@ class KnowledgeGraph:
 
     def __init__(
         self,
-        persist_path: str | Path | None = None,
+        persist_path: Optional[str | Path] = None,
         auto_persist: bool = False,
     ) -> None:
         self._entities: Dict[str, Entity] = {}
@@ -258,14 +260,21 @@ class KnowledgeGraph:
     def infer_for_entity(
         self,
         entity_name: str,
-        entity_type: str | None = None,
+        entity_type: Optional[str] = None,
         max_depth: int = 2,
-        relation_filter: str | None = None,
-    ) -> dict[str, object]:
+        relation_filter: Optional[str] = None,
+    ) -> GraphInferenceResponse:
         """Run entity-centric graph inference.
 
         If `entity_type` is not provided, all entities with matching names are considered.
+        Returns a validated ``GraphInferenceResponse`` Pydantic model.
         """
+        query_info: Dict[str, Any] = {
+            "name": entity_name,
+            "type": entity_type,
+            "max_depth": max_depth,
+            "relation_filter": relation_filter,
+        }
         relation_filter_norm = relation_filter.lower().strip() if relation_filter else None
         matches: list[Entity]
 
@@ -276,17 +285,12 @@ class KnowledgeGraph:
             matches = self._find_by_name(entity_name)
 
         if not matches:
-            return {
-                "query": {
-                    "name": entity_name,
-                    "type": entity_type,
-                    "max_depth": max_depth,
-                    "relation_filter": relation_filter,
-                },
-                "matches": [],
-                "related": [],
-                "predicted_links": [],
-            }
+            return GraphInferenceResponse(
+                query=query_info,
+                matches=[],
+                related=[],
+                predicted_links=[],
+            )
 
         related: list[dict[str, object]] = []
         predicted_links: list[dict[str, object]] = []
@@ -301,17 +305,12 @@ class KnowledgeGraph:
 
             predicted_links.extend(self._predict_links(entity))
 
-        return {
-            "query": {
-                "name": entity_name,
-                "type": entity_type,
-                "max_depth": max_depth,
-                "relation_filter": relation_filter,
-            },
-            "matches": [entity.to_dict() for entity in matches],
-            "related": related,
-            "predicted_links": predicted_links,
-        }
+        return GraphInferenceResponse(
+            query=query_info,
+            matches=[entity.to_dict() for entity in matches],
+            related=related,  # type: ignore[arg-type]
+            predicted_links=predicted_links,  # type: ignore[arg-type]
+        )
 
     def _predict_links(self, entity: Entity) -> list[dict[str, object]]:
         """Infer likely links by two-hop traversal."""
@@ -375,29 +374,30 @@ class KnowledgeGraph:
 
         self._persist_if_needed()
 
-    def export_graph(self) -> dict[str, object]:
+    def export_graph(self) -> KnowledgeGraphExport:
+        """Export the full graph as a validated Pydantic model."""
         nodes = [entity.to_dict() for entity in self._entities.values()]
         edges: list[dict[str, object]] = []
         for relationships in self._adjacency.values():
             for relationship in relationships:
                 edges.append(relationship.to_dict())
 
-        return {
-            "nodes": nodes,
-            "edges": edges,
-            "node_count": len(nodes),
-            "edge_count": len(edges),
-        }
+        return KnowledgeGraphExport(
+            nodes=nodes,  # type: ignore[arg-type]
+            edges=edges,  # type: ignore[arg-type]
+            node_count=len(nodes),
+            edge_count=len(edges),
+        )
 
-    def save(self, path: str | Path | None = None) -> None:
+    def save(self, path: Optional[str | Path] = None) -> None:
         target = Path(path) if path else self._persist_path
         if not target:
             return
         target.parent.mkdir(parents=True, exist_ok=True)
         with target.open("w", encoding="utf-8") as handle:
-            json.dump(self.export_graph(), handle, ensure_ascii=True, indent=2)
+            json.dump(self.export_graph().model_dump(), handle, ensure_ascii=True, indent=2)
 
-    def load(self, path: str | Path | None = None) -> None:
+    def load(self, path: Optional[str | Path] = None) -> None:
         source = Path(path) if path else self._persist_path
         if not source or not source.exists():
             return
@@ -471,12 +471,12 @@ class KnowledgeGraph:
 
         # ── Languages ─────────────────────────────────────────
         python = self.add_entity("Python", "LANGUAGE")
-        javascript = self.add_entity("JavaScript", "LANGUAGE")
-        typescript = self.add_entity("TypeScript", "LANGUAGE")
-        rust = self.add_entity("Rust", "LANGUAGE")
-        go = self.add_entity("Go", "LANGUAGE")
-        java = self.add_entity("Java", "LANGUAGE")
-        sql = self.add_entity("SQL", "LANGUAGE")
+        self.add_entity("JavaScript", "LANGUAGE")
+        self.add_entity("TypeScript", "LANGUAGE")
+        self.add_entity("Rust", "LANGUAGE")
+        self.add_entity("Go", "LANGUAGE")
+        self.add_entity("Java", "LANGUAGE")
+        self.add_entity("SQL", "LANGUAGE")
 
         # ── Frameworks & Libraries ────────────────────────────
         dspy = self.add_entity("DSPy", "FRAMEWORK")
@@ -485,7 +485,7 @@ class KnowledgeGraph:
         flask = self.add_entity("Flask", "FRAMEWORK")
         django = self.add_entity("Django", "FRAMEWORK")
         fastapi = self.add_entity("FastAPI", "FRAMEWORK")
-        react = self.add_entity("React", "FRAMEWORK")
+        self.add_entity("React", "FRAMEWORK")
         pytorch = self.add_entity("PyTorch", "FRAMEWORK")
         tensorflow = self.add_entity("TensorFlow", "FRAMEWORK")
         hf_transformers = self.add_entity("Hugging Face Transformers", "FRAMEWORK")
@@ -510,7 +510,7 @@ class KnowledgeGraph:
         gemini = self.add_entity("Gemini", "MODEL")
         claude = self.add_entity("Claude", "MODEL")
         llama3 = self.add_entity("Llama 3", "MODEL")
-        mistral = self.add_entity("Mistral", "MODEL")
+        self.add_entity("Mistral", "MODEL")
         bert = self.add_entity("BERT", "MODEL")
         t5 = self.add_entity("T5", "MODEL")
         whisper = self.add_entity("Whisper", "MODEL")

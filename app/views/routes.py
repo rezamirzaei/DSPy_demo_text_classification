@@ -150,13 +150,13 @@ def create_app(controller: Any = None) -> Flask:
 
     @app.route("/api/knowledge-graph")
     def knowledge_graph():
-        return jsonify(controller.get_knowledge_graph())
+        return jsonify(controller.get_knowledge_graph().model_dump())
 
     @app.route("/api/knowledge-graph/seed", methods=["POST"])
     def seed_knowledge_graph():
         """Seed the knowledge graph with curated AI/ML data."""
         result = controller.reseed_knowledge_graph()
-        return jsonify(result)
+        return jsonify(result.model_dump())
 
     @app.route("/api/graph/infer", methods=["POST"])
     def graph_infer():
@@ -175,6 +175,6 @@ def create_app(controller: Any = None) -> Flask:
             return _validation_error_response(exc)
 
         inference = controller.graph_infer(schema)
-        return jsonify(inference)
+        return jsonify(inference.model_dump())
 
     return app

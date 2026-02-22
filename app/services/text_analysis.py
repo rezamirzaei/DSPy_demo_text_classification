@@ -6,23 +6,23 @@ import json
 import logging
 import re
 from abc import ABC, abstractmethod
-from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
-from dataclasses import dataclass
-from typing import Any, List, Sequence
+from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import TimeoutError as FuturesTimeoutError
+from typing import Any, Callable, List, Optional, Sequence, TypeVar
 from urllib import error as url_error
 from urllib import request as url_request
 
 from app.domain.enums import ConfidenceLevel
 from app.models.classifier import ClassifierFactory
+from app.models.schemas import AnalysisResultModel
 
 logger = logging.getLogger(__name__)
 
 
-@dataclass(frozen=True)
-class AnalysisResult:
-    """Normalized classifier payload."""
+# Re-export for backward compatibility
+AnalysisResult = AnalysisResultModel
 
-    data: dict[str, Any]
+_T = TypeVar("_T")
 
 
 class TextAnalysisEngine(ABC):
@@ -30,23 +30,23 @@ class TextAnalysisEngine(ABC):
 
     @abstractmethod
     def classify_sentiment(self, text: str) -> AnalysisResult:
-        raise NotImplementedError
+        ...
 
     @abstractmethod
-    def classify_topic(self, text: str, categories: Sequence[str] | None = None) -> AnalysisResult:
-        raise NotImplementedError
+    def classify_topic(self, text: str, categories: Optional[Sequence[str]] = None) -> AnalysisResult:
+        ...
 
     @abstractmethod
-    def classify_intent(self, text: str, intents: Sequence[str] | None = None) -> AnalysisResult:
-        raise NotImplementedError
+    def classify_intent(self, text: str, intents: Optional[Sequence[str]] = None) -> AnalysisResult:
+        ...
 
     @abstractmethod
-    def classify_multi_label(self, text: str, labels: Sequence[str] | None = None) -> AnalysisResult:
-        raise NotImplementedError
+    def classify_multi_label(self, text: str, labels: Optional[Sequence[str]] = None) -> AnalysisResult:
+        ...
 
     @abstractmethod
     def extract_entities(self, text: str) -> List[dict[str, str]]:
-        raise NotImplementedError
+        ...
 
     @abstractmethod
     def summarize(
@@ -57,7 +57,7 @@ class TextAnalysisEngine(ABC):
         intent: dict[str, Any],
         entities: list[dict[str, str]],
     ) -> str:
-        raise NotImplementedError
+        ...
 
 
 class RuleBasedTextAnalysisEngine(TextAnalysisEngine):
@@ -140,13 +140,11 @@ class RuleBasedTextAnalysisEngine(TextAnalysisEngine):
             else ConfidenceLevel.MEDIUM.value
         )
 
-        return AnalysisResult(
-            {
+        return AnalysisResult(data={
                 "sentiment": sentiment,
                 "confidence": confidence,
                 "reasoning": f"rule_based(pos={pos}, neg={neg})",
-            }
-        )
+            })
 
     def classify_topic(
         self,
@@ -176,13 +174,11 @@ class RuleBasedTextAnalysisEngine(TextAnalysisEngine):
             ConfidenceLevel.HIGH.value if scores[best_category] >= 2 else ConfidenceLevel.MEDIUM.value
         )
 
-        return AnalysisResult(
-            {
+        return AnalysisResult(data={
                 "topic": best_category,
                 "confidence": confidence,
                 "reasoning": f"rule_based(scores={scores})",
-            }
-        )
+            })
 
     def classify_intent(
         self,
@@ -212,14 +208,12 @@ class RuleBasedTextAnalysisEngine(TextAnalysisEngine):
             intent = next(iter(allowed_intents))
             confidence = ConfidenceLevel.LOW.value
 
-        return AnalysisResult(
-            {
+        return AnalysisResult(data={
                 "intent": intent,
                 "confidence": confidence,
                 "entities": self.extract_entities(text),
                 "reasoning": f"rule_based(intent={intent})",
-            }
-        )
+            })
 
     def classify_multi_label(
         self,
@@ -249,13 +243,11 @@ class RuleBasedTextAnalysisEngine(TextAnalysisEngine):
             filtered = [label for label in inferred if label.lower() in allowed_set]
             inferred = filtered or [allowed[0]]
 
-        return AnalysisResult(
-            {
+        return AnalysisResult(data={
                 "labels": ", ".join(dict.fromkeys(inferred)),
                 "confidence": ConfidenceLevel.MEDIUM.value,
                 "reasoning": "rule_based(label_heuristics)",
-            }
-        )
+            })
 
     def extract_entities(self, text: str) -> List[dict[str, str]]:
         found: list[dict[str, str]] = []
@@ -315,7 +307,7 @@ class DSPyTextAnalysisEngine(TextAnalysisEngine):
 
     def classify_sentiment(self, text: str) -> AnalysisResult:
         response = self._sentiment(text=text)
-        return AnalysisResult(self._to_payload(response))
+        return AnalysisResult(data=self._to_payload(response))
 
     def classify_topic(
         self,
@@ -326,7 +318,7 @@ class DSPyTextAnalysisEngine(TextAnalysisEngine):
         if categories:
             kwargs["categories"] = ", ".join(categories)
         response = self._topic(**kwargs)
-        return AnalysisResult(self._to_payload(response))
+        return AnalysisResult(data=self._to_payload(response))
 
     def classify_intent(
         self,
@@ -339,7 +331,7 @@ class DSPyTextAnalysisEngine(TextAnalysisEngine):
         response = self._intent(**kwargs)
         payload = self._to_payload(response)
         payload["entities"] = self._normalize_entities(payload.get("entities", ""))
-        return AnalysisResult(payload)
+        return AnalysisResult(data=payload)
 
     def classify_multi_label(
         self,
@@ -350,7 +342,7 @@ class DSPyTextAnalysisEngine(TextAnalysisEngine):
         if labels:
             kwargs["available_labels"] = ", ".join(labels)
         response = self._multi_label(**kwargs)
-        return AnalysisResult(self._to_payload(response))
+        return AnalysisResult(data=self._to_payload(response))
 
     def extract_entities(self, text: str) -> List[dict[str, str]]:
         response = self._entity(text=text)
@@ -436,7 +428,7 @@ class OllamaTextAnalysisEngine(TextAnalysisEngine):
         payload["sentiment"] = str(payload.get("sentiment", "neutral")).strip().lower()
         payload["confidence"] = str(payload.get("confidence", "medium")).strip().lower()
         payload["reasoning"] = str(payload.get("reasoning", "")).strip()
-        return AnalysisResult(payload)
+        return AnalysisResult(data=payload)
 
     def classify_topic(
         self,
@@ -456,7 +448,7 @@ class OllamaTextAnalysisEngine(TextAnalysisEngine):
         payload["topic"] = str(payload.get("topic", "Other")).strip()
         payload["confidence"] = str(payload.get("confidence", "medium")).strip().lower()
         payload["reasoning"] = str(payload.get("reasoning", "")).strip()
-        return AnalysisResult(payload)
+        return AnalysisResult(data=payload)
 
     def classify_intent(
         self,
@@ -481,7 +473,7 @@ class OllamaTextAnalysisEngine(TextAnalysisEngine):
         payload["confidence"] = str(payload.get("confidence", "medium")).strip().lower()
         payload["reasoning"] = str(payload.get("reasoning", "")).strip()
         payload["entities"] = self._normalize_entities(payload.get("entities", []))
-        return AnalysisResult(payload)
+        return AnalysisResult(data=payload)
 
     def classify_multi_label(
         self,
@@ -502,7 +494,7 @@ class OllamaTextAnalysisEngine(TextAnalysisEngine):
         payload["labels"] = str(payload.get("labels", "informative")).strip()
         payload["confidence"] = str(payload.get("confidence", "medium")).strip().lower()
         payload["reasoning"] = str(payload.get("reasoning", "")).strip()
-        return AnalysisResult(payload)
+        return AnalysisResult(data=payload)
 
     def extract_entities(self, text: str) -> List[dict[str, str]]:
         prompt = (
@@ -626,7 +618,12 @@ class HybridTextAnalysisEngine(TextAnalysisEngine):
     def has_primary(self) -> bool:
         return self._primary is not None
 
-    def _execute(self, operation: str, primary_call: Any, fallback_call: Any) -> Any:
+    def _execute(
+        self,
+        operation: str,
+        primary_call: Callable[[], _T],
+        fallback_call: Callable[[], _T],
+    ) -> _T:
         if self._primary is not None:
             future = self._executor.submit(primary_call)
             try:

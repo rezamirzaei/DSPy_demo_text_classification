@@ -3,6 +3,7 @@
 import json
 
 import pytest
+
 from app.services.knowledge_graph import Entity, KnowledgeGraph, Relationship
 
 
@@ -139,9 +140,9 @@ class TestKnowledgeGraph:
     def test_export_graph(self, kg):
         kg.add_entity("X", "T")
         data = kg.export_graph()
-        assert "nodes" in data
-        assert "edges" in data
-        assert data["node_count"] == 1
+        assert hasattr(data, "nodes")
+        assert hasattr(data, "edges")
+        assert data.node_count == 1
 
     def test_clear(self, kg):
         kg.add_entity("X", "T")
@@ -159,9 +160,9 @@ class TestKnowledgeGraph:
         kg.add_relationship(a, b, "related_to")
 
         result = kg.infer_for_entity("Python", entity_type="CONCEPT", max_depth=2)
-        assert result["query"]["name"] == "Python"
-        assert len(result["matches"]) == 1
-        assert isinstance(result["related"], list)
+        assert result.query["name"] == "Python"
+        assert len(result.matches) == 1
+        assert isinstance(result.related, list)
 
     def test_load_legacy_string_edges(self, tmp_path):
         graph_path = tmp_path / "legacy_graph.json"
@@ -230,8 +231,8 @@ class TestKnowledgeGraphSeed:
         kg = KnowledgeGraph()
         kg.seed_default_graph()
         result = kg.infer_for_entity("Python", entity_type="LANGUAGE", max_depth=2)
-        assert len(result["matches"]) == 1
-        assert len(result["related"]) > 0
+        assert len(result.matches) == 1
+        assert len(result.related) > 0
 
     def test_seed_predict_links(self):
         kg = KnowledgeGraph()
@@ -313,15 +314,15 @@ class TestKnowledgeGraphEdgeCases:
     def test_infer_for_entity_no_match(self):
         kg = KnowledgeGraph()
         result = kg.infer_for_entity("NonExistent", entity_type="FAKE")
-        assert len(result["matches"]) == 0
-        assert len(result["related"]) == 0
+        assert len(result.matches) == 0
+        assert len(result.related) == 0
 
     def test_infer_for_entity_no_type(self):
         kg = KnowledgeGraph()
         kg.add_entity("Shared", "TYPE_A")
         kg.add_entity("Shared", "TYPE_B")
         result = kg.infer_for_entity("Shared")
-        assert len(result["matches"]) == 2
+        assert len(result.matches) == 2
 
     def test_relation_filter(self):
         kg = KnowledgeGraph()
@@ -331,19 +332,19 @@ class TestKnowledgeGraphEdgeCases:
         kg.add_relationship(a, b, "uses")
         kg.add_relationship(a, c, "develops")
         result = kg.infer_for_entity("A", entity_type="X", relation_filter="uses")
-        relations = [r["relation"] for r in result["related"]]
+        relations = [r["relation"] for r in result.related]
         assert all("uses" in r.lower() for r in relations)
 
     def test_export_graph_structure(self):
         kg = KnowledgeGraph()
         kg.add_entity("Test", "TYPE")
         data = kg.export_graph()
-        assert "nodes" in data
-        assert "edges" in data
-        assert "node_count" in data
-        assert "edge_count" in data
-        assert data["node_count"] == 1
-        assert data["edge_count"] == 0
+        assert hasattr(data, "nodes")
+        assert hasattr(data, "edges")
+        assert hasattr(data, "node_count")
+        assert hasattr(data, "edge_count")
+        assert data.node_count == 1
+        assert data.edge_count == 0
 
     def test_build_from_entities_with_empty_names(self):
         kg = KnowledgeGraph()

@@ -1,16 +1,25 @@
 """Tests for app.models.schemas."""
 
 import pytest
+
 from app.domain.enums import ClassifierType
 from app.models.schemas import (
     AgentRequest,
     AgentResponse,
+    AnalysisResultModel,
     BatchClassificationRequest,
     BatchClassificationResponse,
     ClassificationRequest,
     ClassificationResponse,
+    EntityItem,
     GraphInferenceRequest,
+    GraphInferenceResponse,
     HealthResponse,
+    KGEnrichmentResult,
+    KnowledgeGraphExport,
+    QualityReport,
+    ReseedResponse,
+    ServiceHealthInfo,
 )
 
 
@@ -107,3 +116,110 @@ class TestHealthResponse:
     def test_fields(self):
         resp = HealthResponse(status="healthy", provider="test", model="m")
         assert resp.version == "2.1.0"
+
+
+class TestEntityItem:
+    def test_defaults(self):
+        entity = EntityItem(text="Python")
+        assert entity.type == "CONCEPT"
+
+    def test_custom_type(self):
+        entity = EntityItem(text="Python", type="LANGUAGE")
+        assert entity.type == "LANGUAGE"
+
+
+class TestAnalysisResultModel:
+    def test_empty(self):
+        result = AnalysisResultModel()
+        assert result.data == {}
+
+    def test_with_data(self):
+        result = AnalysisResultModel(data={"key": "value"})
+        assert result.data["key"] == "value"
+
+    def test_model_dump(self):
+        result = AnalysisResultModel(data={"sentiment": "positive"})
+        dumped = result.model_dump()
+        assert dumped["data"]["sentiment"] == "positive"
+
+
+class TestQualityReport:
+    def test_valid(self):
+        report = QualityReport(score=85, grade="B", issues=["low_confidence"])
+        assert report.score == 85
+        assert report.grade == "B"
+        assert "low_confidence" in report.issues
+
+    def test_score_boundaries(self):
+        report = QualityReport(score=0, grade="F")
+        assert report.score == 0
+        report = QualityReport(score=100, grade="A")
+        assert report.score == 100
+
+
+class TestKGEnrichmentResult:
+    def test_defaults(self):
+        result = KGEnrichmentResult()
+        assert result.entities_found_in_kg == 0
+        assert result.entity_matches == []
+
+    def test_with_error(self):
+        result = KGEnrichmentResult(error="connection failed")
+        assert result.error == "connection failed"
+
+
+class TestServiceHealthInfo:
+    def test_defaults(self):
+        info = ServiceHealthInfo()
+        assert info.initialized is False
+        assert info.provider == "unknown"
+
+    def test_custom(self):
+        info = ServiceHealthInfo(initialized=True, provider="ollama", model="llama3.2")
+        assert info.initialized is True
+        assert info.model == "llama3.2"
+
+
+class TestReseedResponse:
+    def test_valid(self):
+        resp = ReseedResponse(message="ok", node_count=10, edge_count=20)
+        assert resp.message == "ok"
+        assert resp.node_count == 10
+
+    def test_model_dump(self):
+        resp = ReseedResponse(message="ok", node_count=5, edge_count=3)
+        dumped = resp.model_dump()
+        assert dumped["edge_count"] == 3
+
+
+class TestKnowledgeGraphExport:
+    def test_defaults(self):
+        export = KnowledgeGraphExport()
+        assert export.nodes == []
+        assert export.node_count == 0
+        assert export.inferences is None
+
+    def test_with_data(self):
+        export = KnowledgeGraphExport(
+            nodes=[{"name": "test", "type": "X"}],
+            edges=[],
+            node_count=1,
+            edge_count=0,
+        )
+        assert export.node_count == 1
+
+
+class TestGraphInferenceResponse:
+    def test_valid(self):
+        resp = GraphInferenceResponse(
+            query={"name": "test", "type": None},
+            matches=[{"name": "test", "type": "CONCEPT"}],
+        )
+        assert len(resp.matches) == 1
+
+    def test_defaults(self):
+        resp = GraphInferenceResponse(query={"name": "x"})
+        assert resp.related == []
+        assert resp.predicted_links == []
+
+

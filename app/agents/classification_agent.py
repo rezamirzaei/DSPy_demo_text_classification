@@ -39,7 +39,7 @@ from typing import Annotated, Any, Dict, List, Optional, TypedDict
 
 from langgraph.graph import END, StateGraph
 
-from app.models.schemas import AgentResponse
+from app.models.schemas import AgentResponse, GraphInferenceResponse, KnowledgeGraphExport
 from app.services import KnowledgeGraph, TextAnalysisEngine, build_analysis_engine
 
 logger = logging.getLogger(__name__)
@@ -96,20 +96,20 @@ class ClassificationAgent:
 
     # ── graph construction ───────────────────────────────
 
-    def _build_graph(self):
-        g = StateGraph(AgentState)
+    def _build_graph(self):  # type: ignore[override]
+        g = StateGraph(AgentState)  # type: ignore[arg-type]
 
         # Register nodes
-        g.add_node("router", self._node_router)
-        g.add_node("sentiment", self._node_sentiment)
-        g.add_node("topic", self._node_topic)
-        g.add_node("intent", self._node_intent)
-        g.add_node("merge_analyses", self._node_merge_analyses)
-        g.add_node("entities", self._node_entities)
-        g.add_node("kg_enrich", self._node_kg_enrich)
-        g.add_node("kg_build", self._node_kg_build)
-        g.add_node("summarise", self._node_summarise)
-        g.add_node("quality_check", self._node_quality_check)
+        g.add_node("router", self._node_router)  # type: ignore[arg-type]
+        g.add_node("sentiment", self._node_sentiment)  # type: ignore[arg-type]
+        g.add_node("topic", self._node_topic)  # type: ignore[arg-type]
+        g.add_node("intent", self._node_intent)  # type: ignore[arg-type]
+        g.add_node("merge_analyses", self._node_merge_analyses)  # type: ignore[arg-type]
+        g.add_node("entities", self._node_entities)  # type: ignore[arg-type]
+        g.add_node("kg_enrich", self._node_kg_enrich)  # type: ignore[arg-type]
+        g.add_node("kg_build", self._node_kg_build)  # type: ignore[arg-type]
+        g.add_node("summarise", self._node_summarise)  # type: ignore[arg-type]
+        g.add_node("quality_check", self._node_quality_check)  # type: ignore[arg-type]
 
         # Entry
         g.set_entry_point("router")
@@ -272,28 +272,28 @@ class ClassificationAgent:
                 )
 
                 # If typed search found nothing, try name-only
-                if not inference["matches"] and etype:
+                if not inference.matches and etype:
                     inference = self._kg.infer_for_entity(
                         entity_name=name,
                         entity_type=None,
                         max_depth=2,
                     )
 
-                if inference["matches"]:
-                    enrichment["entity_matches"].extend(inference["matches"])
-                    for rel in inference.get("related", [])[:5]:
+                if inference.matches:
+                    enrichment["entity_matches"].extend(inference.matches)
+                    for rel in inference.related[:5]:
                         enrichment["related_facts"].append({
                             "entity": name,
-                            "related_to": rel["entity"]["name"],
-                            "relation": rel["relation"],
-                            "weight": rel["weight"],
+                            "related_to": rel.get("entity", {}).get("name", ""),
+                            "relation": rel.get("relation", ""),
+                            "weight": rel.get("weight", 0),
                         })
-                    for pred in inference.get("predicted_links", [])[:3]:
+                    for pred in inference.predicted_links[:3]:
                         enrichment["predicted_links"].append({
                             "from": name,
-                            "to": pred["target"]["name"],
-                            "via": pred["via"]["name"],
-                            "confidence": pred["confidence"],
+                            "to": pred.get("target", {}).get("name", ""),
+                            "via": pred.get("via", {}).get("name", ""),
+                            "confidence": pred.get("confidence", 0),
                         })
 
             enrichment["entities_found_in_kg"] = len(enrichment["entity_matches"])
@@ -351,7 +351,8 @@ class ClassificationAgent:
                 for e in entities
             ]
             compact = [e for e in entity_objects if e is not None]
-            graph_data = self._kg.export_graph()
+            graph_export = self._kg.export_graph()
+            graph_data = graph_export.model_dump()
             graph_data["inferences"] = self._kg.infer_connections(compact)
 
             return {
@@ -486,7 +487,7 @@ class ClassificationAgent:
         }
 
         try:
-            result = self._compiled.invoke(initial_state)
+            result = self._compiled.invoke(initial_state)  # type: ignore[arg-type]
             return AgentResponse(
                 text=text,
                 sentiment=result.get("sentiment", {}),
@@ -510,10 +511,10 @@ class ClassificationAgent:
     def infer_entity(
         self,
         name: str,
-        entity_type: str | None = None,
+        entity_type: Optional[str] = None,
         max_depth: int = 2,
-        relation_filter: str | None = None,
-    ) -> dict[str, Any]:
+        relation_filter: Optional[str] = None,
+    ) -> GraphInferenceResponse:
         """Run entity-centric inference on the knowledge graph."""
         return self._kg.infer_for_entity(
             entity_name=name,
@@ -522,8 +523,8 @@ class ClassificationAgent:
             relation_filter=relation_filter,
         )
 
-    def get_knowledge_graph(self) -> dict[str, Any]:
-        """Export the current knowledge graph state."""
+    def get_knowledge_graph(self) -> KnowledgeGraphExport:
+        """Export the current knowledge graph state as a validated model."""
         return self._kg.export_graph()
 
     def clear_knowledge_graph(self) -> None:

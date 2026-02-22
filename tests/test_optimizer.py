@@ -10,10 +10,10 @@ os.environ.setdefault("PROVIDER", "rule_based")
 os.environ.setdefault("ENVIRONMENT", "test")
 
 from app.models.optimizer import (
-    DSPyOptimizer,
     INTENT_EXAMPLES,
     SENTIMENT_EXAMPLES,
     TOPIC_EXAMPLES,
+    DSPyOptimizer,
     _metric_exact_match,
 )
 
@@ -91,7 +91,7 @@ class TestDSPyOptimizer:
 
     def test_init_creates_cache_dir(self, tmp_path):
         cache = tmp_path / "dspy_cache"
-        opt = DSPyOptimizer(cache_dir=cache)
+        DSPyOptimizer(cache_dir=cache)
         assert cache.exists()
 
     def test_optimize_no_examples_returns_module(self, optimizer):
@@ -106,7 +106,7 @@ class TestDSPyOptimizer:
         module = MagicMock()
         module.load = MagicMock()
 
-        result = optimizer.optimize("test", module, SENTIMENT_EXAMPLES)
+        optimizer.optimize("test", module, SENTIMENT_EXAMPLES)
         module.load.assert_called_once_with(str(cache_path))
 
     def test_optimize_handles_cache_load_failure(self, optimizer, tmp_path):
@@ -119,7 +119,7 @@ class TestDSPyOptimizer:
 
         with patch("app.models.optimizer.dspy.BootstrapFewShot") as mock_bs:
             mock_bs.return_value.compile.return_value = module
-            result = optimizer.optimize("test", module, SENTIMENT_EXAMPLES)
+            optimizer.optimize("test", module, SENTIMENT_EXAMPLES)
             mock_bs.return_value.compile.assert_called_once()
 
     def test_optimize_handles_optimization_failure(self, optimizer, tmp_path):

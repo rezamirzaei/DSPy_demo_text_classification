@@ -83,7 +83,10 @@ class TestDSPyTextAnalysisEngine:
                     "confidence": "high",
                     "entities": '[{"text": "API", "type": "CONCEPT"}]',
                 }
-            return lambda **_: {"sentiment": "positive", "confidence": "high", "topic": "Technology", "labels": "informative"}
+            return lambda **_: {
+                "sentiment": "positive", "confidence": "high",
+                "topic": "Technology", "labels": "informative",
+            }
 
         mock_factory.create.side_effect = _mk_return
 

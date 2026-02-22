@@ -9,7 +9,7 @@ import pytest
 os.environ.setdefault("PROVIDER", "rule_based")
 os.environ.setdefault("ENVIRONMENT", "test")
 
-from app.models.optimizer import (
+from app.models.optimizer import (  # noqa: E402
     INTENT_EXAMPLES,
     SENTIMENT_EXAMPLES,
     TOPIC_EXAMPLES,
@@ -133,5 +133,3 @@ class TestDSPyOptimizer:
     def test_default_cache_dir(self):
         opt = DSPyOptimizer()
         assert opt._cache_dir == Path("data/dspy_optimized")
-
-

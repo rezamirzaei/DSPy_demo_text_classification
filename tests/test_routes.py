@@ -162,5 +162,3 @@ class TestErrorHandlers:
         assert resp.status_code == 405
         data = resp.get_json()
         assert data["error"] == "Method not allowed"
-
-

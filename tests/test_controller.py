@@ -55,10 +55,10 @@ class TestClassificationController:
     def test_classify_success(self, controller):
         controller._analysis_engine = MagicMock()
         controller._analysis_engine.classify_sentiment.return_value = AnalysisResult(data={
-                "sentiment": "positive",
-                "confidence": "high",
-                "reasoning": "test",
-            })
+            "sentiment": "positive",
+            "confidence": "high",
+            "reasoning": "test",
+        })
 
         req = ClassificationRequest(
             text="I love this!",
@@ -202,4 +202,3 @@ class TestClassificationController:
         # Reseed clears and rebuilds
         result = controller.reseed_knowledge_graph()
         assert result.node_count > 0
-

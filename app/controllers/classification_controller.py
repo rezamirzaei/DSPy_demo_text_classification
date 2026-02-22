@@ -224,4 +224,3 @@ class ClassificationController:
             node_count=self._knowledge_graph.node_count,
             edge_count=self._knowledge_graph.edge_count,
         )
-

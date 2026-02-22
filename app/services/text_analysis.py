@@ -141,10 +141,10 @@ class RuleBasedTextAnalysisEngine(TextAnalysisEngine):
         )
 
         return AnalysisResult(data={
-                "sentiment": sentiment,
-                "confidence": confidence,
-                "reasoning": f"rule_based(pos={pos}, neg={neg})",
-            })
+            "sentiment": sentiment,
+            "confidence": confidence,
+            "reasoning": f"rule_based(pos={pos}, neg={neg})",
+        })
 
     def classify_topic(
         self,
@@ -175,10 +175,10 @@ class RuleBasedTextAnalysisEngine(TextAnalysisEngine):
         )
 
         return AnalysisResult(data={
-                "topic": best_category,
-                "confidence": confidence,
-                "reasoning": f"rule_based(scores={scores})",
-            })
+            "topic": best_category,
+            "confidence": confidence,
+            "reasoning": f"rule_based(scores={scores})",
+        })
 
     def classify_intent(
         self,
@@ -209,11 +209,11 @@ class RuleBasedTextAnalysisEngine(TextAnalysisEngine):
             confidence = ConfidenceLevel.LOW.value
 
         return AnalysisResult(data={
-                "intent": intent,
-                "confidence": confidence,
-                "entities": self.extract_entities(text),
-                "reasoning": f"rule_based(intent={intent})",
-            })
+            "intent": intent,
+            "confidence": confidence,
+            "entities": self.extract_entities(text),
+            "reasoning": f"rule_based(intent={intent})",
+        })
 
     def classify_multi_label(
         self,
@@ -244,10 +244,10 @@ class RuleBasedTextAnalysisEngine(TextAnalysisEngine):
             inferred = filtered or [allowed[0]]
 
         return AnalysisResult(data={
-                "labels": ", ".join(dict.fromkeys(inferred)),
-                "confidence": ConfidenceLevel.MEDIUM.value,
-                "reasoning": "rule_based(label_heuristics)",
-            })
+            "labels": ", ".join(dict.fromkeys(inferred)),
+            "confidence": ConfidenceLevel.MEDIUM.value,
+            "reasoning": "rule_based(label_heuristics)",
+        })
 
     def extract_entities(self, text: str) -> List[dict[str, str]]:
         found: list[dict[str, str]] = []

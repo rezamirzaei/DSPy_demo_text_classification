@@ -375,5 +375,3 @@ class TestKnowledgeGraphEdgeCases:
         name, entity_type = KnowledgeGraph._parse_legacy_entity(42)
         assert name == ""
         assert entity_type == "CONCEPT"
-
-

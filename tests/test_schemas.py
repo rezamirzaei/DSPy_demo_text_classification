@@ -221,5 +221,3 @@ class TestGraphInferenceResponse:
         resp = GraphInferenceResponse(query={"name": "x"})
         assert resp.related == []
         assert resp.predicted_links == []
-
-

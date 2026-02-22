@@ -19,10 +19,10 @@ class TestClassifierFactory:
         assert "summarizer" in types
 
     def test_create_valid(self):
-        with patch("dspy.ChainOfThought") as mock_cot:
-            mock_cot.return_value = MagicMock()
+        with patch("dspy.Predict") as mock_predict:
+            mock_predict.return_value = MagicMock()
             ClassifierFactory.create("sentiment")
-            mock_cot.assert_called_once_with(SentimentClassifier)
+            mock_predict.assert_called_once_with(SentimentClassifier)
 
     def test_create_invalid(self):
         with pytest.raises(ValueError, match="Unknown classifier type"):

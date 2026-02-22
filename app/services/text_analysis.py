@@ -6,8 +6,11 @@ import json
 import logging
 import re
 from abc import ABC, abstractmethod
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
 from dataclasses import dataclass
 from typing import Any, List, Sequence
+from urllib import error as url_error
+from urllib import request as url_request
 
 from app.domain.enums import ConfidenceLevel
 from app.models.classifier import ClassifierFactory
@@ -411,6 +414,200 @@ class DSPyTextAnalysisEngine(TextAnalysisEngine):
         return normalized
 
 
+class OllamaTextAnalysisEngine(TextAnalysisEngine):
+    """Native Ollama API analysis engine for reliable local LLM usage."""
+
+    def __init__(self, settings: Any) -> None:
+        self._base_url = str(getattr(settings, "ollama_base_url", "http://localhost:11434")).rstrip("/")
+        self._model = str(getattr(settings, "ollama_model", "llama3.2:3b"))
+        self._timeout = int(getattr(settings, "lm_timeout_seconds", 45))
+        self._max_tokens = int(getattr(settings, "lm_max_tokens", 256))
+        self._keep_alive = str(getattr(settings, "ollama_keep_alive", "30m"))
+
+    def classify_sentiment(self, text: str) -> AnalysisResult:
+        prompt = (
+            "Classify sentiment of the text. "
+            "Return STRICT JSON with keys sentiment, confidence, reasoning. "
+            "sentiment must be one of: positive, negative, neutral. "
+            "confidence must be one of: high, medium, low.\n\n"
+            f"Text: {text}"
+        )
+        payload = self._generate_json(prompt, {"sentiment": "neutral", "confidence": "low", "reasoning": ""})
+        payload["sentiment"] = str(payload.get("sentiment", "neutral")).strip().lower()
+        payload["confidence"] = str(payload.get("confidence", "medium")).strip().lower()
+        payload["reasoning"] = str(payload.get("reasoning", "")).strip()
+        return AnalysisResult(payload)
+
+    def classify_topic(
+        self,
+        text: str,
+        categories: Sequence[str] | None = None,
+    ) -> AnalysisResult:
+        options = ", ".join(categories) if categories else (
+            "Technology, Science, Business, Health, Sports, Politics, Entertainment, Education, Other"
+        )
+        prompt = (
+            "Classify the topic of the text. "
+            f"Choose one from: {options}. "
+            "Return STRICT JSON with keys topic, confidence, reasoning.\n\n"
+            f"Text: {text}"
+        )
+        payload = self._generate_json(prompt, {"topic": "Other", "confidence": "low", "reasoning": ""})
+        payload["topic"] = str(payload.get("topic", "Other")).strip()
+        payload["confidence"] = str(payload.get("confidence", "medium")).strip().lower()
+        payload["reasoning"] = str(payload.get("reasoning", "")).strip()
+        return AnalysisResult(payload)
+
+    def classify_intent(
+        self,
+        text: str,
+        intents: Sequence[str] | None = None,
+    ) -> AnalysisResult:
+        options = ", ".join(intents) if intents else (
+            "question, request, complaint, feedback, greeting, farewell, information, other"
+        )
+        prompt = (
+            "Classify user intent of the text. "
+            f"Choose one from: {options}. "
+            "Return STRICT JSON with keys intent, confidence, reasoning, entities. "
+            "entities must be a JSON list of objects with keys text and type.\n\n"
+            f"Text: {text}"
+        )
+        payload = self._generate_json(
+            prompt,
+            {"intent": "information", "confidence": "low", "reasoning": "", "entities": []},
+        )
+        payload["intent"] = str(payload.get("intent", "information")).strip().lower()
+        payload["confidence"] = str(payload.get("confidence", "medium")).strip().lower()
+        payload["reasoning"] = str(payload.get("reasoning", "")).strip()
+        payload["entities"] = self._normalize_entities(payload.get("entities", []))
+        return AnalysisResult(payload)
+
+    def classify_multi_label(
+        self,
+        text: str,
+        labels: Sequence[str] | None = None,
+    ) -> AnalysisResult:
+        options = ", ".join(labels) if labels else (
+            "informative, opinion, question, instructional, persuasive, narrative"
+        )
+        prompt = (
+            "Assign one or more labels to the text. "
+            f"Available labels: {options}. "
+            "Return STRICT JSON with keys labels, confidence, reasoning. "
+            "labels must be comma-separated string.\n\n"
+            f"Text: {text}"
+        )
+        payload = self._generate_json(prompt, {"labels": "informative", "confidence": "low", "reasoning": ""})
+        payload["labels"] = str(payload.get("labels", "informative")).strip()
+        payload["confidence"] = str(payload.get("confidence", "medium")).strip().lower()
+        payload["reasoning"] = str(payload.get("reasoning", "")).strip()
+        return AnalysisResult(payload)
+
+    def extract_entities(self, text: str) -> List[dict[str, str]]:
+        prompt = (
+            "Extract named entities from the text. "
+            "Return STRICT JSON as an array. "
+            "Each item must be an object with keys text and type.\n\n"
+            f"Text: {text}"
+        )
+        raw = self._generate_text(prompt)
+        try:
+            payload = json.loads(raw)
+        except json.JSONDecodeError:
+            payload = []
+        return self._normalize_entities(payload)
+
+    def summarize(
+        self,
+        text: str,
+        sentiment: dict[str, Any],
+        topic: dict[str, Any],
+        intent: dict[str, Any],
+        entities: list[dict[str, str]],
+    ) -> str:
+        prompt = (
+            "Summarize this analysis in one concise sentence.\n"
+            f"Text: {text}\n"
+            f"Sentiment: {json.dumps(sentiment)}\n"
+            f"Topic: {json.dumps(topic)}\n"
+            f"Intent: {json.dumps(intent)}\n"
+            f"Entities: {json.dumps(entities)}\n"
+        )
+        return self._generate_text(prompt).strip()
+
+    def _generate_json(self, prompt: str, fallback: dict[str, Any]) -> dict[str, Any]:
+        raw = self._generate_text(prompt)
+        parsed = self._extract_first_json_object(raw)
+        if parsed is None:
+            return fallback
+        for key, value in fallback.items():
+            parsed.setdefault(key, value)
+        return parsed
+
+    def _generate_text(self, prompt: str) -> str:
+        url = f"{self._base_url}/api/generate"
+        payload = {
+            "model": self._model,
+            "prompt": prompt,
+            "stream": False,
+            "keep_alive": self._keep_alive,
+            "options": {
+                "temperature": 0.1,
+                "num_predict": self._max_tokens,
+            },
+        }
+        body = json.dumps(payload).encode("utf-8")
+        request = url_request.Request(
+            url,
+            data=body,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+
+        try:
+            with url_request.urlopen(request, timeout=self._timeout) as response:
+                data = json.loads(response.read().decode("utf-8"))
+        except (url_error.URLError, TimeoutError, json.JSONDecodeError) as exc:
+            raise RuntimeError(f"Ollama request failed: {exc}") from exc
+
+        return str(data.get("response", "")).strip()
+
+    @staticmethod
+    def _extract_first_json_object(raw: str) -> dict[str, Any] | None:
+        try:
+            parsed = json.loads(raw)
+            if isinstance(parsed, dict):
+                return parsed
+            return None
+        except json.JSONDecodeError:
+            pass
+
+        start = raw.find("{")
+        end = raw.rfind("}")
+        if start == -1 or end == -1 or end <= start:
+            return None
+        try:
+            parsed = json.loads(raw[start:end + 1])
+            return parsed if isinstance(parsed, dict) else None
+        except json.JSONDecodeError:
+            return None
+
+    @staticmethod
+    def _normalize_entities(raw: Any) -> list[dict[str, str]]:
+        entities = raw if isinstance(raw, list) else []
+        normalized: list[dict[str, str]] = []
+        for entity in entities:
+            if not isinstance(entity, dict):
+                continue
+            name = str(entity.get("text", entity.get("name", ""))).strip()
+            if not name:
+                continue
+            entity_type = str(entity.get("type", "CONCEPT")).strip().upper() or "CONCEPT"
+            normalized.append({"text": name, "type": entity_type})
+        return normalized
+
+
 class HybridTextAnalysisEngine(TextAnalysisEngine):
     """Primary engine with deterministic fallback."""
 
@@ -418,9 +615,12 @@ class HybridTextAnalysisEngine(TextAnalysisEngine):
         self,
         fallback: TextAnalysisEngine | None = None,
         primary: TextAnalysisEngine | None = None,
+        primary_timeout_seconds: int = 40,
     ) -> None:
         self._fallback = fallback or RuleBasedTextAnalysisEngine()
         self._primary = primary
+        self._primary_timeout_seconds = max(1, int(primary_timeout_seconds))
+        self._executor = ThreadPoolExecutor(max_workers=2, thread_name_prefix="primary-analysis")
 
     @property
     def has_primary(self) -> bool:
@@ -428,8 +628,15 @@ class HybridTextAnalysisEngine(TextAnalysisEngine):
 
     def _execute(self, operation: str, primary_call: Any, fallback_call: Any) -> Any:
         if self._primary is not None:
+            future = self._executor.submit(primary_call)
             try:
-                return primary_call()
+                return future.result(timeout=self._primary_timeout_seconds)
+            except FuturesTimeoutError:
+                logger.warning(
+                    "Primary analysis engine timed out (%s) after %ss. Falling back to rule-based.",
+                    operation,
+                    self._primary_timeout_seconds,
+                )
             except Exception as exc:  # pragma: no cover - hard to deterministically trigger all DSPy failures
                 logger.warning(
                     "Primary analysis engine failed (%s). Falling back to rule-based: %s",
@@ -488,12 +695,24 @@ class HybridTextAnalysisEngine(TextAnalysisEngine):
         )
 
 
-def build_analysis_engine(enable_dspy: bool) -> HybridTextAnalysisEngine:
+def build_analysis_engine(enable_dspy: bool, settings: Any | None = None) -> HybridTextAnalysisEngine:
     """Build a hybrid engine with optional DSPy primary backend."""
     primary: TextAnalysisEngine | None = None
-    if enable_dspy:
+    provider = str(getattr(settings, "provider", "")).strip().lower() if settings is not None else ""
+
+    if provider == "ollama" and settings is not None:
+        try:
+            primary = OllamaTextAnalysisEngine(settings)
+        except Exception as exc:
+            logger.warning("Unable to initialize native Ollama analysis engine: %s", exc)
+    elif enable_dspy:
         try:
             primary = DSPyTextAnalysisEngine()
         except Exception as exc:
             logger.warning("Unable to initialize DSPy analysis engine: %s", exc)
-    return HybridTextAnalysisEngine(primary=primary)
+
+    timeout_seconds = 40
+    if settings is not None:
+        timeout_seconds = int(getattr(settings, "primary_engine_timeout_seconds", 40))
+
+    return HybridTextAnalysisEngine(primary=primary, primary_timeout_seconds=timeout_seconds)

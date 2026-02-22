@@ -32,11 +32,14 @@ class ClassificationController:
 
         self._settings = settings
         self._dspy_service = DSPyService(settings)
-        self._analysis_engine = build_analysis_engine(enable_dspy=False)
+        self._analysis_engine = build_analysis_engine(enable_dspy=False, settings=settings)
         self._knowledge_graph = KnowledgeGraph(
             persist_path=settings.graph_data_path,
             auto_persist=True,
         )
+        # Seed graph with real-world AI/ML data if empty and no JSON exists
+        if self._knowledge_graph.node_count == 0:
+            self._knowledge_graph.seed_default_graph()
         self._agent: Any = None
         self._initialized = False
 
@@ -61,7 +64,7 @@ class ClassificationController:
         """Initialize primary backend and build hybrid engine."""
         self._initialized = self._dspy_service.initialize()
         use_dspy = self._dspy_service.is_initialized and self._dspy_service.provider != "rule_based"
-        self._analysis_engine = build_analysis_engine(enable_dspy=use_dspy)
+        self._analysis_engine = build_analysis_engine(enable_dspy=use_dspy, settings=self._settings)
         return self.is_initialized
 
     def get_available_classifiers(self) -> List[str]:

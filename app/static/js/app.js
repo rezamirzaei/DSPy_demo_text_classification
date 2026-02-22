@@ -38,6 +38,9 @@ app.factory('ClassifierService', ['$http', function($http) {
         getKnowledgeGraph: function() {
             return $http.get(BASE + '/knowledge-graph');
         },
+        seedKnowledgeGraph: function() {
+            return $http.post(BASE + '/knowledge-graph/seed');
+        },
         inferGraph: function(query) {
             return $http.post(BASE + '/graph/infer', query);
         },
@@ -65,6 +68,8 @@ function($scope, ClassifierService, HistoryService) {
     $scope.agentResult = null;
     $scope.graphData = null;
     $scope.graphInference = null;
+    $scope.graphSubTab = 'explore';
+    $scope.entitySearch = '';
     $scope.graphQuery = {
         entity: '',
         entity_type: '',
@@ -72,6 +77,41 @@ function($scope, ClassifierService, HistoryService) {
         relation_filter: ''
     };
     $scope.history = HistoryService.getAll();
+
+    /* ===== Graph helper functions ===== */
+    $scope.getEntityTypes = function() {
+        if (!$scope.graphData || !$scope.graphData.nodes) return [];
+        var types = {};
+        $scope.graphData.nodes.forEach(function(n) {
+            types[n.type] = true;
+        });
+        return Object.keys(types).sort();
+    };
+
+    $scope.getEntitiesByType = function(entityType) {
+        if (!$scope.graphData || !$scope.graphData.nodes) return [];
+        return $scope.graphData.nodes.filter(function(n) {
+            return n.type === entityType;
+        }).sort(function(a, b) {
+            return a.name.localeCompare(b.name);
+        });
+    };
+
+    $scope.getRelationTypes = function() {
+        if (!$scope.graphData || !$scope.graphData.edges) return [];
+        var types = {};
+        $scope.graphData.edges.forEach(function(e) {
+            types[e.relation] = true;
+        });
+        return Object.keys(types).sort();
+    };
+
+    $scope.quickInfer = function(name, entityType) {
+        $scope.graphQuery.entity = name;
+        $scope.graphQuery.entity_type = entityType || '';
+        $scope.graphSubTab = 'infer';
+        $scope.runGraphInference();
+    };
 
     $scope.classify = function() {
         if (!$scope.inputText.trim()) return;
@@ -123,6 +163,19 @@ function($scope, ClassifierService, HistoryService) {
         ClassifierService.getKnowledgeGraph()
             .then(function(resp) { $scope.graphData = resp.data; })
             .catch(function() { $scope.error = 'Failed to load knowledge graph'; });
+    };
+
+    $scope.seedKnowledgeGraph = function() {
+        $scope.loading = true;
+        $scope.error = null;
+        ClassifierService.seedKnowledgeGraph()
+            .then(function() {
+                $scope.loadKnowledgeGraph();
+            })
+            .catch(function(err) {
+                $scope.error = (err.data && err.data.error) ? err.data.error : 'Failed to seed graph';
+            })
+            .finally(function() { $scope.loading = false; });
     };
 
     $scope.runGraphInference = function() {

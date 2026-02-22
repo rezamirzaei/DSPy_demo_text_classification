@@ -33,16 +33,13 @@ class Settings(BaseSettings):
 
     # ── Provider ─────────────────────────────────
     provider: Literal[
-        "rule_based", "ollama", "gemini", "openai", "huggingface"
-    ] = "rule_based"
+        "rule_based", "ollama", "openai", "huggingface"
+    ] = "ollama"
 
     # ── Ollama ───────────────────────────────────
-    ollama_model: str = "phi3:mini"
+    ollama_model: str = "llama3.2:3b"
     ollama_base_url: str = "http://localhost:11434"
-
-    # ── Gemini ───────────────────────────────────
-    google_api_key: str = ""
-    gemini_model: str = "gemini/gemini-2.0-flash"
+    ollama_keep_alive: str = "30m"
 
     # ── OpenAI ───────────────────────────────────
     openai_api_key: str = ""
@@ -68,6 +65,12 @@ class Settings(BaseSettings):
     # ── CORS ─────────────────────────────────────
     cors_origins: str = "*"
 
+    # ── LM runtime safety ───────────────────────
+    lm_timeout_seconds: int = 45
+    lm_max_tokens: int = 256
+    lm_num_retries: int = 1
+    primary_engine_timeout_seconds: int = 40
+
     @field_validator("log_level")
     @classmethod
     def normalize_log_level(cls, value: str) -> str:
@@ -91,12 +94,7 @@ class Settings(BaseSettings):
                 "model": f"ollama/{self.ollama_model}",
                 "api_base": self.ollama_base_url,
                 "api_key": "ollama",
-            },
-            "gemini": {
-                "provider": "gemini",
-                "model": self.gemini_model,
-                "api_key": self.google_api_key,
-                "api_base": "",
+                "keep_alive": self.ollama_keep_alive,
             },
             "openai": {
                 "provider": "openai",

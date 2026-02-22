@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import time
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 from app.services.text_analysis import (
     DSPyTextAnalysisEngine,
     HybridTextAnalysisEngine,
+    OllamaTextAnalysisEngine,
     RuleBasedTextAnalysisEngine,
     build_analysis_engine,
 )
@@ -131,6 +134,73 @@ class TestHybridTextAnalysisEngine:
         assert result["sentiment"] == "neutral"
         assert hybrid.has_primary is True
 
+    def test_falls_back_on_primary_timeout(self):
+        fallback = RuleBasedTextAnalysisEngine()
+        primary = MagicMock()
+
+        def _slow(*args, **kwargs):
+            time.sleep(0.2)
+            return MagicMock(data={"sentiment": "neutral"})
+
+        primary.classify_sentiment.side_effect = _slow
+        hybrid = HybridTextAnalysisEngine(
+            primary=primary,
+            fallback=fallback,
+            primary_timeout_seconds=1,
+        )
+        hybrid._primary_timeout_seconds = 0.01
+        result = hybrid.classify_sentiment("great").data
+        assert result["sentiment"] == "positive"
+
+
+class _FakeHTTPResponse:
+    def __init__(self, payload: str):
+        self._payload = payload.encode("utf-8")
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        return False
+
+    def read(self):
+        return self._payload
+
+
+class TestOllamaTextAnalysisEngine:
+    @patch("app.services.text_analysis.url_request.urlopen")
+    def test_sentiment_json(self, mock_urlopen):
+        mock_urlopen.return_value = _FakeHTTPResponse(
+            '{"response":"{\\"sentiment\\":\\"positive\\",\\"confidence\\":\\"high\\",\\"reasoning\\":\\"great\\"}"}'
+        )
+        settings = SimpleNamespace(
+            ollama_base_url="http://localhost:11434",
+            ollama_model="llama3.2:3b",
+            lm_timeout_seconds=30,
+            lm_max_tokens=64,
+            ollama_keep_alive="30m",
+        )
+        engine = OllamaTextAnalysisEngine(settings)
+        result = engine.classify_sentiment("I love this").data
+        assert result["sentiment"] == "positive"
+        assert result["confidence"] == "high"
+
+    @patch("app.services.text_analysis.url_request.urlopen")
+    def test_entities_json_array(self, mock_urlopen):
+        mock_urlopen.return_value = _FakeHTTPResponse(
+            '{"response":"[{\\\"text\\\":\\\"Python\\\",\\\"type\\\":\\\"CONCEPT\\\"}]"}'
+        )
+        settings = SimpleNamespace(
+            ollama_base_url="http://localhost:11434",
+            ollama_model="llama3.2:3b",
+            lm_timeout_seconds=30,
+            lm_max_tokens=64,
+            ollama_keep_alive="30m",
+        )
+        engine = OllamaTextAnalysisEngine(settings)
+        entities = engine.extract_entities("Python")
+        assert entities == [{"text": "Python", "type": "CONCEPT"}]
+
 
 class TestBuildAnalysisEngine:
     def test_build_without_dspy(self):
@@ -147,4 +217,11 @@ class TestBuildAnalysisEngine:
     def test_build_with_dspy_success(self, mock_engine):
         mock_engine.return_value = MagicMock()
         engine = build_analysis_engine(enable_dspy=True)
+        assert engine.has_primary is True
+
+    @patch("app.services.text_analysis.OllamaTextAnalysisEngine")
+    def test_build_with_ollama_provider(self, mock_engine):
+        settings = SimpleNamespace(provider="ollama")
+        mock_engine.return_value = MagicMock()
+        engine = build_analysis_engine(enable_dspy=True, settings=settings)
         assert engine.has_primary is True

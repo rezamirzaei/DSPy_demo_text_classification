@@ -15,7 +15,7 @@ class TestSettings:
         assert s.log_level == "INFO"
 
     def test_provider_options(self):
-        for p in ["rule_based", "ollama", "gemini", "openai", "huggingface"]:
+        for p in ["rule_based", "ollama", "openai", "huggingface"]:
             s = Settings(provider=p)
             assert s.provider == p
 
@@ -25,11 +25,16 @@ class TestSettings:
         assert config["provider"] == "ollama"
         assert "ollama/phi3:mini" in config["model"]
 
-    def test_get_lm_config_gemini(self):
-        s = Settings(provider="gemini", google_api_key="test-key")
+    def test_get_lm_config_openai(self):
+        s = Settings(provider="openai", openai_api_key="test-key")
         config = s.get_lm_config()
-        assert config["provider"] == "gemini"
+        assert config["provider"] == "openai"
         assert config["api_key"] == "test-key"
+
+    def test_ollama_keep_alive(self):
+        s = Settings(provider="ollama", ollama_keep_alive="45m")
+        config = s.get_lm_config()
+        assert config["keep_alive"] == "45m"
 
     def test_get_lm_config_rule_based(self):
         s = Settings(provider="rule_based")

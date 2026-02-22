@@ -342,9 +342,9 @@ class KnowledgeGraph:
         # Deduplicate by target name/type, keep highest score
         dedup: dict[str, dict[str, object]] = {}
         for prediction in predictions:
-            target = prediction["target"]
-            key = f"{target['type']}:{target['name'].lower()}"
-            if key not in dedup or prediction["confidence"] > dedup[key]["confidence"]:
+            target_dict: dict[str, str] = prediction["target"]  # type: ignore[assignment]
+            key = f"{target_dict['type']}:{target_dict['name'].lower()}"
+            if key not in dedup or prediction["confidence"] > dedup[key]["confidence"]:  # type: ignore[operator]
                 dedup[key] = prediction
         return list(dedup.values())
 
@@ -458,6 +458,253 @@ class KnowledgeGraph:
             self._entity_index.clear()
             self._edge_index.clear()
             self._persist_if_needed()
+
+    def seed_default_graph(self) -> None:
+        """Populate the graph with a curated AI/ML knowledge base.
+
+        Covers models, frameworks, organisations, researchers, and concepts
+        with rich typed relationships so inference works out-of-the-box.
+        """
+        if self.node_count > 0:
+            logger.info("Graph already has %d nodes – skipping seed.", self.node_count)
+            return
+
+        # ── Languages ─────────────────────────────────────────
+        python = self.add_entity("Python", "LANGUAGE")
+        javascript = self.add_entity("JavaScript", "LANGUAGE")
+        typescript = self.add_entity("TypeScript", "LANGUAGE")
+        rust = self.add_entity("Rust", "LANGUAGE")
+        go = self.add_entity("Go", "LANGUAGE")
+        java = self.add_entity("Java", "LANGUAGE")
+        sql = self.add_entity("SQL", "LANGUAGE")
+
+        # ── Frameworks & Libraries ────────────────────────────
+        dspy = self.add_entity("DSPy", "FRAMEWORK")
+        langchain = self.add_entity("LangChain", "FRAMEWORK")
+        langgraph = self.add_entity("LangGraph", "FRAMEWORK")
+        flask = self.add_entity("Flask", "FRAMEWORK")
+        django = self.add_entity("Django", "FRAMEWORK")
+        fastapi = self.add_entity("FastAPI", "FRAMEWORK")
+        react = self.add_entity("React", "FRAMEWORK")
+        pytorch = self.add_entity("PyTorch", "FRAMEWORK")
+        tensorflow = self.add_entity("TensorFlow", "FRAMEWORK")
+        hf_transformers = self.add_entity("Hugging Face Transformers", "FRAMEWORK")
+        sklearn = self.add_entity("scikit-learn", "FRAMEWORK")
+        pandas = self.add_entity("Pandas", "LIBRARY")
+        numpy = self.add_entity("NumPy", "LIBRARY")
+        pydantic = self.add_entity("Pydantic", "LIBRARY")
+
+        # ── Organisations ─────────────────────────────────────
+        openai = self.add_entity("OpenAI", "ORG")
+        google = self.add_entity("Google", "ORG")
+        meta = self.add_entity("Meta", "ORG")
+        microsoft = self.add_entity("Microsoft", "ORG")
+        anthropic = self.add_entity("Anthropic", "ORG")
+        stanford = self.add_entity("Stanford University", "ORG")
+        deepmind = self.add_entity("DeepMind", "ORG")
+        nvidia = self.add_entity("NVIDIA", "ORG")
+        hugging_face = self.add_entity("Hugging Face", "ORG")
+
+        # ── Models ────────────────────────────────────────────
+        gpt4 = self.add_entity("GPT-4", "MODEL")
+        gemini = self.add_entity("Gemini", "MODEL")
+        claude = self.add_entity("Claude", "MODEL")
+        llama3 = self.add_entity("Llama 3", "MODEL")
+        mistral = self.add_entity("Mistral", "MODEL")
+        bert = self.add_entity("BERT", "MODEL")
+        t5 = self.add_entity("T5", "MODEL")
+        whisper = self.add_entity("Whisper", "MODEL")
+        phi3 = self.add_entity("Phi-3", "MODEL")
+
+        # ── Fields ────────────────────────────────────────────
+        nlp = self.add_entity("Natural Language Processing", "FIELD")
+        cv = self.add_entity("Computer Vision", "FIELD")
+        ml = self.add_entity("Machine Learning", "FIELD")
+        dl = self.add_entity("Deep Learning", "FIELD")
+        rl = self.add_entity("Reinforcement Learning", "FIELD")
+        gen_ai = self.add_entity("Generative AI", "FIELD")
+        ir = self.add_entity("Information Retrieval", "FIELD")
+        kg_field = self.add_entity("Knowledge Graphs", "FIELD")
+        ds = self.add_entity("Data Science", "FIELD")
+        mlops = self.add_entity("MLOps", "FIELD")
+
+        # ── Concepts ──────────────────────────────────────────
+        transformer = self.add_entity("Transformer", "CONCEPT")
+        attention = self.add_entity("Attention Mechanism", "CONCEPT")
+        rag = self.add_entity("Retrieval-Augmented Generation", "CONCEPT")
+        fine_tuning = self.add_entity("Fine-Tuning", "CONCEPT")
+        prompt_eng = self.add_entity("Prompt Engineering", "CONCEPT")
+        embeddings = self.add_entity("Embeddings", "CONCEPT")
+        vector_db = self.add_entity("Vector Database", "CONCEPT")
+        cot = self.add_entity("Chain-of-Thought", "CONCEPT")
+        few_shot = self.add_entity("Few-Shot Learning", "CONCEPT")
+        transfer_learn = self.add_entity("Transfer Learning", "CONCEPT")
+        nn = self.add_entity("Neural Network", "CONCEPT")
+        backprop = self.add_entity("Backpropagation", "CONCEPT")
+        agents_concept = self.add_entity("Autonomous Agents", "CONCEPT")
+        tool_use = self.add_entity("Tool Use", "CONCEPT")
+        rlhf = self.add_entity("RLHF", "CONCEPT")
+
+        # ── Tasks ─────────────────────────────────────────────
+        text_cls = self.add_entity("Text Classification", "TASK")
+        sentiment = self.add_entity("Sentiment Analysis", "TASK")
+        ner = self.add_entity("Named Entity Recognition", "TASK")
+        qa = self.add_entity("Question Answering", "TASK")
+        summarization = self.add_entity("Summarization", "TASK")
+        code_gen = self.add_entity("Code Generation", "TASK")
+        intent_det = self.add_entity("Intent Detection", "TASK")
+
+        # ── Technologies ──────────────────────────────────────
+        docker = self.add_entity("Docker", "TECHNOLOGY")
+        k8s = self.add_entity("Kubernetes", "TECHNOLOGY")
+        chromadb = self.add_entity("ChromaDB", "TECHNOLOGY")
+
+        # ── People ────────────────────────────────────────────
+        hinton = self.add_entity("Geoffrey Hinton", "PERSON")
+        lecun = self.add_entity("Yann LeCun", "PERSON")
+        ng = self.add_entity("Andrew Ng", "PERSON")
+        khattab = self.add_entity("Omar Khattab", "PERSON")
+        altman = self.add_entity("Sam Altman", "PERSON")
+        hassabis = self.add_entity("Demis Hassabis", "PERSON")
+
+        # ── DSPy Relationships ────────────────────────────────
+        self.add_relationship(dspy, python, "implemented_in", 1.0, "DSPy is a Python framework")
+        self.add_relationship(dspy, stanford, "developed_by", 1.0, "DSPy from Stanford NLP")
+        self.add_relationship(dspy, khattab, "created_by", 1.0, "Omar Khattab created DSPy")
+        self.add_relationship(dspy, prompt_eng, "automates", 0.9, "DSPy automates prompt engineering")
+        self.add_relationship(dspy, text_cls, "used_for", 0.9, "DSPy excels at text classification")
+        self.add_relationship(dspy, rag, "supports", 0.85, "DSPy has built-in RAG support")
+        self.add_relationship(dspy, few_shot, "optimizes", 0.9, "DSPy optimizes few-shot examples")
+        self.add_relationship(dspy, cot, "implements", 0.9, "DSPy ChainOfThought module")
+        self.add_relationship(dspy, qa, "used_for", 0.85, "DSPy for QA pipelines")
+        self.add_relationship(dspy, langchain, "alternative_to", 0.7, "DSPy vs LangChain")
+
+        # ── LangGraph Relationships ───────────────────────────
+        self.add_relationship(langgraph, python, "implemented_in", 1.0, "LangGraph is Python")
+        self.add_relationship(langgraph, langchain, "extends", 0.9, "LangGraph extends LangChain")
+        self.add_relationship(langgraph, agents_concept, "enables", 0.95, "LangGraph enables agents")
+        self.add_relationship(langgraph, tool_use, "enables", 0.85, "LangGraph enables tool use")
+
+        # ── Web Frameworks ────────────────────────────────────
+        self.add_relationship(flask, python, "implemented_in", 1.0, "Flask is a Python web framework")
+        self.add_relationship(django, python, "implemented_in", 1.0, "Django is a Python web framework")
+        self.add_relationship(fastapi, python, "implemented_in", 1.0, "FastAPI is modern Python")
+        self.add_relationship(fastapi, pydantic, "depends_on", 0.95, "FastAPI uses Pydantic")
+
+        # ── Model Relationships ───────────────────────────────
+        self.add_relationship(gpt4, openai, "developed_by", 1.0, "GPT-4 by OpenAI")
+        self.add_relationship(gpt4, transformer, "based_on", 1.0, "GPT-4 uses transformers")
+        self.add_relationship(gpt4, gen_ai, "belongs_to", 0.95, "GPT-4 is gen AI")
+        self.add_relationship(gpt4, nlp, "applies_to", 0.95, "GPT-4 is frontier NLP")
+        self.add_relationship(gpt4, rlhf, "trained_with", 0.9, "GPT-4 uses RLHF")
+        self.add_relationship(gpt4, code_gen, "used_for", 0.9, "GPT-4 for code generation")
+
+        self.add_relationship(gemini, google, "developed_by", 1.0, "Gemini by Google DeepMind")
+        self.add_relationship(gemini, deepmind, "developed_by", 0.9, "Gemini co-developed by DeepMind")
+        self.add_relationship(gemini, transformer, "based_on", 1.0, "Gemini uses transformers")
+        self.add_relationship(gemini, gen_ai, "belongs_to", 0.95, "Gemini is gen AI")
+
+        self.add_relationship(claude, anthropic, "developed_by", 1.0, "Claude by Anthropic")
+        self.add_relationship(claude, rlhf, "trained_with", 0.9, "Claude uses RLHF")
+
+        self.add_relationship(llama3, meta, "developed_by", 1.0, "Llama 3 by Meta")
+        self.add_relationship(llama3, transformer, "based_on", 1.0, "Llama 3 uses transformers")
+        self.add_relationship(llama3, gen_ai, "belongs_to", 0.95, "Llama 3 is open-weight gen AI")
+
+        self.add_relationship(bert, google, "developed_by", 1.0, "BERT by Google")
+        self.add_relationship(bert, transformer, "based_on", 1.0, "BERT uses transformer encoder")
+        self.add_relationship(bert, nlp, "applies_to", 1.0, "BERT revolutionized NLP")
+        self.add_relationship(bert, text_cls, "used_for", 0.95, "BERT for text classification")
+        self.add_relationship(bert, ner, "used_for", 0.9, "BERT for NER")
+        self.add_relationship(bert, sentiment, "used_for", 0.9, "BERT for sentiment analysis")
+        self.add_relationship(bert, qa, "used_for", 0.9, "BERT for QA")
+        self.add_relationship(bert, transfer_learn, "demonstrates", 0.9, "BERT pioneered transfer learning")
+
+        self.add_relationship(t5, google, "developed_by", 1.0, "T5 by Google Research")
+        self.add_relationship(t5, transformer, "based_on", 1.0, "T5 encoder-decoder transformer")
+        self.add_relationship(t5, summarization, "used_for", 0.9, "T5 for summarization")
+
+        self.add_relationship(whisper, openai, "developed_by", 1.0, "Whisper by OpenAI")
+        self.add_relationship(phi3, microsoft, "developed_by", 1.0, "Phi-3 by Microsoft")
+
+        # ── Architecture Relationships ────────────────────────
+        self.add_relationship(transformer, attention, "built_on", 1.0, "Transformers built on attention")
+        self.add_relationship(transformer, dl, "belongs_to", 0.95, "Core DL architecture")
+        self.add_relationship(transformer, nlp, "revolutionized", 0.95, "Transformers revolutionized NLP")
+        self.add_relationship(attention, nn, "component_of", 0.9, "Attention is NN component")
+        self.add_relationship(nn, dl, "foundation_of", 1.0, "NNs are foundation of DL")
+        self.add_relationship(nn, backprop, "trained_with", 1.0, "NNs trained with backprop")
+
+        # ── RAG / Embeddings ──────────────────────────────────
+        self.add_relationship(rag, vector_db, "relies_on", 0.9, "RAG uses vector databases")
+        self.add_relationship(rag, embeddings, "uses", 0.9, "RAG uses embeddings")
+        self.add_relationship(rag, ir, "combines_with", 0.85, "RAG combines IR with generation")
+        self.add_relationship(vector_db, chromadb, "implemented_by", 0.8, "ChromaDB is vector DB")
+
+        # ── Field Hierarchy ───────────────────────────────────
+        self.add_relationship(dl, ml, "subfield_of", 1.0, "DL is subfield of ML")
+        self.add_relationship(nlp, ml, "subfield_of", 0.9, "NLP relies on ML")
+        self.add_relationship(cv, ml, "subfield_of", 0.9, "CV is ML application area")
+        self.add_relationship(gen_ai, dl, "subfield_of", 0.95, "Gen AI built on DL")
+        self.add_relationship(rl, ml, "subfield_of", 1.0, "RL is branch of ML")
+        self.add_relationship(kg_field, ir, "enhances", 0.8, "KGs enhance IR")
+
+        # ── Task Relationships ────────────────────────────────
+        self.add_relationship(sentiment, text_cls, "subtype_of", 0.95, "Sentiment is text classification")
+        self.add_relationship(intent_det, text_cls, "subtype_of", 0.9, "Intent detection is classification")
+        self.add_relationship(text_cls, nlp, "belongs_to", 1.0, "Text classification is NLP")
+        self.add_relationship(qa, nlp, "belongs_to", 0.95, "QA is NLP task")
+        self.add_relationship(code_gen, gen_ai, "belongs_to", 0.9, "Code gen is gen AI")
+        self.add_relationship(ner, nlp, "belongs_to", 0.95, "NER is NLP task")
+
+        # ── DL Frameworks ─────────────────────────────────────
+        self.add_relationship(pytorch, python, "implemented_in", 1.0, "PyTorch in Python")
+        self.add_relationship(pytorch, meta, "developed_by", 0.9, "PyTorch by Meta")
+        self.add_relationship(pytorch, dl, "used_for", 1.0, "PyTorch for DL")
+        self.add_relationship(tensorflow, python, "implemented_in", 1.0, "TF in Python")
+        self.add_relationship(tensorflow, google, "developed_by", 1.0, "TF by Google")
+        self.add_relationship(tensorflow, dl, "used_for", 1.0, "TF for DL")
+        self.add_relationship(hf_transformers, hugging_face, "developed_by", 1.0, "HF Transformers by HF")
+        self.add_relationship(hf_transformers, transfer_learn, "enables", 0.9, "HF enables transfer learning")
+        self.add_relationship(hf_transformers, fine_tuning, "supports", 0.9, "HF supports fine-tuning")
+        self.add_relationship(sklearn, ml, "used_for", 1.0, "sklearn for ML")
+
+        # ── Data Libraries ────────────────────────────────────
+        self.add_relationship(pandas, ds, "used_for", 0.95, "Pandas for data science")
+        self.add_relationship(numpy, ml, "used_for", 0.9, "NumPy for numerical computing")
+
+        # ── People ────────────────────────────────────────────
+        self.add_relationship(hinton, dl, "pioneer_of", 1.0, "Hinton is godfather of DL")
+        self.add_relationship(hinton, backprop, "popularized", 0.95, "Hinton popularized backprop")
+        self.add_relationship(lecun, meta, "works_at", 0.9, "LeCun is at Meta")
+        self.add_relationship(ng, ml, "educator_in", 0.95, "Ng is ML educator")
+        self.add_relationship(ng, stanford, "affiliated_with", 0.9, "Ng at Stanford")
+        self.add_relationship(altman, openai, "leads", 1.0, "Altman leads OpenAI")
+        self.add_relationship(hassabis, deepmind, "leads", 1.0, "Hassabis leads DeepMind")
+
+        # ── Org Relationships ─────────────────────────────────
+        self.add_relationship(deepmind, google, "subsidiary_of", 0.95, "DeepMind is Google subsidiary")
+        self.add_relationship(microsoft, openai, "investor_in", 0.9, "Microsoft invests in OpenAI")
+        self.add_relationship(nvidia, dl, "enables", 0.95, "NVIDIA GPUs enable DL")
+        self.add_relationship(stanford, ml, "research_hub_for", 0.95, "Stanford is ML research hub")
+
+        # ── Concept Relationships ─────────────────────────────
+        self.add_relationship(cot, prompt_eng, "technique_of", 0.9, "CoT is prompting technique")
+        self.add_relationship(few_shot, prompt_eng, "technique_of", 0.85, "Few-shot is prompting")
+        self.add_relationship(fine_tuning, transfer_learn, "method_of", 0.95, "Fine-tuning is transfer learning")
+        self.add_relationship(rlhf, rl, "applies", 0.9, "RLHF applies RL")
+        self.add_relationship(agents_concept, tool_use, "requires", 0.85, "Agents require tool use")
+
+        # ── Infrastructure ────────────────────────────────────
+        self.add_relationship(docker, k8s, "orchestrated_by", 0.85, "Docker orchestrated by K8s")
+        self.add_relationship(docker, mlops, "used_in", 0.8, "Docker in MLOps")
+
+        self._persist_if_needed()
+        logger.info(
+            "Seeded knowledge graph: %d nodes, %d edges",
+            self.node_count,
+            self.edge_count,
+        )
 
     @property
     def node_count(self) -> int:

@@ -22,7 +22,8 @@ venv/
 *.swp
 
 # ── Runtime data ─────────────────────────
-data/
+data/chroma/
+data/graph/conceptnet_raw.json
 chroma_db/
 *.sqlite3
 

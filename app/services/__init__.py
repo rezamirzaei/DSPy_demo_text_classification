@@ -5,6 +5,7 @@ from app.services.knowledge_graph import KnowledgeGraph
 from app.services.text_analysis import (
     DSPyTextAnalysisEngine,
     HybridTextAnalysisEngine,
+    OllamaTextAnalysisEngine,
     RuleBasedTextAnalysisEngine,
     TextAnalysisEngine,
     build_analysis_engine,
@@ -15,6 +16,7 @@ __all__ = [
     "DSPyTextAnalysisEngine",
     "HybridTextAnalysisEngine",
     "KnowledgeGraph",
+    "OllamaTextAnalysisEngine",
     "RuleBasedTextAnalysisEngine",
     "TextAnalysisEngine",
     "build_analysis_engine",

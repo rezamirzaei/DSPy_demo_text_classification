@@ -112,13 +112,13 @@ class ClassifierFactory:
 
     @classmethod
     def create(cls, classifier_type: str) -> Any:
-        """Instantiate a ChainOfThought module for the requested type."""
+        """Instantiate a Predict module for the requested type."""
         if classifier_type not in cls._registry:
             raise ValueError(
                 f"Unknown classifier type: {classifier_type}. "
                 f"Available: {list(cls._registry.keys())}"
             )
-        return dspy.ChainOfThought(cls._registry[classifier_type])
+        return dspy.Predict(cls._registry[classifier_type])
 
     @classmethod
     def available_types(cls) -> list:

@@ -89,43 +89,131 @@
   </section>
 
   <section class="panel" ng-show="currentTab === 'graph'">
-    <h2>Knowledge Graph</h2>
+    <h2>&#x1f578; Knowledge Graph Explorer</h2>
 
-    <div class="status-grid" ng-show="graphData">
-      <div><label>Nodes</label><p>{{ graphData.node_count }}</p></div>
-      <div><label>Edges</label><p>{{ graphData.edge_count }}</p></div>
-    </div>
-
-    <div class="form-group">
-      <label>Entity Name</label>
-      <input type="text" ng-model="graphQuery.entity" placeholder="Entity to infer around (e.g. Python)">
-    </div>
-    <div class="form-group">
-      <label>Entity Type (optional)</label>
-      <input type="text" ng-model="graphQuery.entity_type" placeholder="CONCEPT, ORG, TOPIC, ...">
-    </div>
-    <div class="form-group">
-      <label>Max Depth (1-6)</label>
-      <input type="number" min="1" max="6" ng-model="graphQuery.max_depth">
-    </div>
-    <div class="form-group">
-      <label>Relation Filter (optional)</label>
-      <input type="text" ng-model="graphQuery.relation_filter" placeholder="co_occurs, belongs_to, ...">
+    <div class="kg-stats-bar" ng-show="graphData">
+      <div class="kg-stat-card">
+        <div class="stat-value">{{ graphData.node_count }}</div>
+        <div class="stat-label">Entities</div>
+      </div>
+      <div class="kg-stat-card">
+        <div class="stat-value">{{ graphData.edge_count }}</div>
+        <div class="stat-label">Relationships</div>
+      </div>
+      <div class="kg-stat-card">
+        <div class="stat-value">{{ getEntityTypes().length }}</div>
+        <div class="stat-label">Entity Types</div>
+      </div>
+      <div class="kg-stat-card">
+        <div class="stat-value">{{ getRelationTypes().length }}</div>
+        <div class="stat-label">Relation Types</div>
+      </div>
     </div>
 
-    <div class="controls-row">
-      <button ng-click="runGraphInference()" ng-disabled="loading">
-        {{ loading ? 'Inferring...' : 'Run Graph Inference' }}
-      </button>
-      <button class="ghost" ng-click="loadKnowledgeGraph()">Reload Graph</button>
+    <div class="sub-nav">
+      <button ng-class="{'active': graphSubTab === 'explore'}" ng-click="graphSubTab = 'explore'">Explore</button>
+      <button ng-class="{'active': graphSubTab === 'infer'}" ng-click="graphSubTab = 'infer'">Infer</button>
+      <button ng-class="{'active': graphSubTab === 'raw'}" ng-click="graphSubTab = 'raw'">Raw Data</button>
     </div>
 
-    <h3>Inference Result</h3>
-    <pre class="result" ng-show="graphInference">{{ graphInference | json }}</pre>
+    <!-- Explore Sub-Tab -->
+    <div ng-show="graphSubTab === 'explore'" ng-if="graphData">
+      <div class="quick-search">
+        <input type="text" ng-model="entitySearch" placeholder="Filter entities...">
+      </div>
+      <div ng-repeat="entityType in getEntityTypes()">
+        <h3 style="margin: 12px 0 6px; font-size: 0.9rem; color: #5f5f5f;">
+          <span class="entity-type-badge" ng-class="entityType">{{ entityType }}</span>
+          ({{ getEntitiesByType(entityType).length }})
+        </h3>
+        <div class="entity-list">
+          <span class="entity-item"
+                ng-repeat="entity in getEntitiesByType(entityType) | filter:{name: entitySearch}"
+                ng-click="quickInfer(entity.name, entity.type)">
+            {{ entity.name }}
+          </span>
+        </div>
+      </div>
+    </div>
 
-    <h3>Graph Snapshot</h3>
-    <pre class="result" ng-show="graphData">{{ graphData | json }}</pre>
-    <p ng-hide="graphData">Click the tab to load the graph.</p>
+    <!-- Infer Sub-Tab -->
+    <div ng-show="graphSubTab === 'infer'">
+      <div class="form-group">
+        <label>Entity Name</label>
+        <input type="text" ng-model="graphQuery.entity" placeholder="e.g. DSPy, BERT, Python, GPT-4">
+      </div>
+      <div class="form-group">
+        <label>Entity Type (optional)</label>
+        <select ng-model="graphQuery.entity_type">
+          <option value="">Any Type</option>
+          <option value="MODEL">MODEL</option>
+          <option value="FRAMEWORK">FRAMEWORK</option>
+          <option value="LANGUAGE">LANGUAGE</option>
+          <option value="ORG">ORG</option>
+          <option value="CONCEPT">CONCEPT</option>
+          <option value="FIELD">FIELD</option>
+          <option value="TASK">TASK</option>
+          <option value="PERSON">PERSON</option>
+          <option value="TECHNOLOGY">TECHNOLOGY</option>
+          <option value="PAPER">PAPER</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Max Depth (1-6)</label>
+        <input type="number" min="1" max="6" ng-model="graphQuery.max_depth">
+      </div>
+      <div class="form-group">
+        <label>Relation Filter (optional)</label>
+        <input type="text" ng-model="graphQuery.relation_filter" placeholder="developed_by, used_for, based_on, ...">
+      </div>
+
+      <div class="controls-row">
+        <button ng-click="runGraphInference()" ng-disabled="loading">
+          {{ loading ? 'Inferring...' : 'Run Graph Inference' }}
+        </button>
+        <button class="ghost" ng-click="loadKnowledgeGraph()">Reload</button>
+        <button class="ghost" ng-click="seedKnowledgeGraph()" ng-disabled="loading">Re-seed</button>
+      </div>
+
+      <div ng-show="graphInference">
+        <h3 style="margin-top: 16px;">Matches ({{ graphInference.matches.length }})</h3>
+        <div ng-repeat="match in graphInference.matches" class="inference-card">
+          <span class="entity-type-badge" ng-class="match.type">{{ match.type }}</span>
+          <strong>{{ match.name }}</strong>
+        </div>
+
+        <h3 ng-show="graphInference.related.length">Related Entities ({{ graphInference.related.length }})</h3>
+        <div ng-repeat="rel in graphInference.related" class="inference-card">
+          <span class="entity-type-badge" ng-class="rel.entity.type">{{ rel.entity.type }}</span>
+          <strong>{{ rel.entity.name }}</strong>
+          <span class="relation-label">{{ rel.relation }}</span>
+          <span class="depth-label">depth {{ rel.depth }}</span>
+          <span class="weight-bar" ng-style="{'width': (rel.weight * 60) + 'px'}"></span>
+          <span style="font-size: 11px; color: #aaa; margin-left: 4px;">{{ rel.weight }}</span>
+        </div>
+
+        <h3 ng-show="graphInference.predicted_links.length">Predicted Links ({{ graphInference.predicted_links.length }})</h3>
+        <div ng-repeat="pred in graphInference.predicted_links" class="prediction-card">
+          <span class="entity-type-badge" ng-class="pred.source.type">{{ pred.source.name }}</span>
+          &#x2192;
+          <span class="entity-type-badge" ng-class="pred.target.type">{{ pred.target.name }}</span>
+          <br>
+          <small>via <strong>{{ pred.via.name }}</strong> | {{ pred.suggested_relation }}</small>
+          <span class="confidence">{{ (pred.confidence * 100).toFixed(0) }}%</span>
+        </div>
+
+        <div ng-hide="graphInference.related.length || graphInference.predicted_links.length" style="color: var(--muted); margin-top: 12px;">
+          No inference results found. Try a different entity or increase depth.
+        </div>
+      </div>
+    </div>
+
+    <!-- Raw Data Sub-Tab -->
+    <div ng-show="graphSubTab === 'raw'">
+      <pre class="result" ng-show="graphInference">{{ graphInference | json }}</pre>
+      <pre class="result" ng-show="graphData">{{ graphData | json }}</pre>
+      <p ng-hide="graphData">Click the tab to load the graph.</p>
+    </div>
   </section>
 
   <section class="panel" ng-show="currentTab === 'history'">

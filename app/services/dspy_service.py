@@ -71,6 +71,11 @@ class DSPyService:
                 lm_kwargs["api_key"] = config["api_key"]
             if config.get("api_base"):
                 lm_kwargs["api_base"] = config["api_base"]
+            if config.get("keep_alive"):
+                lm_kwargs["keep_alive"] = config["keep_alive"]
+            lm_kwargs["timeout"] = int(getattr(self._settings, "lm_timeout_seconds", 45))
+            lm_kwargs["max_tokens"] = int(getattr(self._settings, "lm_max_tokens", 256))
+            lm_kwargs["num_retries"] = int(getattr(self._settings, "lm_num_retries", 1))
             self._lm = dspy.LM(**lm_kwargs)
             dspy.configure(lm=self._lm)
             self._initialized = True

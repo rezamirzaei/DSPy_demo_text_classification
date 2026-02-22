@@ -65,6 +65,17 @@ class DSPyService:
                 self._initialized = False
                 return False
 
+        # Validate API key for cloud providers
+        if self._provider in ("openai", "google", "huggingface"):
+            api_key = str(config.get("api_key", "")).strip()
+            if not api_key:
+                logger.warning(
+                    "No API key configured for %s. Falling back to rule-based analysis engine.",
+                    self._provider,
+                )
+                self._initialized = False
+                return False
+
         try:
             lm_kwargs: dict[str, Any] = {"model": config["model"]}
             if config.get("api_key"):

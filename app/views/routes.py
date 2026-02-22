@@ -141,13 +141,8 @@ def create_app(controller: Any = None) -> Flask:
     @app.route("/api/knowledge-graph/seed", methods=["POST"])
     def seed_knowledge_graph():
         """Seed the knowledge graph with curated AI/ML data."""
-        controller._knowledge_graph.clear()
-        controller._knowledge_graph.seed_default_graph()
-        return jsonify({
-            "message": "Knowledge graph seeded successfully",
-            "node_count": controller._knowledge_graph.node_count,
-            "edge_count": controller._knowledge_graph.edge_count,
-        })
+        result = controller.reseed_knowledge_graph()
+        return jsonify(result)
 
     @app.route("/api/graph/infer", methods=["POST"])
     def graph_infer():

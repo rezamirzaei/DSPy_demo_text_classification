@@ -179,3 +179,14 @@ class ClassificationController:
         if self._agent is not None:
             return self._agent.get_knowledge_graph()
         return self._knowledge_graph.export_graph()
+
+    def reseed_knowledge_graph(self) -> Dict[str, Any]:
+        """Clear and re-seed the knowledge graph with curated data."""
+        self._knowledge_graph.clear()
+        self._knowledge_graph.seed_default_graph()
+        return {
+            "message": "Knowledge graph seeded successfully",
+            "node_count": self._knowledge_graph.node_count,
+            "edge_count": self._knowledge_graph.edge_count,
+        }
+

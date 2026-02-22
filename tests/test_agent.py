@@ -134,18 +134,23 @@ class TestAgentAnalysis:
         result = agent.analyze("Test text")
         assert result.success is True
         step_names = [s.split("(")[0] for s in result.steps]
-        expected_order = [
-            "router",
-            "sentiment_analysis",
-            "topic_classification",
-            "intent_detection",
+        # router is always first
+        assert step_names[0] == "router"
+        # sentiment, topic, intent run in parallel — order is non-deterministic
+        parallel_steps = set(step_names[1:4])
+        assert parallel_steps == {"sentiment_analysis", "topic_classification", "intent_detection"}
+        # After parallel merge, the remaining steps are deterministic
+        assert "parallel_merge" in step_names
+        merge_idx = step_names.index("parallel_merge")
+        post_merge = step_names[merge_idx + 1:]
+        expected_post_merge = [
             "entity_extraction",
             "kg_enrichment",
             "knowledge_graph_construction",
             "summary_generation",
             "quality_check",
         ]
-        assert step_names == expected_order
+        assert post_merge == expected_post_merge
 
     def test_agent_steps_order_without_kg(self):
         agent = ClassificationAgent(
@@ -155,16 +160,21 @@ class TestAgentAnalysis:
         )
         result = agent.analyze("Test text")
         step_names = [s.split("(")[0] for s in result.steps]
-        expected_order = [
-            "router",
-            "sentiment_analysis",
-            "topic_classification",
-            "intent_detection",
+        # router is always first
+        assert step_names[0] == "router"
+        # sentiment, topic, intent run in parallel
+        parallel_steps = set(step_names[1:4])
+        assert parallel_steps == {"sentiment_analysis", "topic_classification", "intent_detection"}
+        # After parallel merge
+        assert "parallel_merge" in step_names
+        merge_idx = step_names.index("parallel_merge")
+        post_merge = step_names[merge_idx + 1:]
+        expected_post_merge = [
             "entity_extraction",
             "summary_generation",
             "quality_check",
         ]
-        assert step_names == expected_order
+        assert post_merge == expected_post_merge
 
     def test_agent_sentiment_result(self):
         agent = ClassificationAgent(

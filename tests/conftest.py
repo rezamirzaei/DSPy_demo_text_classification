@@ -86,6 +86,9 @@ def app_client():
         def get_knowledge_graph(self):
             return {"nodes": [], "edges": [], "node_count": 0, "edge_count": 0}
 
+        def reseed_knowledge_graph(self):
+            return {"message": "Knowledge graph seeded successfully", "node_count": 10, "edge_count": 20}
+
         def graph_infer(self, request):
             return {
                 "query": {

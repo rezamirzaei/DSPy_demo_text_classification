@@ -1,41 +1,41 @@
 """Classification Agent — LangGraph multi-step analysis pipeline.
 
-Uses LangGraph's StateGraph with conditional routing, knowledge-graph
-enrichment, and quality validation.
+Uses LangGraph's StateGraph with **parallel fan-out**, conditional routing,
+knowledge-graph enrichment, and quality validation.
 
 Graph topology
 --------------
-         ┌──────────┐
-         │  router   │
-         └────┬──────┘
-              │
-         sentiment
-              │
-           topic
-              │
-          intent
-              │
-         entities
-              │
-     ┌────────┴────────┐
-     │ (if KG enabled) │
-     ▼                 ▼
- kg_enrich         (skip)
-     │                 │
-  kg_build             │
-     └────────┬────────┘
-              │
-          summarise
-              │
-        quality_check
-              │
-             END
+              ┌──────────┐
+              │  router   │
+              └────┬──────┘
+                   │
+         ┌────────┼────────┐
+         ▼        ▼        ▼
+     sentiment  topic   intent     ← parallel fan-out
+         └────────┼────────┘
+                  │
+             entities
+                  │
+        ┌─────────┴─────────┐
+        │  (if KG enabled)  │
+        ▼                   ▼
+    kg_enrich           (skip)
+        │                   │
+     kg_build               │
+        └─────────┬─────────┘
+                  │
+             summarise
+                  │
+           quality_check
+                  │
+                 END
 """
 
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, List, Optional, TypedDict
+import operator
+from typing import Annotated, Any, Dict, List, Optional, TypedDict
 
 from langgraph.graph import END, StateGraph
 
@@ -48,7 +48,11 @@ logger = logging.getLogger(__name__)
 # ── State ────────────────────────────────────────────────
 
 class AgentState(TypedDict):
-    """State that flows through every LangGraph node."""
+    """State that flows through every LangGraph node.
+
+    The ``steps`` field uses ``operator.add`` as a reducer so that
+    parallel nodes can each append without overwriting each other.
+    """
 
     text: str
     include_knowledge_graph: bool
@@ -66,7 +70,7 @@ class AgentState(TypedDict):
     # Final
     summary: str
     quality: Dict[str, Any]
-    steps: List[str]
+    steps: Annotated[List[str], operator.add]
     error: Optional[str]
 
 
@@ -100,6 +104,7 @@ class ClassificationAgent:
         g.add_node("sentiment", self._node_sentiment)
         g.add_node("topic", self._node_topic)
         g.add_node("intent", self._node_intent)
+        g.add_node("merge_analyses", self._node_merge_analyses)
         g.add_node("entities", self._node_entities)
         g.add_node("kg_enrich", self._node_kg_enrich)
         g.add_node("kg_build", self._node_kg_build)
@@ -109,11 +114,17 @@ class ClassificationAgent:
         # Entry
         g.set_entry_point("router")
 
-        # Router → sequential analyses
+        # Router → parallel fan-out to sentiment, topic, intent
         g.add_edge("router", "sentiment")
-        g.add_edge("sentiment", "topic")
-        g.add_edge("topic", "intent")
-        g.add_edge("intent", "entities")
+        g.add_edge("router", "topic")
+        g.add_edge("router", "intent")
+
+        # All three merge before entity extraction
+        g.add_edge("sentiment", "merge_analyses")
+        g.add_edge("topic", "merge_analyses")
+        g.add_edge("intent", "merge_analyses")
+
+        g.add_edge("merge_analyses", "entities")
 
         # After entities, decide whether to do KG work
         g.add_conditional_edges(
@@ -159,9 +170,7 @@ class ClassificationAgent:
             else "simple"
         )
         return {
-            "steps": state.get("steps", []) + [
-                f"router(words={word_count}, complexity={complexity})"
-            ],
+            "steps": [f"router(words={word_count}, complexity={complexity})"],
         }
 
     def _node_sentiment(self, state: AgentState) -> dict[str, Any]:
@@ -169,7 +178,7 @@ class ClassificationAgent:
             result = self._engine.classify_sentiment(state["text"]).data
             return {
                 "sentiment": result,
-                "steps": state.get("steps", []) + ["sentiment_analysis"],
+                "steps": ["sentiment_analysis"],
             }
         except Exception as exc:
             logger.warning("Sentiment analysis failed: %s", exc)
@@ -179,7 +188,7 @@ class ClassificationAgent:
                     "confidence": "low",
                     "reasoning": str(exc),
                 },
-                "steps": state.get("steps", []) + ["sentiment_analysis (failed)"],
+                "steps": ["sentiment_analysis (failed)"],
             }
 
     def _node_topic(self, state: AgentState) -> dict[str, Any]:
@@ -187,7 +196,7 @@ class ClassificationAgent:
             result = self._engine.classify_topic(state["text"]).data
             return {
                 "topic": result,
-                "steps": state.get("steps", []) + ["topic_classification"],
+                "steps": ["topic_classification"],
             }
         except Exception as exc:
             logger.warning("Topic classification failed: %s", exc)
@@ -197,7 +206,7 @@ class ClassificationAgent:
                     "confidence": "low",
                     "reasoning": str(exc),
                 },
-                "steps": state.get("steps", []) + ["topic_classification (failed)"],
+                "steps": ["topic_classification (failed)"],
             }
 
     def _node_intent(self, state: AgentState) -> dict[str, Any]:
@@ -205,7 +214,7 @@ class ClassificationAgent:
             result = self._engine.classify_intent(state["text"]).data
             return {
                 "intent": result,
-                "steps": state.get("steps", []) + ["intent_detection"],
+                "steps": ["intent_detection"],
             }
         except Exception as exc:
             logger.warning("Intent detection failed: %s", exc)
@@ -215,21 +224,25 @@ class ClassificationAgent:
                     "confidence": "low",
                     "reasoning": str(exc),
                 },
-                "steps": state.get("steps", []) + ["intent_detection (failed)"],
+                "steps": ["intent_detection (failed)"],
             }
+
+    def _node_merge_analyses(self, state: AgentState) -> dict[str, Any]:
+        """Merge point after parallel sentiment/topic/intent fan-out."""
+        return {"steps": ["parallel_merge"]}
 
     def _node_entities(self, state: AgentState) -> dict[str, Any]:
         try:
             entities = self._engine.extract_entities(state["text"])
             return {
                 "entities": entities,
-                "steps": state.get("steps", []) + ["entity_extraction"],
+                "steps": ["entity_extraction"],
             }
         except Exception as exc:
             logger.warning("Entity extraction failed: %s", exc)
             return {
                 "entities": [],
-                "steps": state.get("steps", []) + ["entity_extraction (failed)"],
+                "steps": ["entity_extraction (failed)"],
             }
 
     def _node_kg_enrich(self, state: AgentState) -> dict[str, Any]:
@@ -288,7 +301,7 @@ class ClassificationAgent:
 
             return {
                 "kg_enrichment": enrichment,
-                "steps": state.get("steps", []) + [
+                "steps": [
                     f"kg_enrichment(found={enrichment['entities_found_in_kg']})"
                 ],
             }
@@ -296,7 +309,7 @@ class ClassificationAgent:
             logger.warning("KG enrichment failed: %s", exc)
             return {
                 "kg_enrichment": {"error": str(exc)},
-                "steps": state.get("steps", []) + ["kg_enrichment (failed)"],
+                "steps": ["kg_enrichment (failed)"],
             }
 
     def _node_kg_build(self, state: AgentState) -> dict[str, Any]:
@@ -343,13 +356,13 @@ class ClassificationAgent:
 
             return {
                 "knowledge_graph": graph_data,
-                "steps": state.get("steps", []) + ["knowledge_graph_construction"],
+                "steps": ["knowledge_graph_construction"],
             }
         except Exception as exc:
             logger.exception("Knowledge graph construction failed: %s", exc)
             return {
                 "knowledge_graph": {"error": str(exc)},
-                "steps": state.get("steps", []) + [
+                "steps": [
                     "knowledge_graph_construction (failed)"
                 ],
             }
@@ -377,13 +390,13 @@ class ClassificationAgent:
 
             return {
                 "summary": summary,
-                "steps": state.get("steps", []) + ["summary_generation"],
+                "steps": ["summary_generation"],
             }
         except Exception as exc:
             logger.warning("Summary generation failed: %s", exc)
             return {
                 "summary": "Analysis completed with partial results.",
-                "steps": state.get("steps", []) + ["summary_generation (failed)"],
+                "steps": ["summary_generation (failed)"],
             }
 
     def _node_quality_check(self, state: AgentState) -> dict[str, Any]:
@@ -440,7 +453,7 @@ class ClassificationAgent:
 
         return {
             "quality": quality,
-            "steps": state.get("steps", []) + [
+            "steps": [
                 f"quality_check(score={quality['score']}, grade={quality['grade']})"
             ],
         }

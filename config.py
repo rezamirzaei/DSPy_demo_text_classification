@@ -33,7 +33,7 @@ class Settings(BaseSettings):
 
     # ── Provider ─────────────────────────────────
     provider: Literal[
-        "rule_based", "ollama", "openai", "huggingface"
+        "rule_based", "ollama", "openai", "huggingface", "google"
     ] = "ollama"
 
     # ── Ollama ───────────────────────────────────
@@ -44,6 +44,10 @@ class Settings(BaseSettings):
     # ── OpenAI ───────────────────────────────────
     openai_api_key: str = ""
     openai_model: str = "gpt-4o-mini"
+
+    # ── Google Gemini ────────────────────────────
+    google_api_key: str = ""
+    google_model: str = "gemini-2.0-flash-lite"
 
     # ── HuggingFace ──────────────────────────────
     hf_token: str = ""
@@ -100,6 +104,12 @@ class Settings(BaseSettings):
                 "provider": "openai",
                 "model": self.openai_model,
                 "api_key": self.openai_api_key,
+                "api_base": "",
+            },
+            "google": {
+                "provider": "google",
+                "model": f"gemini/{self.google_model}",
+                "api_key": self.google_api_key,
                 "api_base": "",
             },
             "huggingface": {
